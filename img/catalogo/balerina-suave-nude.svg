@@ -1,13 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Balerina Suave">
   <title>Balerina Suave</title>
   <defs>
-    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#eae7ef"/>
-      <stop offset="1" stop-color="#d5d0de"/>
-    </linearGradient>
+    <radialGradient id="s" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#000" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="300" fill="url(#f)"/>
-  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+  <rect width="400" height="300" fill="#ffffff"/>
+  <ellipse cx="204" cy="264" rx="148" ry="18" fill="url(#s)"/>
+  <g stroke="#9a7a6a" stroke-width="1" stroke-linejoin="round">
 
   <path d="M58 212 C54 180 70 154 104 146 C128 140 148 148 166 162 L192 182 C210 194 238 200 274 204 C318 209 342 208 354 211 C360 213 358 216 352 216 H60 Z" fill="#dcae97"/>
   <path d="M192 182 C210 194 238 200 274 204 C318 209 342 208 354 211 C360 213 358 216 352 216 H216 C214 202 204 190 192 182 Z" fill="#efdbd0" opacity=".45"/>
@@ -16,4 +17,5 @@
   <path d="M148 176 C176 170 206 176 226 190 L220 204 C200 192 174 188 152 194 Z" fill="#3c3b45" opacity=".9"/>
   <path d="M50 212 H358 C370 212 376 221 372 230 C368 239 354 244 336 244 H78 C56 244 46 237 44 228 C42 219 44 212 50 212 Z" fill="#3c3b45"/>
   <path d="M52 242 H120 C126 242 128 246 128 249 C128 251 126 252 120 252 H62 C54 252 50 249 50 246 C50 243 48 242 52 242 Z" fill="#3c3b45"/>
+  </g>
 </svg>

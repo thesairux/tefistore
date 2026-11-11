@@ -1,14 +1,14 @@
 {
   "name": "Tefi Store",
   "short_name": "Tefi Store",
-  "description": "Zapatillas, botas, tacos y zapatos de vestir. Elige tu talla y envía tu pedido por WhatsApp.",
+  "description": "Botines, botas, zapatillas y calzado urbano. Elige tu talla y compra fácil por WhatsApp.",
   "lang": "es-CL",
   "dir": "ltr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#141221",
-  "theme_color": "#141221",
+  "background_color": "#ffffff",
+  "theme_color": "#4b0d2b",
   "categories": ["shopping"],
   "icons": [
     { "src": "img/icono-192.png", "sizes": "192x192", "type": "image/png" },

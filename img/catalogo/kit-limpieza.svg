@@ -1,17 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Kit de limpieza para zapatillas">
   <title>Kit de limpieza para zapatillas</title>
   <defs>
-    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#efeff3"/>
-      <stop offset="1" stop-color="#dddce4"/>
-    </linearGradient>
+    <radialGradient id="s" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#000" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="300" fill="url(#f)"/>
-  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+  <rect width="400" height="300" fill="#ffffff"/>
+  <ellipse cx="204" cy="264" rx="148" ry="18" fill="url(#s)"/>
+  <g stroke="#8d8aa6" stroke-width="1" stroke-linejoin="round">
 
   <path d="M74 118 L200 86 L326 118 L326 134 L200 166 L74 134 Z" fill="#afadc1"/>
   <path d="M74 134 L200 166 L200 252 L74 220 Z" fill="#8d8aa6"/>
   <path d="M326 134 L200 166 L200 252 L326 220 Z" fill="#6e6c81"/>
   <path d="M74 118 L200 86 L326 118 L200 150 Z" fill="#8d8aa6"/>
   <path d="M152 168 L248 144 L248 164 L152 188 Z" fill="#ffffff" opacity=".85"/>
+  </g>
 </svg>

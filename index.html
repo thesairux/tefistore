@@ -3,275 +3,226 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
-<title>Tefi Store | Zapatos y zapatillas — pide por WhatsApp</title>
-<meta name="description" content="Tefi Store: zapatillas, botas, tacos y zapatos de vestir para mujer, hombre y niños. Elige tu talla y envía tu pedido por WhatsApp. Despacho a todo Chile y retiro en tienda.">
-<meta name="theme-color" content="#141221">
+<title>Tefi Store | Calzado — envíos a todo Chile</title>
+<meta name="description" content="Tefi Store: botines, botas, zapatillas y calzado urbano. Elige tu talla y compra fácil por WhatsApp. Envíos a todo Chile y retiro en La Serena.">
+<meta name="theme-color" content="#4b0d2b">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Tefi Store | Zapatos y zapatillas">
-<meta property="og:description" content="Zapatillas, botas, tacos y zapatos de vestir. Elige tu talla y pide por WhatsApp.">
+<meta property="og:title" content="Tefi Store | Calzado">
+<meta property="og:description" content="Botines, botas, zapatillas y calzado urbano. Envíos a todo Chile.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="img/icono-180.png">
 <link rel="manifest" href="site.webmanifest">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="css/estilos.css">
-<!-- Productos, precios, tallas, colores, horario y datos de la tienda: se editan en catalogo.js -->
+<!-- Productos, precios, tallas, despachos y datos de la tienda: se editan en catalogo.js -->
 <script src="catalogo.js"></script>
 <script src="js/tema.js"></script>
 <script src="js/app.js" defer></script>
 <script src="js/asistente.js" defer></script>
 </head>
 <body>
-<a class="saltar" href="#catalogo">Saltar al catálogo</a>
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<div class="anuncio" data-anuncio hidden></div>
 
 <header class="cabecera">
   <div class="contenedor cabecera-fila">
-    <a class="marca" href="#inicio" aria-label="Tefi Store, ir al inicio">
-      <span class="marca-ico" aria-hidden="true">
-        <svg viewBox="0 0 64 64"><path d="M11 42c-1-9 1.5-14.5 5.5-16.5 2-1 4-.5 4.5 2 .5 2.5 2 4 5 5.5l5-7c1.5-2 4-2 5.5 0 3.5 4.5 8 7.5 13.5 9 4 1.1 6 2.8 6 5.5v1Z"/><path d="M9.5 41.5h46c2.5 0 3.5 2 2.8 3.8-.7 1.8-2.8 2.7-5.8 2.7H14c-3 0-5-1.6-5-3.7Z"/></svg>
-      </span>
-      <span class="marca-texto"><b data-dato="nombre">Tefi</b><small data-dato="rubro">Store</small></span>
-    </a>
-    <nav class="menu" aria-label="Secciones">
-      <a href="#catalogo">Catálogo</a>
-      <a href="#tallas">Guía de tallas</a>
-      <a href="#como-comprar">Cómo comprar</a>
-      <a href="#tienda" data-si="direccion">Tienda</a>
-    </nav>
-    <button class="boton-pedido" type="button" data-abrir-pedido aria-label="Mi bolsa, 0 productos">
-      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
-      <span class="boton-pedido-texto">Mi bolsa</span>
-      <span class="contador" data-contador>0</span>
+    <button class="icono-boton solo-movil" type="button" data-abrir-menu aria-label="Abrir el menú" aria-expanded="false">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
+
+    <a class="marca" href="#/" aria-label="Tefi Store, ir al inicio">
+      <b>TEFI</b><span>STORE</span>
+    </a>
+
+    <nav class="menu" data-menu aria-label="Categorías"></nav>
+
+    <div class="cabecera-acciones">
+      <button class="icono-boton" type="button" data-abrir-buscador aria-label="Buscar" aria-expanded="false">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      </button>
+      <button class="icono-boton icono-boton--bolsa" type="button" data-abrir-carrito aria-label="Mi carrito, 0 productos">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="globo" data-contador hidden>0</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="barra-buscador" data-barra-buscador hidden>
+    <div class="contenedor barra-buscador-fila">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+      <input type="search" data-buscar placeholder="Busca por modelo, color o categoría…" aria-label="Buscar en el catálogo" autocomplete="off" enterkeyhint="search">
+      <button class="icono-boton" type="button" data-cerrar-buscador aria-label="Cerrar la búsqueda">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
   </div>
 </header>
 
+<nav class="menu-movil" data-menu-movil hidden aria-label="Menú">
+  <div class="menu-movil-cab">
+    <span class="marca"><b>TEFI</b><span>STORE</span></span>
+    <button class="icono-boton" type="button" data-cerrar-menu aria-label="Cerrar el menú">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="menu-movil-lista" data-menu-movil-lista></div>
+  <div class="menu-movil-pie">
+    <a class="boton boton--wsp" data-wsp href="#" target="_blank" rel="noopener">
+      <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg>
+      Escríbenos por WhatsApp
+    </a>
+  </div>
+</nav>
+
 <main id="contenido">
-
-  <section class="portada" id="inicio">
-    <div class="portada-fondo" aria-hidden="true"></div>
-    <div class="contenedor portada-grilla">
-      <div class="portada-texto">
-        <p class="portada-sello" data-estado-tienda hidden></p>
-        <h1 class="portada-titulo"><span data-texto="portada.titulo">Encuentra</span> <span class="brillo" data-texto="portada.destacado">tu par</span></h1>
-        <p class="portada-bajada" data-texto="portada.bajada">Zapatillas, botas, tacos y zapatos de vestir para mujer, hombre y niños.</p>
-        <div class="portada-acciones">
-          <a class="boton boton--grande" href="#catalogo">Ver el catálogo <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="boton boton--wsp" data-wsp href="#" target="_blank" rel="noopener"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg> Escríbenos</a>
+  <section class="vista" data-vista="inicio" hidden>
+    <div class="portada" data-portada></div>
+    <section class="bloque" aria-labelledby="destacados-titulo">
+      <div class="contenedor">
+        <div class="bloque-cab">
+          <h2 class="titulo" id="destacados-titulo" data-texto="destacados.titulo">Destacados</h2>
+          <a class="enlace-flecha" href="#/catalogo">Ver todo <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
-        <ul class="portada-ventajas" data-ventajas></ul>
+        <div class="rejilla rejilla--3" data-destacados></div>
       </div>
-      <div class="destacados" data-destacados></div>
-    </div>
-  </section>
-
-  <section class="catalogo" id="catalogo" aria-labelledby="catalogo-titulo">
-    <div class="contenedor">
-      <div class="catalogo-cabeza">
-        <div>
-          <h2 class="titulo-grande" id="catalogo-titulo"><span data-texto="catalogo.titulo">Nuestro</span> <span class="acento" data-texto="catalogo.destacado">catálogo</span></h2>
-          <p class="catalogo-bajada" data-texto="catalogo.bajada">Mostramos solo las tallas que tenemos en tienda.</p>
-        </div>
-        <label class="buscador">
-          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>
-          <span class="oculto">Buscar en el catálogo</span>
-          <input type="search" data-buscar placeholder="Busca: zapatilla, bota, negro…" autocomplete="off" enterkeyhint="search">
-        </label>
+    </section>
+    <section class="temporada" data-temporada hidden></section>
+    <section class="bloque" aria-labelledby="categorias-titulo">
+      <div class="contenedor">
+        <div class="bloque-cab"><h2 class="titulo" id="categorias-titulo">Compra por categoría</h2></div>
+        <div class="mosaico" data-mosaico></div>
       </div>
-    </div>
-    <nav class="secciones" aria-label="Secciones del catálogo">
-      <div class="contenedor"><div class="pildoras pildoras--grandes" data-secciones></div></div>
-    </nav>
-    <div class="contenedor">
-      <div class="pildoras pildoras--chicas" data-categorias></div>
-      <div class="filtros">
-        <div class="filtro-tallas">
-          <span class="filtro-titulo">Tu talla</span>
-          <div class="pildoras pildoras--tallas" data-filtro-tallas></div>
-        </div>
-        <label class="filtro-orden">
-          <span class="filtro-titulo">Ordenar</span>
-          <select data-orden>
-            <option value="destacados">Destacados</option>
-            <option value="precio-asc">Precio: de menor a mayor</option>
-            <option value="precio-desc">Precio: de mayor a menor</option>
-            <option value="nombre">Nombre (A-Z)</option>
-          </select>
-        </label>
+    </section>
+    <section class="bloque bloque--cupones" data-cupones-bloque hidden aria-labelledby="cupones-titulo">
+      <div class="contenedor">
+        <div class="bloque-cab"><h2 class="titulo" id="cupones-titulo">Cupones de descuento</h2></div>
+        <div class="cupones-lista" data-cupones></div>
       </div>
-      <p class="resultado-cuenta" data-cuenta aria-live="polite"></p>
-      <div class="rejilla" data-lista>
-        <p class="sin-js">Cargando el catálogo…</p>
-      </div>
-      <div class="catalogo-otra">
-        <span class="catalogo-otra-ico"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg></span>
-        <div class="catalogo-otra-texto"><b>¿No está tu talla?</b><span>Escríbenos: la pedimos a bodega y te avisamos.</span></div>
-        <a class="boton boton--wsp" data-wsp href="#" target="_blank" rel="noopener">Consultar por WhatsApp</a>
-      </div>
-    </div>
-  </section>
-
-  <section class="cupones" id="cupones" aria-labelledby="cupones-titulo" hidden>
-    <div class="contenedor">
-      <div class="cupones-cabeza">
-        <h2 class="titulo-grande" id="cupones-titulo"><span data-texto="cupones.titulo">Cupones</span> <span class="acento" data-texto="cupones.destacado">de la semana</span></h2>
-        <p class="cupones-bajada" data-texto="cupones.bajada">Un cupón por pedido.</p>
-      </div>
-      <ul class="cupones-lista" data-cupones></ul>
-    </div>
-  </section>
-
-  <section class="tallas" id="tallas" aria-labelledby="tallas-titulo">
-    <div class="contenedor tallas-grilla">
-      <div>
-        <h2 class="titulo-grande" id="tallas-titulo"><span data-texto="tallas.titulo">¿Cuál es tu</span> <span class="acento" data-texto="tallas.destacado">talla?</span></h2>
-        <p class="tallas-bajada" data-texto="tallas.bajada">Mide tu pie del talón al dedo más largo.</p>
-        <ol class="tallas-pasos">
-          <li>Pon una hoja contra la pared y párate encima con el talón pegado al muro.</li>
-          <li>Marca con un lápiz donde termina tu dedo más largo.</li>
-          <li>Mide en centímetros y busca el número en la tabla.</li>
+    </section>
+    <section class="pasos" aria-labelledby="pasos-titulo">
+      <div class="contenedor">
+        <h2 class="titulo titulo--claro" id="pasos-titulo">Comprar es simple</h2>
+        <ol class="pasos-lista">
+          <li><span class="pasos-num">01</span><h3>Elige tu talla</h3><p>Mostramos el stock real de cada talla. Agrega los pares que quieras al carrito.</p></li>
+          <li><span class="pasos-num">02</span><h3>Completa tus datos</h3><p>Envío a domicilio o retiro en la tienda. Si tienes cupón, lo aplicas ahí mismo.</p></li>
+          <li><span class="pasos-num">03</span><h3>Confirmamos por WhatsApp</h3><p>Te llega el detalle del pedido. Confirmamos stock y total, y recién ahí pagas.</p></li>
         </ol>
-        <p class="nota-chica">¿Te queda entre dos tallas? Elige la más grande. Si llega y no te queda, tienes cambio: <span data-dato="cambios"></span></p>
       </div>
-      <div class="tabla-marco">
-        <table class="tabla-tallas">
-          <caption class="oculto">Equivalencia entre talla chilena, centímetros y talla US</caption>
-          <thead><tr><th scope="col">Talla</th><th scope="col">Largo del pie</th><th scope="col">US</th></tr></thead>
-          <tbody data-guia-tallas></tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section class="pasos" id="como-comprar" aria-labelledby="pasos-titulo">
-    <div class="contenedor pasos-grilla">
-      <div class="pasos-cabeza">
-        <h2 class="titulo-grande titulo-grande--claro" id="pasos-titulo"><span data-texto="pasos.titulo">Compra en</span> <span class="brillo" data-texto="pasos.destacado">3 pasos.</span></h2>
-        <p class="pasos-bajada">El pago lo coordinamos por WhatsApp: transferencia, débito o crédito.</p>
-      </div>
-      <ol class="pasos-lista">
-        <li>
-          <div class="pasos-cab"><span class="pasos-ico"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg></span><span class="pasos-num">01</span></div>
-          <h3>Elige modelo y talla</h3><p>Agrega a la bolsa los pares que quieras. Te mostramos el stock real de cada talla.</p>
-        </li>
-        <li>
-          <div class="pasos-cab"><span class="pasos-ico"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.8"/><circle cx="17.5" cy="17" r="1.8"/></svg></span><span class="pasos-num">02</span></div>
-          <h3>Despacho o retiro</h3><p>Elige tu sector para el despacho, o retira gratis en la tienda cuando te avisemos.</p>
-        </li>
-        <li>
-          <div class="pasos-cab"><span class="pasos-ico"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg></span><span class="pasos-num">03</span></div>
-          <h3>Envía por WhatsApp</h3><p>Tu pedido llega listo a nuestro WhatsApp. Confirmamos stock, total y la forma de pago.</p>
-        </li>
-      </ol>
-    </div>
-  </section>
-
-  <section class="tienda" id="tienda" aria-labelledby="tienda-titulo" data-si="direccion" hidden>
-    <div class="contenedor tienda-grilla">
-      <div>
-        <h2 class="titulo-grande" id="tienda-titulo"><span data-texto="tienda.titulo">Visítanos</span> <span class="acento" data-texto="tienda.destacado">en la tienda</span></h2>
-        <ul class="datos-local">
-          <li>
-            <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <div><b data-dato="direccion"></b><span><span data-dato="sector-ciudad"></span><span data-si="region">, <span data-dato="region"></span></span></span></div>
-          </li>
-          <li data-si="horario">
-            <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M12 8v4l2.5 2"/></svg>
-            <div data-horario-largo></div>
-          </li>
-          <li data-si="pagos">
-            <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="1.5"/><path d="M3.5 10h17M7 14.5h3"/></svg>
-            <div><b>Formas de pago</b><span data-dato="pagos"></span></div>
-          </li>
-          <li>
-            <svg class="icono icono--acento" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 10a8 8 0 1 0-2.3 5.7L20 18"/><path d="M20 10h-5"/></svg>
-            <div><b>Cambios y garantía</b><span><span data-dato="cambios"></span> <span data-dato="garantia"></span></span></div>
-          </li>
-        </ul>
-        <div class="envios-caja">
-          <b>Despachos</b>
-          <ul class="envios-lista" data-envios></ul>
+    </section>
+    <section class="bloque" id="tienda" data-si="direccion" hidden aria-labelledby="tienda-titulo">
+      <div class="contenedor tienda-grilla">
+        <div>
+          <h2 class="titulo" id="tienda-titulo" data-texto="tienda.titulo">Visítanos en la tienda</h2>
+          <ul class="datos-local">
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
+              <div><b data-dato="direccion"></b><span data-dato="sector-ciudad-region"></span></div>
+            </li>
+            <li data-si="horario">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="7.5"/><path d="M12 8v4l2.5 2"/></svg>
+              <div data-horario-largo></div>
+            </li>
+            <li data-si="pagos">
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="6" width="17" height="12" rx="1.5"/><path d="M3.5 10h17M7 14.5h3"/></svg>
+              <div><b>Formas de pago</b><span data-dato="pagos"></span></div>
+            </li>
+            <li>
+              <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.8"/><circle cx="17.5" cy="17" r="1.8"/></svg>
+              <div><b>Despachos</b><span data-envios-texto></span></div>
+            </li>
+          </ul>
         </div>
-      </div>
-      <figure class="mapa">
-        <div class="mapa-marco">
-          <a class="mapa-enlace" data-mapa href="#" target="_blank" rel="noopener">
-            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11Z"/><circle cx="12" cy="10" r="2.3"/></svg>
-            <b>Ver en Google Maps</b>
-            <span data-dato="direccion-ciudad"></span>
-          </a>
+        <figure class="mapa">
           <iframe data-mapa-embed title="Mapa de la tienda" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </figure>
-    </div>
+          <figcaption><a data-mapa href="#" target="_blank" rel="noopener">Ver en Google Maps <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></figcaption>
+        </figure>
+      </div>
+    </section>
   </section>
 
-  <section class="cierre" aria-labelledby="cierre-titulo">
-    <div class="cierre-fondo" aria-hidden="true"></div>
-    <div class="contenedor cierre-centro">
-      <h2 class="titulo-grande titulo-grande--claro" id="cierre-titulo"><span data-texto="cierre.titulo">¿Lista o listo</span> <span class="brillo" data-texto="cierre.destacado">para estrenar?</span></h2>
-      <a class="boton boton--claro boton--grande" href="#catalogo">Elegir mi par <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-    </div>
-  </section>
-
+  <section class="vista" data-vista="catalogo" hidden></section>
+  <section class="vista" data-vista="producto" hidden></section>
+  <section class="vista" data-vista="checkout" hidden></section>
 </main>
 
 <footer class="pie">
-  <div class="contenedor">
-    <div class="pie-fila">
-      <div class="pie-marca">
-        <span class="marca-ico" aria-hidden="true">
-          <svg viewBox="0 0 64 64"><path d="M11 42c-1-9 1.5-14.5 5.5-16.5 2-1 4-.5 4.5 2 .5 2.5 2 4 5 5.5l5-7c1.5-2 4-2 5.5 0 3.5 4.5 8 7.5 13.5 9 4 1.1 6 2.8 6 5.5v1Z"/><path d="M9.5 41.5h46c2.5 0 3.5 2 2.8 3.8-.7 1.8-2.8 2.7-5.8 2.7H14c-3 0-5-1.6-5-3.7Z"/></svg>
-        </span>
-        <span class="marca-texto"><b data-dato="nombre">Tefi</b><small data-dato="rubro">Store</small></span>
-      </div>
-      <div class="pie-contacto">
-        <span class="pie-titulo">Escríbenos o síguenos</span>
-        <div class="pie-botones">
-          <a class="red-boton red-boton--wsp" data-wsp href="#" target="_blank" rel="noopener"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg><span><b>WhatsApp</b><small data-dato="whatsappVisible"></small></span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="red-boton red-boton--ig" data-instagram data-si="instagram" hidden href="#" target="_blank" rel="noopener"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor" stroke="none"/></svg><span><b>Instagram</b><small data-dato="instagram"></small></span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-          <a class="red-boton red-boton--fb" data-facebook data-si="facebook" hidden href="#" target="_blank" rel="noopener"><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M13.5 21v-7.3h2.4l.4-2.9h-2.8V9c0-.8.3-1.4 1.5-1.4h1.4V5c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8.1v2.9h2.4V21h3Z"/></svg><span><b>Facebook</b></span><svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        </div>
+  <div class="contenedor pie-grilla">
+    <div>
+      <span class="marca marca--pie"><b>TEFI</b><span>STORE</span></span>
+      <p class="pie-texto">Calzado con estilo, comodidad y versatilidad para tu día a día.</p>
+      <div class="pie-redes">
+        <a class="icono-boton" data-wsp href="#" target="_blank" rel="noopener" aria-label="WhatsApp">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5 5.6 16A8 8 0 1 1 8.4 18.6Z"/><path d="M9.2 8.6c.3 2.7 2.4 5 5.2 5.6l1.2-1.3-1.8-1-1 .7c-.9-.5-1.7-1.3-2.2-2.2l.7-1-1-1.8Z"/></svg>
+        </a>
+        <a class="icono-boton" data-instagram data-si="instagram" hidden href="#" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r=".9" fill="currentColor" stroke="none"/></svg>
+        </a>
+        <a class="icono-boton" data-facebook data-si="facebook" hidden href="#" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M13.5 21v-7.3h2.4l.4-2.9h-2.8V9c0-.8.3-1.4 1.5-1.4h1.4V5c-.3 0-1.2-.1-2.2-.1-2.2 0-3.7 1.3-3.7 3.8v2.1H8.1v2.9h2.4V21h3Z"/></svg>
+        </a>
       </div>
     </div>
-    <p class="pie-nota">Los precios y el stock son referenciales: confirmamos todo por WhatsApp antes de que pagues.</p>
-    <p class="pie-firma">Hecho con <a href="https://altiroweb.cl" target="_blank" rel="noopener">altiroweb.cl</a></p>
+    <div>
+      <b class="pie-titulo">Catálogo</b>
+      <ul class="pie-lista" data-pie-categorias></ul>
+    </div>
+    <div>
+      <b class="pie-titulo">Ayuda</b>
+      <ul class="pie-lista">
+        <li><a href="#" data-abrir-tallas>Guía de tallas</a></li>
+        <li><a href="#/" data-ir-tienda>Dónde estamos</a></li>
+        <li><a data-wsp href="#" target="_blank" rel="noopener">Hablar por WhatsApp</a></li>
+      </ul>
+    </div>
+    <div>
+      <b class="pie-titulo">Cambios y garantía</b>
+      <p class="pie-texto" data-dato="cambios"></p>
+      <p class="pie-texto" data-dato="garantia"></p>
+    </div>
+  </div>
+  <div class="contenedor pie-abajo">
+    <p>Los precios y el stock son referenciales: confirmamos todo por WhatsApp antes de que pagues.</p>
+    <p>Hecho con <a href="https://altiroweb.cl" target="_blank" rel="noopener">altiroweb.cl</a></p>
   </div>
 </footer>
 
-<button class="barra-pedido" type="button" data-abrir-pedido data-barra hidden>
-  <span class="barra-cuenta" data-contador>0</span>
-  <span>Ver mi bolsa</span>
-  <b data-barra-total>$0</b>
-</button>
+<div class="velo" data-velo hidden></div>
 
-<div class="aviso-agregado" data-aviso role="status" aria-live="polite"></div>
-
-<dialog class="ficha" data-ficha aria-labelledby="ficha-titulo">
-  <div class="ficha-caja">
-    <button class="cerrar" type="button" data-cerrar aria-label="Cerrar">
+<aside class="carrito" data-carrito hidden aria-label="Tu carrito">
+  <header class="carrito-cab">
+    <div>
+      <h2 class="titulo">Tu carrito</h2>
+      <p class="carrito-cuenta" data-carrito-cuenta>0 productos</p>
+    </div>
+    <button class="icono-boton" type="button" data-cerrar-carrito aria-label="Cerrar el carrito">
       <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
     </button>
-    <div class="ficha-cuerpo" data-ficha-cuerpo></div>
-    <div class="ficha-pie">
-      <button class="boton boton--grande" type="button" data-confirmar></button>
-      <p class="nota-chica">Precio y stock referenciales. Confirmamos tu talla por WhatsApp antes del pago.</p>
+  </header>
+  <div class="carrito-cuerpo" data-carrito-cuerpo></div>
+  <div class="carrito-pie" data-carrito-pie></div>
+</aside>
+
+<dialog class="ventana" data-ventana-tallas aria-labelledby="vt-titulo">
+  <div class="ventana-caja">
+    <header class="ventana-cab">
+      <h2 class="titulo" id="vt-titulo" data-texto="tallas.titulo">Guía de tallas</h2>
+      <button class="icono-boton" type="button" data-cerrar-ventana aria-label="Cerrar">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div class="ventana-cuerpo">
+      <p class="texto-suave" data-texto="tallas.bajada"></p>
+      <table class="tabla-tallas">
+        <thead><tr><th scope="col">Talla</th><th scope="col">Largo del pie</th><th scope="col">US</th></tr></thead>
+        <tbody data-guia-tallas></tbody>
+      </table>
     </div>
   </div>
 </dialog>
 
-<dialog class="pedido" data-pedido aria-labelledby="pedido-titulo">
-  <div class="pedido-caja">
-    <header class="pedido-cab">
-      <h2 id="pedido-titulo">Mi bolsa <span class="pedido-cuenta" data-pedido-cuenta></span></h2>
-      <button class="cerrar" type="button" data-cerrar aria-label="Cerrar bolsa">
-        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
-      </button>
-    </header>
-    <div class="pedido-cuerpo" data-pedido-cuerpo></div>
-    <div class="pedido-pie" data-pedido-pie></div>
-  </div>
-</dialog>
+<div class="aviso" data-aviso role="status" aria-live="polite"></div>
 </body>
 </html>

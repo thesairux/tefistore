@@ -49,9 +49,8 @@ def paleta(color):
         "sombra": mezclar(color, "#000000", 0.22 if not claro else 0.10),
         "suela": mezclar(color, "#000000", 0.55) if not claro else "#3c3b45",
         "detalle": "#ffffff" if not claro else "#3c3b45",
-        # Con colores muy claros (blanco, nude) el fondo se tiñe de gris para que la silueta se vea
-        "fondo1": mezclar(color, "#ffffff", 0.86) if not claro else "#eae7ef",
-        "fondo2": mezclar(color, "#ffffff", 0.70) if not claro else "#d5d0de",
+        # Contorno suave: con colores muy claros (blanco, nude) hace falta para que se vea la silueta
+        "borde": mezclar(color, "#000000", 0.30) if claro else color,
     }
 
 
@@ -170,20 +169,23 @@ FORMAS = {
 
 
 def svg(forma, color, titulo):
+    """Dibujo de catálogo: fondo blanco y sombra suave, para que combine con las fotos reales."""
     p = paleta(color)
     cuerpo = FORMAS.get(forma, zapatilla)(p)
     seguro = (titulo or "").replace("&", "y").replace("<", "").replace(">", "")
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="{seguro}">
   <title>{seguro}</title>
   <defs>
-    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="{p['fondo1']}"/>
-      <stop offset="1" stop-color="{p['fondo2']}"/>
-    </linearGradient>
+    <radialGradient id="s" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#000" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <rect width="400" height="300" fill="url(#f)"/>
-  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
-{cuerpo}</svg>
+  <rect width="400" height="300" fill="#ffffff"/>
+  <ellipse cx="204" cy="264" rx="148" ry="18" fill="url(#s)"/>
+  <g stroke="{p['borde']}" stroke-width="1" stroke-linejoin="round">
+{cuerpo}  </g>
+</svg>
 '''
 
 
@@ -191,12 +193,11 @@ def main():
     cat = leer_catalogo()
     SALIDA.mkdir(parents=True, exist_ok=True)
     hechos = 0
-    for sec in cat.get("secciones", []):
-        for c in sec.get("categorias", []):
-            for pr in c.get("productos", []):
-                foto = pr.get("foto") or ""
+    for c in cat.get("categorias", []):
+        for pr in c.get("productos", []):
+            for foto in pr.get("fotos") or []:
                 if not foto.endswith(".svg"):
-                    continue
+                    continue          # las fotos reales no se tocan
                 colores = pr.get("colores") or []
                 color = colores[0]["hex"] if colores else "#8d8aa6"
                 destino = RAIZ / foto

@@ -55,7 +55,7 @@
     ubicacion: { t: "📍 Dónde están", q: "¿Dónde están ubicados?" },
     cupones: { t: "🎟️ Cupones", q: "¿Tienen cupones?" },
     comprar: { t: "❓ ¿Cómo compro?", q: "¿Cómo hago un pedido?" },
-    bolsa: { t: "🛍️ Mi bolsa", a: "bolsa" },
+    bolsa: { t: "🛍️ Mi carrito", a: "carrito" },
     humano: { t: "💬 Hablar con alguien", a: "wsp" },
     reiniciar: { t: "🔄 Empezar de nuevo", a: "reiniciar" }
   };
@@ -169,7 +169,7 @@
         texto: "Sí 🎟️\n" + cu.map(function (c) {
           return "• " + c.codigo + ": " + (c.tipo === "monto" ? plata(c.valor) + " menos" : c.valor + "% de descuento") +
             (c.minimo ? " (compra mínima " + plata(c.minimo) + ")" : "");
-        }).join("\n") + "\nSe escribe en «Mi bolsa», antes de enviar el pedido.",
+        }).join("\n") + "\nSe escribe en «Finalizar compra», antes de enviar el pedido.",
         opciones: ["Ver ofertas", "¿Cómo compro?"]
       };
     }
@@ -197,7 +197,7 @@
     }
 
     if (hay("gracias", "muchas gracias")) {
-      return { texto: "¡De nada! Cualquier cosa me preguntas 🙌", opciones: ["Ver el catálogo", "Mi bolsa"] };
+      return { texto: "¡De nada! Cualquier cosa me preguntas 🙌", opciones: ["Ver el catálogo", "Mi carrito"] };
     }
 
     if (hay("recomienda", "recomendacion", "mas vendido", "que me recomiendas", "lo mejor")) {
@@ -400,7 +400,7 @@
     var cuerpo = {
       mensajes: mensajes.filter(function (m) { return m.role === "user" || m.role === "assistant"; })
         .map(function (m) { return { role: m.role, content: m.content }; }),
-      bolsa: P.resumenBolsa()
+      carrito: P.resumenBolsa()
     };
 
     fetch(API, {
