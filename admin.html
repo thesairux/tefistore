@@ -116,6 +116,16 @@ a{color:var(--vino)}
   display:grid;place-items:center;cursor:pointer;font-size:13px;color:var(--suave-txt);text-align:center;padding:6px}
 .subir:hover{border-color:var(--vino);color:var(--vino)}
 
+/* campo de imagen (portada y banda): se sube desde el dispositivo */
+.img-campo{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.img-campo>img{width:220px;aspect-ratio:4/3;object-fit:cover;display:block;
+  border:1px solid var(--linea);border-radius:8px;background:var(--suave-2)}
+.img-vacia{width:220px;aspect-ratio:4/3;border:1px dashed var(--linea);border-radius:8px;
+  background:var(--suave);display:grid;place-items:center;font-size:13px;color:var(--suave-txt)}
+.img-acciones{display:grid;gap:7px;align-content:start;max-width:260px}
+.img-acciones label{cursor:pointer}
+.img-acciones .ayuda{font-size:12.5px;color:var(--suave-txt);line-height:1.45}
+
 /* tallas */
 .tallas-modo{display:flex;gap:6px;margin-bottom:12px}
 .tallas-modo button{border:1px solid var(--linea);background:#fff;border-radius:999px;padding:6px 14px;
@@ -217,6 +227,7 @@ a{color:var(--vino)}
   var cuenta = { usuario: "", clave: "" };
   var D = null;              // el catálogo que se está editando
   var fotosNuevas = [];      // { path, sha } de las fotos subidas en esta sesión
+  var previas = {};          // ruta -> la foto en el navegador, para verla antes de publicar
   var cambios = false;
   var sel = null;            // id del producto abierto
   var filtro = { texto: "", categoria: "" };
@@ -403,7 +414,7 @@ a{color:var(--vino)}
     $("[data-lista]").innerHTML = lista.length ? lista.map(function (x) {
       return '<button class="lista-item" type="button" data-sel="' + esc(x.p.id) + '"' +
         (x.p.id === sel ? ' aria-current="true"' : "") + ">" +
-        '<img src="' + esc(foto1(x.p)) + '" alt="" loading="lazy">' +
+        '<img src="' + esc(urlFoto(foto1(x.p))) + '" alt="" loading="lazy">' +
         "<div><b>" + esc(x.p.nombre) + "</b><small>" + plata(x.p.precio) + " · " + esc(x.cat.nombre) +
         (x.p.disponible === false ? ' <span class="oculto-tag">oculto</span>' : "") + "</small></div></button>";
     }).join("") : '<p class="vacio" style="padding:14px">No hay productos con ese filtro.</p>';
@@ -450,15 +461,15 @@ a{color:var(--vino)}
       '<div class="fotos" data-fotos>' +
         (p.fotos || []).map(function (f, i) {
           return '<div class="foto">' + (i === 0 ? '<span class="foto-principal">Principal</span>' : "") +
-            '<img src="' + esc(f) + '" alt="">' +
+            '<img src="' + esc(urlFoto(f)) + '" alt="">' +
             '<div class="foto-acciones">' +
               (i > 0 ? '<button type="button" data-foto-sube="' + i + '" title="Mover antes">←</button>' : "") +
               '<button type="button" data-foto-borra="' + i + '" title="Quitar">Quitar</button>' +
             "</div></div>";
         }).join("") +
-        '<label class="subir">+ Subir foto<input type="file" accept="image/*" hidden data-subir-foto></label>' +
+        '<label class="subir">+ Elegir foto<br><small>del dispositivo</small><input type="file" accept="image/*" hidden data-subir-foto></label>' +
       "</div>" +
-      '<p class="ayuda" style="margin-top:8px">La primera foto es la que se ve en el catálogo. Se recortan solas a 4:3 sobre fondo blanco.</p>' +
+      '<p class="ayuda" style="margin-top:8px">La primera foto es la que se ve en el catálogo. Se eligen desde tu teléfono o computador y se recortan solas a 4:3 sobre fondo blanco.</p>' +
 
       '<p class="sub-titulo">Tallas</p>' +
       '<div class="tallas-modo">' +
@@ -507,8 +518,25 @@ a{color:var(--vino)}
       "</div>";
   }
 
+  /* Una foto recién subida aún no está en la página: se muestra la copia del navegador */
+  function urlFoto(f) { return (f && previas[f]) || f || ""; }
+
   function campo(etiqueta, html) {
     return '<div class="campo"><label>' + esc(etiqueta) + "</label>" + html + "</div>";
+  }
+
+  /* Campo de imagen: se elige un archivo del teléfono o del computador, nunca un enlace */
+  function campoImagen(etiqueta, valor, attrSubir, attrQuitar) {
+    return '<div class="campo"><label>' + esc(etiqueta) + "</label>" +
+      '<div class="img-campo">' +
+        (valor ? '<img src="' + esc(urlFoto(valor)) + '" alt="">' : '<div class="img-vacia">Sin foto</div>') +
+        '<div class="img-acciones">' +
+          '<label class="boton boton--linea boton--chico">' + (valor ? "Cambiar foto" : "Elegir foto") +
+            '<input type="file" accept="image/*" hidden ' + attrSubir + "></label>" +
+          (valor ? '<button class="boton boton--linea boton--chico" type="button" ' + attrQuitar + ">Quitar</button>" : "") +
+          '<small class="ayuda">Desde tu teléfono o computador. Se recorta sola a 4:3 y se achica para que la página cargue rápido.</small>' +
+        "</div>" +
+      "</div></div>";
   }
 
   /* ---- eventos de productos ---- */
@@ -606,6 +634,8 @@ a{color:var(--vino)}
       return;
     }
     if (el.matches("[data-subir-foto]")) { subirFoto(el); return; }
+    if (el.matches("[data-subir-slide]")) { subirPortada(el); return; }
+    if (el.matches("[data-subir-temp]")) { subirTemporada(el); return; }
   });
 
   function nuevoProducto() {
@@ -644,30 +674,76 @@ a{color:var(--vino)}
   }
 
   /* ---- subir una foto ---- */
-  function subirFoto(input) {
+  /* Toma el archivo que eligió la usuaria, lo achica en el navegador y lo deja en el repositorio.
+     Devuelve la ruta con la que queda guardado (fotos/nombre-xxxxx.jpg). */
+  function subir(archivo, nombreBase, modo) {
+    avisar("Preparando la foto…");
+    var guardada = "";
+    return aJpeg(archivo, modo).then(function (base64) {
+      guardada = base64;
+      return api("foto", { datos: base64 });
+    }).then(function (d) {
+      var base = (slug(nombreBase) || "foto").slice(0, 38);
+      if (base.length < 3) base = "foto";
+      var ruta = "fotos/" + base + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
+      fotosNuevas.push({ path: ruta, sha: d.sha });
+      previas[ruta] = "data:image/jpeg;base64," + guardada;
+      return ruta;
+    });
+  }
+  /* Saca el archivo del <input type="file"> y lo deja listo para volver a usarse */
+  function archivoDe(input) {
     var archivo = input.files && input.files[0];
     input.value = "";
+    return archivo || null;
+  }
+  function falloFoto(e) {
+    avisar((e && e.message) || "No se pudo subir la foto.", true);
+  }
+
+  function subirFoto(input) {
+    var archivo = archivoDe(input);
     if (!archivo) return;
     var x = buscarProd(sel);
     if (!x) return;
-    avisar("Preparando la foto…");
-    aJpeg(archivo).then(function (base64) {
-      return api("foto", { datos: base64 });
-    }).then(function (d) {
-      var ruta = "fotos/" + (slug(x.p.nombre) || "foto") + "-" + Math.random().toString(36).slice(2, 7) + ".jpg";
-      fotosNuevas.push({ path: ruta, sha: d.sha });
+    subir(archivo, x.p.nombre, "contener").then(function (ruta) {
       (x.p.fotos = x.p.fotos || []).push(ruta);
       tocar();
       pintarEditor();
       pintarLista();
       avisar("Foto lista. Recuerda guardar los cambios.");
-    }).catch(function (e) {
-      avisar(e.message || "No se pudo subir la foto.", true);
-    });
+    }).catch(falloFoto);
   }
 
-  /* La foto se recorta a 4:3 sobre blanco y se achica antes de subirla */
-  function aJpeg(archivo) {
+  function subirPortada(input) {
+    var archivo = archivoDe(input);
+    if (!archivo) return;
+    var i = +input.getAttribute("data-subir-slide");
+    var s = (D.portada || [])[i];
+    if (!s) return;
+    subir(archivo, "portada-" + (i + 1), "cubrir").then(function (ruta) {
+      s.foto = ruta;
+      tocar();
+      pintarPortada();
+      avisar("Foto lista. Recuerda guardar los cambios.");
+    }).catch(falloFoto);
+  }
+
+  function subirTemporada(input) {
+    var archivo = archivoDe(input);
+    if (!archivo) return;
+    subir(archivo, "banda", "cubrir").then(function (ruta) {
+      (D.temporada = D.temporada || {}).foto = ruta;
+      tocar();
+      pintarPortada();
+      avisar("Foto lista. Recuerda guardar los cambios.");
+    }).catch(falloFoto);
+  }
+
+  /* La foto se achica antes de subirla, siempre a 4:3.
+     «contener»: el zapato completo sobre fondo blanco (catálogo).
+     «cubrir»:   la foto llena el marco y se recorta lo que sobra (portada y banda). */
+  function aJpeg(archivo, modo) {
     return new Promise(function (ok, mal) {
       var lector = new FileReader();
       lector.onerror = function () { mal(new Error("No se pudo leer el archivo.")); };
@@ -675,16 +751,19 @@ a{color:var(--vino)}
         var im = new Image();
         im.onerror = function () { mal(new Error("Ese archivo no es una imagen.")); };
         im.onload = function () {
-          var W = 1400, H = 1050;
+          var cubrir = modo === "cubrir";
+          var W = cubrir ? 1600 : 1400, H = cubrir ? 1200 : 1050;
           var c = document.createElement("canvas");
           c.width = W; c.height = H;
           var g = c.getContext("2d");
           g.fillStyle = "#ffffff";
           g.fillRect(0, 0, W, H);
-          var e = Math.min(W * 0.94 / im.width, H * 0.94 / im.height);
+          var e = cubrir
+            ? Math.max(W / im.width, H / im.height)
+            : Math.min(W * 0.94 / im.width, H * 0.94 / im.height);
           var w = Math.round(im.width * e), h = Math.round(im.height * e);
-          g.drawImage(im, (W - w) / 2, (H - h) / 2, w, h);
-          var url = c.toDataURL("image/jpeg", 0.88);
+          g.drawImage(im, Math.round((W - w) / 2), Math.round((H - h) / 2), w, h);
+          var url = c.toDataURL("image/jpeg", cubrir ? 0.86 : 0.88);
           ok(url.slice(url.indexOf(",") + 1));
         };
         im.src = lector.result;
@@ -715,11 +794,8 @@ a{color:var(--vino)}
               campo("Texto del botón", '<input type="text" data-slide="' + i + '" data-k="boton" value="' + esc(s.boton) + '">') +
             "</div>" +
             campo("Bajada", '<input type="text" data-slide="' + i + '" data-k="bajada" value="' + esc(s.bajada) + '">') +
-            '<div class="fila">' +
-              campo("Enlace del botón", '<input type="text" data-slide="' + i + '" data-k="enlace" value="' + esc(s.enlace) + '">') +
-              campo("Foto", '<input type="text" data-slide="' + i + '" data-k="foto" value="' + esc(s.foto) + '">') +
-            "</div>" +
-            (s.foto ? '<img src="' + esc(s.foto) + '" alt="" style="width:200px;border-radius:6px;border:1px solid var(--linea)">' : "") +
+            campo("Enlace del botón", '<input type="text" data-slide="' + i + '" data-k="enlace" value="' + esc(s.enlace) + '">') +
+            campoImagen("Foto", s.foto, 'data-subir-slide="' + i + '"', 'data-quitar-slide="' + i + '"') +
             "</div>";
         }).join("") +
         '<button class="boton boton--linea boton--chico" type="button" data-slide-nuevo>+ Agregar imagen</button>' +
@@ -735,7 +811,7 @@ a{color:var(--vino)}
           campo("Texto del botón", '<input type="text" data-temp="boton" value="' + esc(T.boton) + '">') +
           campo("Enlace", '<input type="text" data-temp="enlace" value="' + esc(T.enlace) + '">') +
         "</div>" +
-        campo("Foto", '<input type="text" data-temp="foto" value="' + esc(T.foto) + '">') +
+        campoImagen("Foto", T.foto, 'data-subir-temp', "data-quitar-temp") +
       "</div>" +
 
       '<div class="tarjeta"><h3>Los tres pasos</h3>' +
@@ -969,6 +1045,8 @@ a{color:var(--vino)}
       tocar(); pintarPortada(); return;
     }
     if ((el = ev.target.closest("[data-slide-borra]"))) { D.portada.splice(+el.getAttribute("data-slide-borra"), 1); tocar(); pintarPortada(); return; }
+    if ((el = ev.target.closest("[data-quitar-slide]"))) { D.portada[+el.getAttribute("data-quitar-slide")].foto = ""; tocar(); pintarPortada(); return; }
+    if (ev.target.closest("[data-quitar-temp]")) { (D.temporada = D.temporada || {}).foto = ""; tocar(); pintarPortada(); return; }
     if (ev.target.closest("[data-zona-nueva]")) {
       (D.negocio.envios = D.negocio.envios || []).push({ nombre: "Zona nueva", detalle: "" });
       tocar(); pintarTienda(); return;
