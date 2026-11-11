@@ -597,13 +597,32 @@
     var titulo = filtro.favoritos ? "Favoritos" : cat ? cat.nombre : (enRuta(C.textos, "catalogo.titulo") || "Catálogo");
     var bajada = filtro.favoritos ? "Los modelos que guardaste con el corazón." : (enRuta(C.textos, "catalogo.bajada") || "");
 
+    // las tallas que existen en lo que se está mirando
+    var base = PRODUCTOS.filter(function (p) {
+      return (!filtro.categoria || p._cat === filtro.categoria) && (!filtro.favoritos || esFavorito(p.id));
+    });
+    var hay = {};
+    base.forEach(function (p) {
+      tallasDe(p).forEach(function (x) { if (stockTalla(p, x) > 0) hay[x] = true; });
+    });
+    var tallas = TODAS_TALLAS.filter(function (x) { return hay[x]; });
+    if (filtro.talla && tallas.indexOf(filtro.talla) < 0) filtro.talla = "";
+
     var lista = filtrados();
     vista.innerHTML =
       '<div class="contenedor">' +
         '<div class="cat-cab"><h1 class="titulo">' + esc(titulo) + "</h1>" +
           (bajada ? '<p class="cat-bajada">' + esc(bajada) + "</p>" : "") + "</div>" +
         '<div class="filtros">' +
-          "<div></div>" +
+          (tallas.length
+            ? '<div class="filtro-tallas"><span class="filtro-rotulo">Buscar por talla</span>' +
+              '<div class="pildoras pildoras--tallas">' +
+              '<button class="pildora" type="button" data-talla="" aria-pressed="' + (filtro.talla ? "false" : "true") + '">Todas</button>' +
+              tallas.map(function (x) {
+                return '<button class="pildora" type="button" data-talla="' + esc(x) + '" aria-pressed="' +
+                  (filtro.talla === x ? "true" : "false") + '">' + esc(x) + "</button>";
+              }).join("") + "</div></div>"
+            : "<div></div>") +
           '<div class="filtro-orden"><span class="filtro-rotulo">Ordenar</span>' +
             '<select data-orden aria-label="Ordenar el catálogo">' +
               ["destacados|Destacados", "precio-asc|Precio: de menor a mayor", "precio-desc|Precio: de mayor a menor", "nombre|Nombre (A-Z)"].map(function (o) {
@@ -613,11 +632,13 @@
             "</select></div>" +
         "</div>" +
         '<p class="cat-cuenta">' + (lista.length ? lista.length + (lista.length === 1 ? " modelo" : " modelos") +
+          (filtro.talla ? " en talla " + esc(filtro.talla) : "") +
           (filtro.texto ? ' para "' + esc(filtro.texto) + '"' : "") : "") + "</p>" +
         '<div class="rejilla rejilla--4">' +
           (lista.length ? lista.map(tarjeta).join("")
             : '<div class="vacio"><b>No encontramos nada con eso</b>' +
-              "<p>Prueba con otra palabra o quita el filtro de talla. También podemos buscarlo nosotros.</p>" +
+              "<p>" + (filtro.talla ? "Prueba con otra talla o escríbenos: " : "Prueba con otra palabra o escríbenos: ") +
+              "si no está acá, igual podemos buscarlo.</p>" +
               '<a class="boton boton--wsp" href="' + esc(enlaceWsp("Hola, busco un modelo que no veo en la página")) + '" target="_blank" rel="noopener">Preguntar por WhatsApp</a></div>') +
         "</div>" +
       "</div>" +
@@ -1141,6 +1162,13 @@
           var s = $("#tienda");
           if (s) s.scrollIntoView({ behavior: "smooth" });
         }, 60);
+        return;
+      }
+
+      // Catálogo
+      if ((el = t.closest("[data-talla]"))) {
+        filtro.talla = el.getAttribute("data-talla");
+        pintarCatalogo();
         return;
       }
 
