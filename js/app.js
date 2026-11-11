@@ -51,9 +51,30 @@
   var PRODUCTOS = [];
   var PORID = {};
   var CATEGORIAS = (C.categorias || []).filter(function (c) { return c && c.id; });
+  /* "tallas" se puede escribir como "35-40", como lista o con el stock de cada talla.
+     Adentro siempre queda un objeto {talla: pares}, donde null = disponible sin contar pares. */
+  function normalizarTallas(p) {
+    var t = p.tallas;
+    if (typeof t === "string" || Array.isArray(t)) {
+      var lista = [];
+      if (typeof t === "string") {
+        var m = /^\s*(\d+)\s*(?:-|a|al)\s*(\d+)\s*$/.exec(t);
+        if (m) for (var i = +m[1]; i <= +m[2]; i++) lista.push(String(i));
+        else lista = t.split(/[,;\s]+/).filter(Boolean);
+      } else {
+        lista = t.map(String);
+      }
+      var o = {};
+      lista.forEach(function (x) { o[x] = null; });
+      t = o;
+    }
+    p.tallas = t || {};
+  }
+
   CATEGORIAS.forEach(function (cat) {
     (cat.productos || []).forEach(function (p) {
       if (p.disponible === false) return;
+      normalizarTallas(p);
       p._cat = cat.id;
       p._catNombre = cat.nombre;
       p._nombre = sinTildes([p.nombre, cat.nombre].join(" "));
@@ -67,7 +88,13 @@
   function fotos(p) { return (p && p.fotos && p.fotos.length) ? p.fotos : ["img/catalogo/_sinfoto.svg"]; }
   function foto(p) { return fotos(p)[0]; }
   function tallasDe(p) { return p.tallaUnica ? [] : Object.keys(p.tallas || {}); }
-  function stockTalla(p, t) { return Math.max(0, parseInt((p.tallas || {})[t], 10) || 0); }
+  var SIN_CONTAR = 10;   // tope por talla cuando la tienda no lleva la cuenta de pares
+  function stockTalla(p, t) {
+    var v = (p.tallas || {})[t];
+    if (v === null || v === undefined && t in (p.tallas || {})) return SIN_CONTAR;
+    return Math.max(0, parseInt(v, 10) || 0);
+  }
+  function stockContado(p, t) { return typeof (p.tallas || {})[t] === "number"; }
   function stockTotal(p) {
     if (p.tallaUnica) return Math.max(0, parseInt(p.stock, 10) || 0);
     return tallasDe(p).reduce(function (a, t) { return a + stockTalla(p, t); }, 0);
@@ -282,6 +309,13 @@
     var et = etiqueta(p);
     var d = descuento(p);
     var tallas = tallasDe(p).filter(function (t) { return stockTalla(p, t) > 0; });
+    var contadas = tallas.some(function (t) { return stockContado(p, t); });
+    var seguidas = tallas.length > 2 && tallas.every(function (t, i) {
+      return i === 0 || +t === +tallas[i - 1] + 1;
+    });
+    var textoTallas = !tallas.length ? "Sin stock"
+      : (!contadas && seguidas) ? "Tallas " + tallas[0] + " a la " + tallas[tallas.length - 1]
+      : "Tallas " + tallas.join(", ");
     return '<a class="tarjeta' + (hayStock(p) ? "" : " tarjeta--agotada") + '" href="#/p/' + esc(p.id) + '">' +
       '<span class="tarjeta-foto">' +
         (et ? '<span class="cinta cinta--' + et.clase + '">' + esc(et.texto) + "</span>" : "") +
@@ -290,7 +324,7 @@
       '<span class="tarjeta-nombre">' + esc(p.nombre) + "</span>" +
       '<span class="tarjeta-precios"><span class="tarjeta-precio">' + plata(p.precio) + "</span>" +
         (d ? '<span class="tarjeta-antes">' + plata(p.precioAntes) + "</span>" : "") + "</span>" +
-      '<span class="tarjeta-tallas">' + (p.tallaUnica ? "Talla única" : tallas.length ? "Tallas " + tallas.join(", ") : "Sin stock") + "</span>" +
+      '<span class="tarjeta-tallas">' + (p.tallaUnica ? "Talla única" : textoTallas) + "</span>" +
       "</a>";
   }
 
@@ -625,8 +659,9 @@
                     var s = stockTalla(p, t);
                     return '<button class="talla" type="button" data-talla-op="' + esc(t) + '"' + (s > 0 ? "" : " disabled") +
                       ' aria-pressed="' + (ficha.talla === t ? "true" : "false") + '">' + esc(t) +
-                      (s > 0 && s <= 2 ? "<small>" + (s === 1 ? "última" : "quedan 2") + "</small>" : "") + "</button>";
-                  }).join("") + "</div></div>"
+                      (stockContado(p, t) && s > 0 && s <= 2 ? "<small>" + (s === 1 ? "última" : "quedan 2") + "</small>" : "") + "</button>";
+                  }).join("") + "</div>" +
+                  (p.nota ? '<p class="nota" style="margin-top:10px">' + esc(p.nota) + "</p>" : "") + "</div>"
                 : "") +
 
             (agotado ? "" :
@@ -1202,6 +1237,7 @@
     foto: foto,
     tallas: tallasDe,
     stockTalla: stockTalla,
+    stockContado: stockContado,
     stockTotal: stockTotal,
     hayStock: hayStock,
     estaAbierto: estaAbierto,

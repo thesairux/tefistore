@@ -42,6 +42,24 @@ function abiertoAhora(C) {
 }
 
 /* Texto corto con todo lo que el asistente necesita saber. */
+/* "tallas" puede venir como "35-40", como lista o con el stock de cada talla. */
+function normalizarTallas(t) {
+  if (typeof t === "string" || Array.isArray(t)) {
+    let lista = [];
+    if (typeof t === "string") {
+      const m = /^\s*(\d+)\s*(?:-|a|al)\s*(\d+)\s*$/.exec(t);
+      if (m) { for (let i = +m[1]; i <= +m[2]; i++) lista.push(String(i)); }
+      else lista = t.split(/[,;\s]+/).filter(Boolean);
+    } else {
+      lista = t.map(String);
+    }
+    const o = {};
+    lista.forEach(x => { o[x] = null; });
+    return o;
+  }
+  return t || {};
+}
+
 function contexto(C) {
   const N = C.negocio || {};
   const l = [];
@@ -84,13 +102,19 @@ function contexto(C) {
         const stock = Math.max(0, parseInt(p.stock, 10) || 0);
         s += stock > 0 ? ". Talla única" : ". AGOTADO";
       } else {
-        const tallas = Object.keys(p.tallas || {});
-        const hay = tallas.filter(t => (p.tallas[t] | 0) > 0);
-        s += hay.length
-          ? ". Tallas con stock: " + hay.map(t => `${t} (${p.tallas[t]})`).join(", ") +
-            (hay.length < tallas.length ? ". Sin stock: " + tallas.filter(t => !(p.tallas[t] | 0)).join(", ") : "")
-          : ". AGOTADO en todas las tallas";
+        const tallas = normalizarTallas(p.tallas);
+        const nombres = Object.keys(tallas);
+        const contadas = nombres.some(t => typeof tallas[t] === "number");
+        const hay = nombres.filter(t => tallas[t] === null || tallas[t] > 0);
+        if (!hay.length) s += ". AGOTADO en todas las tallas";
+        else if (!contadas) s += ". Tallas: " + hay.join(", ") + " (la tienda confirma la talla por WhatsApp)";
+        else {
+          s += ". Tallas con stock: " + hay.map(t => tallas[t] === null ? t : `${t} (${tallas[t]})`).join(", ");
+          const sin = nombres.filter(t => tallas[t] === 0);
+          if (sin.length) s += ". Sin stock: " + sin.join(", ");
+        }
       }
+      if (p.nota) s += " " + p.nota;
       if ((p.colores || []).length) s += ". Color: " + p.colores.map(c => c.nombre).join(", ");
       if (p.material) s += ". Material: " + p.material;
       if (p.detalle) s += ". " + p.detalle.replace(/\n/g, " ");
@@ -108,10 +132,10 @@ Cómo responder:
 - Español de Chile, cercano y amable (tutea), con buena onda pero sin exagerar. Puedes usar algún emoji 👟 de vez en cuando.
 - Respuestas CORTAS: 1 a 4 frases, o una lista breve. Es un chat en el celular.
 - Usa SOLO la información de abajo. Nunca inventes modelos, precios, tallas, stock, marcas, materiales, plazos de despacho ni promociones. Si no sabes algo, dilo y sugiere preguntar por WhatsApp (${N.whatsappVisible || "el WhatsApp de la tienda"}).
-- El stock es por talla y es lo más importante: si preguntan por una talla, revisa el número de pares de ESE modelo en ESA talla. Si no queda, dilo y ofrece otro modelo que sí la tenga.
+- Las tallas son lo más importante: si preguntan por una, revisa si ESE modelo la tiene. Cuando el catálogo trae el número de pares, úsalo; cuando solo trae la lista de tallas, di que la tienda confirma la disponibilidad por WhatsApp. Si una talla no está, dilo y ofrece otro modelo que sí la tenga.
 - Cuando recomiendes o menciones modelos del catálogo, agrega al final de la frase su id así: [[zapatilla-nube]]. La página muestra esos modelos como tarjetas con botón para elegir talla. Máximo 4 ids por respuesta. No escribas los ids de otra forma.
 - Al final de cada respuesta sugiere 2 o 3 respuestas cortas que el cliente podría tocar, así: {{¿Tienen la 38?}} {{Ver botas}}. Máximo 30 letras cada una, escritas como las diría el cliente.
-- Si el cliente no sabe su talla, ayúdalo con la equivalencia en centímetros de la guía de tallas.
+- Si el cliente no sabe su talla, ayúdalo con la equivalencia en centímetros de la guía de tallas. Varios modelos tienen horma pequeña: cuando el producto lo diga, recuérdale que conviene pedir una talla más.
 - Tú NO tomas pedidos ni confirmas nada: el cliente elige talla, agrega al carrito y completa sus datos en «Finalizar compra»; el pedido llega por WhatsApp desde «Tu carrito». El total es referencial; la tienda confirma stock y total.
 - No recomiendes modelos AGOTADOS. Si la tienda está cerrada, avisa a qué hora abre, pero igual puede dejar su pedido.
 - Si preguntan por cambios, devoluciones o garantía, responde con lo que dice la información de abajo y que el detalle se ve con la boleta en la tienda.

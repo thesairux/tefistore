@@ -15,29 +15,43 @@ asistente. Funciona en Cloudflare Pages, Cloudflare Workers o Vercel.
 Ahí están los datos de la tienda, los colores de la marca, el horario, los despachos, los cupones,
 la guía de tallas, las imágenes de la portada y todos los modelos con su precio y sus tallas.
 
+Los productos, precios y descripciones salen del catálogo de Instagram (@tefistore_style).
+
 Ejemplo de un producto:
 
 ```js
 {
-  "id": "botin-intiara-camel",             // no se repite y no se cambia (el asistente lo usa)
-  "nombre": "Botín Intiara Camel",
-  "precio": 34990,                          // sin punto ni signo
-  "precioAntes": 44990,                     // opcional: muestra el precio tachado y el % de descuento
-  "fotos": ["img/catalogo/botin-intiara-camel.webp"],   // la primera es la del catálogo
-  "detalle": "Botín de gamuza con doble hebilla lateral.",
-  "descripcion": "Caña corta...\nTaco de 6 cm...",      // se ve en «Descripción»
-  "material": "Gamuza sintética",
+  "id": "intiara-camel",                    // no se repite y no se cambia (el asistente lo usa)
+  "nombre": "Intiara Camel",
+  "precio": 22990,                          // sin punto ni signo
+  "precioAntes": 25990,                     // opcional: muestra el precio tachado y el % de descuento
+  "fotos": ["img/catalogo/intiara-camel.webp"],   // la primera es la del catálogo
+  "detalle": "Botín de gamuza premium con doble hebilla lateral.",
+  "descripcion": "Un nombre que simboliza luz...",      // se ve en «Descripción»
+  "material": "Tipo gamuza premium",
   "cuidados": "Limpia con cepillo seco.",               // se ve en «Material y cuidados»
-  "colores": [{ "nombre": "Camel", "hex": "#b06a35" }],
+  "colores": [{ "nombre": "Camel", "hex": "#a9682f" }],
+  "nota": "Horma pequeña: se recomienda pedir una talla más.",
   "etiquetas": [],                          // "nuevo", "oferta" o "ultimos"
   "destacado": true,                        // sale en la portada
-  "tallas": { "35": 2, "36": 4, "37": 5, "38": 3, "39": 2, "40": 1 }
+  "tallas": "35-40"
 }
 ```
 
-- **Talla agotada:** déjala en `0`. Sale tachada y no se puede elegir.
-- **Producto sin tallas** (betún, plantillas, calcetines): `"tallaUnica": true` y `"stock": 12`.
+### Las tallas
+
+`"tallas"` se puede escribir de dos formas:
+
+| Forma | Qué hace |
+|---|---|
+| `"35-40"` | Esas tallas están disponibles. La página no promete cuántos pares hay. |
+| `{ "35": 2, "36": 4, "39": 0 }` | Cuántos pares quedan. Aparece «última» o «quedan 2», y la talla en 0 sale tachada. |
+
+Hoy está la primera forma, porque el stock por talla todavía no está contado. Cuando lo tengas,
+cambia el rango por el detalle y la página empieza a mostrar el stock real sola.
+
 - **Esconder un producto:** `"disponible": false`.
+- **Producto sin tallas** (un accesorio, por ejemplo): `"tallaUnica": true` y `"stock": 12`.
 - **Categorías:** las de `"categorias"` arman solas el menú de arriba, el menú del celular, los
   filtros y el pie. Puedes agregar, renombrar o reordenar.
 - **Portada:** `"portada"` es una lista; cada elemento es una imagen con su título. Si hay más de
@@ -49,21 +63,17 @@ Ejemplo de un producto:
 
 ### Las fotos
 
-Las fotos que trae la página salen del diseño de referencia y están para que se vea cómo queda.
-**Reemplázalas por las fotos reales de la tienda:** guárdalas en `img/catalogo/` (de preferencia
-`.webp` o `.jpg`, cuadradas o 4:3, ~1200 px de ancho y fondo blanco) y cambia la ruta en `"fotos"`.
-Lo mismo con las de la portada (`img/portada-1.webp`, `-2`, `-3`) y la de la banda
-(`img/temporada.webp`).
+Son las del catálogo de Instagram. A las piezas publicitarias (las de fondo lila) se les quitó el
+fondo, el logo y los textos, así todos los modelos quedan sobre blanco. Cuatro modelos
+(Kallpa, Inti Oro y Yastay Ébano) solo tenían fotos con la bota puesta: esas se dejaron tal cual,
+bien encuadradas.
 
-Los modelos que todavía no tienen foto usan un dibujo de ejemplo (`.svg`). Para volver a generarlos
-después de agregar productos:
+**Para agregar un modelo nuevo:** guarda su foto en `img/catalogo/` (`.webp` o `.jpg`, proporción
+4:3, ~1200 px de ancho, de preferencia fondo blanco) y escribe la ruta en `"fotos"`. Si la foto no
+es 4:3 no pasa nada: la página la recorta centrada.
 
-```sh
-python3 herramientas/imagenes.py
-```
-
-Usa el campo `"forma"`: `zapatilla`, `bota`, `taco`, `sandalia`, `mocasin`, `caja`, `frasco`,
-`cordon` o `accesorio`. Con fotos reales ese campo deja de importar.
+Las imágenes de la portada son `img/portada-1.webp`, `-2` y `-3`, y la de la banda del medio es
+`img/temporada.webp`.
 
 ---
 
@@ -184,7 +194,6 @@ lib/comun.js             Utilidades de los servidores (no se publica)
 lib/vercel.js            Adaptador de Vercel (no se publica)
 worker.js                Entrada para Cloudflare Workers
 herramientas/construir.sh    Arma dist/
-herramientas/imagenes.py     Genera los dibujos de ejemplo del catálogo
 img/                     Portada, íconos y fotos de los productos
 ```
 
@@ -213,3 +222,18 @@ En `catalogo.js` → `negocio.whatsapp` (solo números, con el 56 adelante) y `n
 
 **¿Dónde cambio el texto de la barra de arriba?**
 En `catalogo.js` → `"anuncio"`. Cada texto de la lista se separa con una barrita.
+
+**No aparece la sección de la tienda ni el mapa.**
+Es a propósito: `"direccion"` está vacía. Escribe la dirección del local en `catalogo.js` y la
+sección aparece sola, con su mapa y su horario.
+
+---
+
+## 7. Lo que falta para publicar
+
+1. **El número de WhatsApp** (`negocio.whatsapp`). Mientras diga `56900000000`, los pedidos no
+   llegan a ninguna parte.
+2. **La dirección**, si quieres mostrar la tienda y el mapa.
+3. **Los precios de despacho** de `negocio.envios`: están puestos como ejemplo.
+4. **El stock por talla**, cuando lo tengas contado (ver «Las tallas»).
+5. Revisar que «Envíos a todo Chile» de la barra de arriba sea efectivo.

@@ -128,8 +128,8 @@
 
     if (hay("retiro", "retirar", "pasar a buscar")) {
       return {
-        texto: "Sí, puedes retirar gratis en " + [N.direccion, N.ciudad].filter(Boolean).join(", ") + ". " + (N.notaRetiro || ""),
-        opciones: ["¿A qué hora abren?", "Ver el catálogo"]
+        texto: "Sí, el retiro es gratis" + (N.ciudad ? " en " + N.ciudad : "") + ". " + (N.notaRetiro || ""),
+        opciones: ["¿Cuánto es el despacho?", "Ver el catálogo"]
       };
     }
 
@@ -149,16 +149,26 @@
 
     if (hay("horario", "hora abren", "a que hora", "abierto", "cerrado", "atienden")) {
       var ab = P.estaAbierto();
+      var h = horarioTexto();
+      if (!h) {
+        return {
+          texto: "Atendemos por WhatsApp (" + (N.whatsappVisible || "") + "). Déjanos tu pedido a la hora que quieras y te respondemos apenas lo veamos 🙂",
+          opciones: ["¿Cómo compro?", "Ver el catálogo"]
+        };
+      }
       return {
-        texto: (ab === true ? "Estamos abiertos ahora 🙌\n" : ab === false ? "Ahora estamos cerrados, pero deja tu pedido igual y te respondemos al abrir.\n" : "") + horarioTexto(),
+        texto: (ab === true ? "Estamos abiertos ahora 🙌\n" : ab === false ? "Ahora estamos cerrados, pero deja tu pedido igual y te respondemos al abrir.\n" : "") + h,
         opciones: ["¿Dónde están?", "Ver el catálogo"]
       };
     }
 
     if (hay("donde estan", "direccion", "ubica", "llegar", "local", "tienda queda")) {
+      var donde = [N.direccion, N.sector, N.ciudad, N.region].filter(Boolean).join(", ");
       return {
-        texto: "Estamos en " + [N.direccion, N.sector, N.ciudad, N.region].filter(Boolean).join(", ") + ".\nEn la página, más abajo, está el mapa para llegar.",
-        opciones: ["¿A qué hora abren?", "¿Hacen despacho?"]
+        texto: N.direccion
+          ? "Estamos en " + donde + ".\nEn la página, más abajo, está el mapa para llegar."
+          : "Somos de " + (donde || "Chile") + ". El retiro lo coordinamos por WhatsApp, y también despachamos a tu casa.",
+        opciones: ["¿Cuánto es el despacho?", "Ver el catálogo"]
       };
     }
 
