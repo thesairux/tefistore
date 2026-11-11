@@ -136,6 +136,22 @@
   if (!datos.entrega) datos.entrega = "envio";
 
   function guardarCarrito() { guardar(LLAVE_CARRITO, carrito); }
+
+  /* El carrito queda guardado en el navegador: si mientras tanto cambió el stock en catalogo.js,
+     se ajustan las cantidades (o se saca la línea) para no pedir pares que ya no están. */
+  function revisarCarrito() {
+    var antes = carrito.length;
+    var cambio = false;
+    carrito = carrito.filter(function (l) {
+      var p = PORID[l.id];
+      if (!p || !hayStock(p)) return false;
+      var max = tope(p, l.talla);
+      if (max <= 0) return false;
+      if (l.cantidad > max) { l.cantidad = max; cambio = true; }
+      return true;
+    });
+    if (cambio || carrito.length !== antes) guardarCarrito();
+  }
   function guardarDatos() { guardar(LLAVE_DATOS, datos); }
   function clave(id, talla) { return id + "|" + (talla || ""); }
   function lineas() { return carrito.filter(function (l) { return PORID[l.id]; }); }
@@ -649,6 +665,19 @@
           : "") +
       "</div>";
   }
+  /* Cambiar de foto no rehace la ficha entera: solo se cambia la imagen grande. */
+  function verFoto(i) {
+    var p = PORID[ficha.id];
+    if (!p) return;
+    var ims = fotos(p);
+    ficha.imagen = (i + ims.length) % ims.length;
+    var grande = $("[data-galeria-foto]");
+    if (grande) grande.src = ims[ficha.imagen];
+    $$("[data-galeria-ir]").forEach(function (b, n) {
+      if (n === ficha.imagen) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
+    });
+  }
+
   function detalle(titulo, cuerpo, abierto) {
     return "<details" + (abierto ? " open" : "") + "><summary>" + esc(titulo) + "</summary>" +
       '<div class="acordeon-cuerpo">' + esc(cuerpo) + "</div></details>";
@@ -657,16 +686,22 @@
   /* =======================================================================
      Carrito (panel lateral)
      ======================================================================= */
+  var focoPrevio = null;
   function abrirCarrito() {
+    focoPrevio = document.activeElement;
     pintarCarrito();
     $("[data-carrito]").removeAttribute("hidden");
     $("[data-velo]").removeAttribute("hidden");
     document.body.classList.add("sin-scroll");
+    var cerrar = $("[data-cerrar-carrito]");
+    if (cerrar) cerrar.focus();
   }
   function cerrarCarrito() {
     $("[data-carrito]").setAttribute("hidden", "");
     if ($("[data-menu-movil]").hasAttribute("hidden")) $("[data-velo]").setAttribute("hidden", "");
     document.body.classList.remove("sin-scroll");
+    if (focoPrevio && document.contains(focoPrevio)) focoPrevio.focus();
+    focoPrevio = null;
   }
   function refrescarCarrito() {
     var n = cuenta();
@@ -976,6 +1011,8 @@
     $("[data-velo]").removeAttribute("hidden");
     $("[data-abrir-menu]").setAttribute("aria-expanded", "true");
     document.body.classList.add("sin-scroll");
+    var cerrarM = $("[data-cerrar-menu]");
+    if (cerrarM) cerrarM.focus();
   }
   function cerrarMenu() {
     var m = $("[data-menu-movil]");
@@ -1046,13 +1083,8 @@
         pintarProducto(ficha.id);
         return;
       }
-      if ((el = t.closest("[data-galeria]"))) {
-        var ims = fotos(PORID[ficha.id]);
-        ficha.imagen = (ficha.imagen + +el.getAttribute("data-galeria") + ims.length) % ims.length;
-        pintarProducto(ficha.id);
-        return;
-      }
-      if ((el = t.closest("[data-galeria-ir]"))) { ficha.imagen = +el.getAttribute("data-galeria-ir"); pintarProducto(ficha.id); return; }
+      if ((el = t.closest("[data-galeria]"))) { verFoto(ficha.imagen + +el.getAttribute("data-galeria")); return; }
+      if ((el = t.closest("[data-galeria-ir]"))) { verFoto(+el.getAttribute("data-galeria-ir")); return; }
       if (t.closest("[data-agregar]")) {
         var p2 = PORID[ficha.id];
         if (!p2) return;
@@ -1149,6 +1181,7 @@
      Arranque
      ======================================================================= */
   function iniciar() {
+    revisarCarrito();
     armarFijos();
     armarPortada();
     armarInicio();

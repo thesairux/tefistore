@@ -72,28 +72,28 @@ def zapatilla(p):
 
 def bota(p):
     return f'''
-  <path d="M72 212 V80 C72 66 82 58 98 58 H146 C160 58 170 66 170 80 V148 C186 168 210 181 244 189 C290 199 330 203 352 207 C360 208 360 212 352 214 H74 Z" fill="{p['cuerpo']}"/>
-  <path d="M170 148 C186 168 210 181 244 189 C290 199 330 203 352 207 C360 208 360 212 352 214 H206 C202 190 190 166 170 148 Z" fill="{p['alto']}" opacity=".45"/>
-  <path d="M72 58 H170 V80 H72 Z" fill="{p['alto']}" opacity=".65"/>
-  <path d="M72 80 H170 V88 H72 Z" fill="{p['sombra']}"/>
-  <path d="M72 212 V80 H100 V212 Z" fill="{p['sombra']}" opacity=".45"/>
-  <g stroke="{p['detalle']}" stroke-width="4.5" stroke-linecap="round" opacity=".8" fill="none">
-    <path d="M106 112 H156"/><path d="M106 134 H156"/><path d="M106 156 H156"/><path d="M106 178 H156"/>
+  <path d="M88 232 V64 C88 54 96 48 108 48 H168 C180 48 188 54 188 64 V152 C200 172 224 186 258 194 C296 203 322 210 334 218 C342 223 341 230 332 232 Z" fill="{p['cuerpo']}"/>
+  <path d="M188 152 C200 172 224 186 258 194 C296 203 322 210 334 218 C342 223 341 230 332 232 H206 C204 206 198 176 188 152 Z" fill="{p['alto']}" opacity=".40"/>
+  <path d="M88 48 H188 V70 H88 Z" fill="{p['alto']}" opacity=".60"/>
+  <path d="M88 70 H188 V78 H88 Z" fill="{p['sombra']}"/>
+  <path d="M88 232 V78 H112 V232 Z" fill="{p['sombra']}" opacity=".35"/>
+  <g stroke="{p['detalle']}" stroke-width="4.5" stroke-linecap="round" opacity=".85" fill="none">
+    <path d="M118 102 H164"/><path d="M118 126 H164"/><path d="M118 150 H164"/><path d="M118 174 H164"/>
   </g>
-  <path d="M60 210 H358 C370 210 376 219 372 228 C368 237 354 242 336 242 H76 C62 242 56 236 56 228 C56 220 54 210 60 210 Z" fill="{p['suela']}"/>
-  <path d="M62 240 H134 C140 240 142 244 142 248 C142 251 139 252 134 252 H70 C62 252 58 249 58 245 C58 242 58 240 62 240 Z" fill="{p['suela']}"/>
+  <path d="M82 230 H336 C346 230 350 236 347 242 C344 247 334 250 320 250 H96 C86 250 80 244 80 238 C80 233 78 230 82 230 Z" fill="{p['suela']}"/>
+  <path d="M84 246 H146 C150 246 152 249 152 252 C152 255 150 256 146 256 H90 C83 256 80 253 80 250 C80 247 80 246 84 246 Z" fill="{p['suela']}"/>
 '''
 
 
 def taco(p):
     return f'''
-  <path d="M106 136 C132 148 152 164 178 184 C216 212 274 232 340 243 C352 245 358 248 356 251 L248 252 C204 250 174 242 148 226 C132 214 122 206 119 196 C105 180 101 158 106 136 Z" fill="{p['cuerpo']}"/>
-  <path d="M232 216 C270 231 308 239 340 243 C352 245 358 248 356 251 L248 252 C228 251 212 249 198 246 Z" fill="{p['alto']}" opacity=".5"/>
-  <path d="M106 136 C104 158 109 178 119 196 C112 190 104 176 101 160 C99 148 101 140 106 136 Z" fill="{p['sombra']}"/>
-  <path d="M148 226 C174 242 204 250 248 252 L248 246 C206 244 176 236 152 222 Z" fill="{p['suela']}"/>
-  <path d="M119 196 L146 214 L157 252 H132 Z" fill="{p['cuerpo']}"/>
-  <path d="M136 206 L146 214 L157 252 H146 Z" fill="{p['sombra']}"/>
-  <path d="M128 246 H162 C167 246 169 248 169 250 C169 252 167 253 162 253 H128 C123 253 121 252 121 250 C121 248 123 246 128 246 Z" fill="{p['suela']}"/>
+  <path d="M106 148 C104 122 124 110 142 128 C158 144 172 166 196 186 C226 210 274 226 326 234 C340 236 346 240 344 244 L250 246 C206 242 172 230 148 214 C130 202 120 192 116 182 C108 170 105 160 106 148 Z" fill="{p['cuerpo']}"/>
+  <path d="M232 212 C266 226 300 232 326 234 C340 236 346 240 344 244 L250 246 C226 244 206 240 190 234 Z" fill="{p['alto']}" opacity=".45"/>
+  <path d="M106 148 C105 164 109 176 116 186 C108 180 102 168 101 156 C100 148 102 142 106 148 Z" fill="{p['sombra']}"/>
+  <path d="M148 214 C172 230 206 242 250 246 L250 240 C210 236 176 226 152 210 Z" fill="{p['suela']}"/>
+  <path d="M116 182 L146 206 L158 252 H132 Z" fill="{p['cuerpo']}"/>
+  <path d="M134 196 L146 206 L158 252 H146 Z" fill="{p['sombra']}"/>
+  <path d="M128 246 H164 C169 246 172 248 172 251 C172 254 169 255 164 255 H128 C123 255 121 254 121 251 C121 248 123 246 128 246 Z" fill="{p['suela']}"/>
 '''
 
 
@@ -109,16 +109,36 @@ def sandalia(p):
 '''
 
 
-def mocasin(p):
+def _bajo(p, detalle):
+    """Base de los zapatos bajos: oxford, mocasín y balerina comparten la silueta."""
     return f'''
-  <path d="M58 212 C54 180 70 154 104 146 C128 140 148 148 166 162 L192 182 C210 194 238 200 274 204 C318 209 342 208 354 211 C360 213 358 216 352 216 H60 Z" fill="{p['cuerpo']}"/>
-  <path d="M192 182 C210 194 238 200 274 204 C318 209 342 208 354 211 C360 213 358 216 352 216 H216 C214 202 204 190 192 182 Z" fill="{p['alto']}" opacity=".45"/>
-  <path d="M58 212 C54 180 70 154 104 146 C96 164 90 188 90 212 Z" fill="{p['sombra']}"/>
-  <path d="M112 152 C138 146 160 156 180 174 C156 166 130 166 108 176 Z" fill="{p['sombra']}" opacity=".8"/>
-  <path d="M148 176 C176 170 206 176 226 190 L220 204 C200 192 174 188 152 194 Z" fill="{p['detalle']}" opacity=".9"/>
-  <path d="M50 212 H358 C370 212 376 221 372 230 C368 239 354 244 336 244 H78 C56 244 46 237 44 228 C42 219 44 212 50 212 Z" fill="{p['suela']}"/>
-  <path d="M52 242 H120 C126 242 128 246 128 249 C128 251 126 252 120 252 H62 C54 252 50 249 50 246 C50 243 48 242 52 242 Z" fill="{p['suela']}"/>
+  <path d="M104 236 V192 C104 179 115 170 132 170 C148 170 159 179 165 193 C177 209 201 218 240 223 C282 228 310 230 324 233 C332 235 332 239 324 240 H108 Z" fill="{p['cuerpo']}"/>
+  <path d="M165 193 C177 209 201 218 240 223 C282 228 310 230 324 233 C332 235 332 239 324 240 H214 C210 220 192 202 165 193 Z" fill="{p['alto']}" opacity=".38"/>
+  <path d="M104 236 V192 C104 180 113 172 127 170 C117 184 113 210 114 236 Z" fill="{p['sombra']}"/>
+  <path d="M132 170 C150 170 162 182 170 198 C154 186 134 183 116 187 C118 176 122 170 132 170 Z" fill="{p['sombra']}" opacity=".55"/>
+{detalle}  <path d="M98 238 H330 C340 238 344 243 341 247 C338 251 328 253 314 253 H110 C100 253 96 249 96 245 C96 241 94 238 98 238 Z" fill="{p['suela']}"/>
+  <path d="M100 250 H152 C156 250 158 253 158 256 C158 259 156 260 152 260 H106 C99 260 96 257 96 254 C96 251 96 250 100 250 Z" fill="{p['suela']}"/>
 '''
+
+
+def oxford(p):
+    return _bajo(p, f'''  <path d="M166 196 C186 190 210 192 228 202 L224 214 C208 206 186 204 170 208 Z" fill="{p['sombra']}" opacity=".75"/>
+  <g stroke="{p['detalle']}" stroke-width="4" stroke-linecap="round" opacity=".9" fill="none">
+    <path d="M150 196 L172 202"/><path d="M146 207 L168 213"/>
+  </g>
+''')
+
+
+def mocasin(p):
+    return _bajo(p, f'''  <path d="M158 194 C186 189 216 196 236 210 L231 222 C211 210 185 206 163 210 Z" fill="{p['detalle']}" opacity=".85"/>
+  <path d="M186 198 L190 215" stroke="{p['sombra']}" stroke-width="3" opacity=".5"/>
+''')
+
+
+def balerina(p):
+    return _bajo(p, f'''  <path d="M150 192 C170 200 196 208 228 213 L226 221 C192 217 164 208 146 199 Z" fill="{p['sombra']}" opacity=".55"/>
+  <path d="M198 196 c-8 -8 -20 -6 -20 3 0 7 9 9 15 5 6 4 15 2 15 -5 0 -9 -12 -11 -20 -3 Z" fill="{p['detalle']}" opacity=".9"/>
+''')
 
 
 def accesorio(p):
@@ -163,7 +183,7 @@ def cordon(p):
 
 FORMAS = {
     "zapatilla": zapatilla, "bota": bota, "taco": taco,
-    "sandalia": sandalia, "mocasin": mocasin, "accesorio": accesorio,
+    "sandalia": sandalia, "mocasin": mocasin, "oxford": oxford, "balerina": balerina, "accesorio": accesorio,
     "caja": caja, "frasco": frasco, "cordon": cordon,
 }
 
