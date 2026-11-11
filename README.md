@@ -115,7 +115,64 @@ pueden leer en el archivo, así que la tienda confirma cada cupón por WhatsApp.
 
 ---
 
-## 3. El asistente
+## 3. El panel de administración
+
+En **tu-pagina/admin** hay un panel para cambiar la tienda sin tocar código. Lo que haces ahí se
+guarda en `catalogo.js` dentro del repositorio, y la página se vuelve a publicar sola en un par de
+minutos.
+
+Qué se puede editar:
+
+| Pestaña | Qué cambia |
+|---|---|
+| **Productos** | Nombre, precio, precio anterior, categoría, fotos, textos, colores, aviso de horma, cinta, destacado, esconder. Agregar y eliminar modelos. |
+| **Portada** | La barra de arriba, las imágenes de portada, la banda del medio y los tres pasos. |
+| **Tienda** | WhatsApp, Instagram, dirección, retiro, zonas de despacho, formas de pago y las políticas de compra. |
+| **Cupones** | Crear, apagar y borrar cupones. |
+| **Ajustes** | Colores de la marca, categorías, guía de tallas y los títulos de cada sección. |
+
+### Las tallas, desde el panel
+
+Cada producto tiene dos modos:
+
+- **Rango** (`35-40`): se ofrecen esas tallas sin prometer cuántos pares hay.
+- **Stock por talla**: escribes cuántos pares quedan de cada una. En 0 la talla sale tachada, y con
+  1 o 2 la ficha avisa «última» o «quedan 2». El filtro del catálogo empieza a esconder los modelos
+  que no tengan la talla buscada.
+
+Para pasar de uno a otro, el botón está arriba de las tallas.
+
+### Las fotos
+
+Al subir una foto, el panel la recorta sola a 4:3 sobre fondo blanco, la achica y la guarda en la
+carpeta `fotos/` del repositorio. La primera foto de la lista es la que se ve en el catálogo; las
+demás salen en la ficha con las flechas. Las fotos que dejas de usar se borran al guardar.
+
+### Configurarlo
+
+Necesita dos claves en las variables del proyecto (Cloudflare: Settings → Variables and Secrets;
+Vercel: Settings → Environment Variables). Las dos como **Secret**:
+
+| Variable | Para qué |
+|---|---|
+| `ADMIN_PASSWORD` | La contraseña del panel. Mínimo 12 caracteres. **Sin ella el panel no deja entrar a nadie.** |
+| `GITHUB_TOKEN` | Un token de GitHub con permiso *Contents: Read and write* sobre este repositorio. Es el que guarda los cambios. |
+| `GITHUB_REPO` | `usuario/repositorio`. En Vercel se deduce solo; en Cloudflare hay que ponerlo. |
+| `ADMIN_USER` | Opcional. El usuario del panel; si no lo pones es `tefistore`. |
+| `GITHUB_BRANCH` | Opcional. La rama donde se guarda; si no lo pones, la publicada. |
+
+El token se saca en GitHub → Settings → Developer settings → Personal access tokens → Fine-grained,
+dándole acceso solo a este repositorio.
+
+Para revisar que quedó bien, abre `tu-pagina/api/admin` en el navegador: dice qué falta (nunca
+muestra las claves).
+
+**El panel no se indexa** en Google (`robots.txt` y la cabecera `noindex`), pero igual conviene una
+contraseña larga: con ella se puede cambiar todo lo que se ve en la página.
+
+---
+
+## 4. El asistente
 
 Abajo a la derecha hay un chat que responde dudas: tallas, stock por talla, despachos, formas de
 pago, cambios, horario y recomendaciones. Cuando recomienda un modelo lo muestra como tarjeta, y al
@@ -149,7 +206,7 @@ por persona. El catálogo se manda con caché para que las preguntas seguidas sa
 
 ---
 
-## 4. Publicar la página
+## 5. Publicar la página
 
 El comando de construcción arma `dist/` con **solo** los archivos de la página (los servidores y las
 herramientas no quedan a la vista).
@@ -184,22 +241,26 @@ y abre `http://localhost:8787`. Así el chat anda en modo básico (no hay servid
 
 ---
 
-## 5. Los archivos
+## 6. Los archivos
 
 ```
 catalogo.js              ← TODO lo que se edita: tienda, colores, portada, despachos, cupones, productos
 index.html               La página (una sola; las vistas se arman con JavaScript)
+admin.html               El panel de administración (tu-pagina/admin)
 css/estilos.css          Estilos
 js/tema.js               Aplica los colores de la marca de catalogo.js
 js/app.js                Menú, portada, catálogo, ficha, carrito, checkout y mensaje de WhatsApp
 js/asistente.js          El chat (modo IA y modo básico)
 functions/api/asistente.js   Servidor del asistente (Cloudflare Pages y Workers)
-api/asistente.js         El mismo servidor, para Vercel
+functions/api/admin.js       Servidor del panel: guarda los cambios en GitHub
+api/asistente.js         Los mismos servidores, para Vercel
+api/admin.js
 lib/comun.js             Utilidades de los servidores (no se publica)
 lib/vercel.js            Adaptador de Vercel (no se publica)
 worker.js                Entrada para Cloudflare Workers
 herramientas/construir.sh    Arma dist/
 img/                     Portada, íconos y fotos de los productos
+fotos/                   Las fotos que subes desde el panel
 ```
 
 Las direcciones internas (lo que va después del `#`): `#/` portada, `#/catalogo` todo,
@@ -208,7 +269,7 @@ Se pueden compartir: cada una abre directo donde corresponde.
 
 ---
 
-## 6. Preguntas frecuentes
+## 7. Preguntas frecuentes
 
 **¿Se cobra desde la página?**
 No. La página arma el pedido y lo manda por WhatsApp; el pago se coordina ahí.
@@ -234,7 +295,7 @@ sección aparece sola, con su mapa y su horario.
 
 ---
 
-## 7. Lo que falta para publicar
+## 8. Lo que falta para publicar
 
 1. **La dirección**, si quieres mostrar la tienda y el mapa.
 2. **Los plazos de despacho** de `negocio.envios`: están puestos como estimación.

@@ -64,9 +64,28 @@ window.CATALOGO = {
     "envioPorPagar": true,
     "envioGratisDesde": 0,
     "envios": [
-      { "nombre": "La Serena y Coquimbo", "detalle": "1 a 2 días hábiles (estimado)", "comunas": ["La Serena", "Coquimbo"] },
-      { "nombre": "Región de Coquimbo", "detalle": "2 a 3 días hábiles (estimado)", "regiones": ["Coquimbo"] },
-      { "nombre": "Resto de Chile", "detalle": "3 a 5 días hábiles (estimado), por Starken o Chilexpress", "regiones": ["*"] }
+      {
+        "nombre": "La Serena y Coquimbo",
+        "detalle": "1 a 2 días hábiles (estimado)",
+        "comunas": [
+          "La Serena",
+          "Coquimbo"
+        ]
+      },
+      {
+        "nombre": "Región de Coquimbo",
+        "detalle": "2 a 3 días hábiles (estimado)",
+        "regiones": [
+          "Coquimbo"
+        ]
+      },
+      {
+        "nombre": "Resto de Chile",
+        "detalle": "3 a 5 días hábiles (estimado), por Starken o Chilexpress",
+        "regiones": [
+          "*"
+        ]
+      }
     ],
     "pagos": [
       "Transferencia",
@@ -77,11 +96,26 @@ window.CATALOGO = {
     "cambios": "No se hacen cambios ni devoluciones.",
     "garantia": "",
     "politicas": [
-      { "titulo": "Cambios y devoluciones", "texto": "No se hacen cambios ni devoluciones. Por eso, si tienes dudas con la talla, escríbenos antes de comprar y la vemos juntas." },
-      { "titulo": "Reservas", "texto": "No se hacen reservas. El pedido queda tomado cuando se confirma." },
-      { "titulo": "Reembolsos", "texto": "No se realizan reembolsos." },
-      { "titulo": "Envíos", "texto": "Todos los envíos son por pagar: el despacho lo pagas al recibirlo, directo al transporte. No se hacen excepciones." },
-      { "titulo": "Plazos de entrega", "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros." }
+      {
+        "titulo": "Cambios y devoluciones",
+        "texto": "No se hacen cambios ni devoluciones. Por eso, si tienes dudas con la talla, escríbenos antes de comprar y la vemos juntas."
+      },
+      {
+        "titulo": "Reservas",
+        "texto": "No se hacen reservas. El pedido queda tomado cuando se confirma."
+      },
+      {
+        "titulo": "Reembolsos",
+        "texto": "No se realizan reembolsos."
+      },
+      {
+        "titulo": "Envíos",
+        "texto": "Todos los envíos son por pagar: el despacho lo pagas al recibirlo, directo al transporte. No se hacen excepciones."
+      },
+      {
+        "titulo": "Plazos de entrega",
+        "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros."
+      }
     ]
   },
   "tema": {
@@ -148,42 +182,75 @@ window.CATALOGO = {
       "titulo": "Catálogo",
       "bajada": "Todos los modelos vienen de la talla 35 a la 40. Antes de enviarte el pedido confirmamos por WhatsApp que esté tu talla."
     },
-    "destacados": { "titulo": "Destacados" },
+    "destacados": {
+      "titulo": "Destacados"
+    },
     "tallas": {
       "titulo": "Guía de tallas",
       "bajada": "Mide tu pie en centímetros, del talón al dedo más largo, de pie y sobre una hoja. Ojo: varios modelos tienen horma pequeña, así que conviene pedir una talla más."
     },
-    "tienda": { "titulo": "Visítanos en la tienda" },
-    "pasos": { "titulo": "Comprar es simple" },
-    "politicas": { "titulo": "Políticas de compra", "bajada": "Para que no haya sorpresas, esto es lo que acordamos en cada compra." }
+    "tienda": {
+      "titulo": "Visítanos en la tienda"
+    },
+    "pasos": {
+      "titulo": "Comprar es simple"
+    },
+    "politicas": {
+      "titulo": "Políticas de compra",
+      "bajada": "Para que no haya sorpresas, esto es lo que acordamos en cada compra."
+    }
   },
   "regiones": [
-    "Arica y Parinacota", "Tarapacá", "Antofagasta", "Atacama", "Coquimbo", "Valparaíso",
-    "Metropolitana", "O'Higgins", "Maule", "Ñuble", "Biobío", "La Araucanía",
-    "Los Ríos", "Los Lagos", "Aysén", "Magallanes"
+    "Arica y Parinacota",
+    "Tarapacá",
+    "Antofagasta",
+    "Atacama",
+    "Coquimbo",
+    "Valparaíso",
+    "Metropolitana",
+    "O'Higgins",
+    "Maule",
+    "Ñuble",
+    "Biobío",
+    "La Araucanía",
+    "Los Ríos",
+    "Los Lagos",
+    "Aysén",
+    "Magallanes"
   ],
   "guiaTallas": [
-    { "talla": "35", "cm": "22,5", "us": "5" },
-    { "talla": "36", "cm": "23,0", "us": "5,5" },
-    { "talla": "37", "cm": "23,5", "us": "6,5" },
-    { "talla": "38", "cm": "24,5", "us": "7,5" },
-    { "talla": "39", "cm": "25,0", "us": "8" },
-    { "talla": "40", "cm": "25,5", "us": "8,5" }
-  ],
-  "cupones": [
-    /* Ejemplo del formato, para cuando quieras lanzar una promoción:
     {
-      "codigo": "PRIMERPAR",
-      "tipo": "porcentaje",        // "porcentaje", "monto" o "envio" (despacho gratis)
-      "valor": 10,
-      "minimo": 30000,             // compra mínima (opcional)
-      "tope": 8000,                // descuento máximo de un porcentaje (opcional)
-      "detalle": "10% en tu primera compra",
-      "activo": true,
-      "visible": true              // false: no se publica en la página, pero el código funciona
+      "talla": "35",
+      "cm": "22,5",
+      "us": "5"
+    },
+    {
+      "talla": "36",
+      "cm": "23,0",
+      "us": "5,5"
+    },
+    {
+      "talla": "37",
+      "cm": "23,5",
+      "us": "6,5"
+    },
+    {
+      "talla": "38",
+      "cm": "24,5",
+      "us": "7,5"
+    },
+    {
+      "talla": "39",
+      "cm": "25,0",
+      "us": "8"
+    },
+    {
+      "talla": "40",
+      "cm": "25,5",
+      "us": "8,5"
     }
-    */
   ],
+  "cupones": [],
   "categorias": [
     {
       "id": "botines",
@@ -193,12 +260,19 @@ window.CATALOGO = {
           "id": "intiara-camel",
           "nombre": "Intiara Camel",
           "precio": 22990,
-          "fotos": ["img/catalogo/intiara-camel.webp"],
+          "fotos": [
+            "img/catalogo/intiara-camel.webp"
+          ],
           "detalle": "Botín de gamuza premium con doble hebilla lateral, cómodo y versátil para tu día a día.",
           "descripcion": "Un nombre que simboliza luz, sofisticación y fuerza interior.\nAcabado tipo gamuza premium, de líneas refinadas y diseño contemporáneo. Sus delicadas hebillas y su estructura firme aportan carácter, y el taco estable hace que se pueda usar todo el día.",
           "material": "Tipo gamuza premium",
           "cuidados": "Limpia con cepillo seco de cerdas suaves. No lo mojes ni uses betún líquido.",
-          "colores": [{ "nombre": "Camel", "hex": "#a9682f" }],
+          "colores": [
+            {
+              "nombre": "Camel",
+              "hex": "#a9682f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "destacado": true,
@@ -208,12 +282,19 @@ window.CATALOGO = {
           "id": "intiara-black",
           "nombre": "Intiara Black",
           "precio": 22990,
-          "fotos": ["img/catalogo/intiara-black.webp"],
+          "fotos": [
+            "img/catalogo/intiara-black.webp"
+          ],
           "detalle": "El mismo Intiara en negro: líneas limpias, hebillas delicadas y taco firme.",
           "descripcion": "Un nombre que representa luz interior, poder y elegancia atemporal.\nAcabado tipo gamuza premium con diseño refinado. Sus hebillas aportan carácter y su taco firme brinda una pisada cómoda y segura.",
           "material": "Tipo gamuza premium",
           "cuidados": "Limpia con cepillo seco de cerdas suaves. No lo mojes ni uses betún líquido.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "destacado": true,
@@ -223,12 +304,19 @@ window.CATALOGO = {
           "id": "amarua-force",
           "nombre": "Amarua Force",
           "precio": 21990,
-          "fotos": ["img/catalogo/amarua-force.webp"],
+          "fotos": [
+            "img/catalogo/amarua-force.webp"
+          ],
           "detalle": "Botín tipo cuero con forro, estructura firme y taco estable.",
           "descripcion": "Un nombre que evoca fuerza interior y elegancia, diseñado para mujeres que destacan con cada paso.\nDiseño sofisticado y contemporáneo: comodidad sin renunciar al estilo.",
           "material": "Tipo cuero con forro",
           "cuidados": "Paño húmedo y betún neutro de vez en cuando.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -238,14 +326,23 @@ window.CATALOGO = {
           "nombre": "Sayani Prime",
           "precio": 19990,
           "precioAntes": 22990,
-          "fotos": ["img/catalogo/sayani-prime.webp"],
+          "fotos": [
+            "img/catalogo/sayani-prime.webp"
+          ],
           "detalle": "La combat que no puede faltar en tu clóset: chunky, firme y con toda la actitud.",
           "descripcion": "Perfectas para jeans, vestidos oversized o looks street.\nCordones al frente y suela gruesa con buen agarre.",
           "material": "Tipo cuero",
           "cuidados": "Cepilla el polvo y pasa un paño húmedo.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma normal.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "destacado": true,
           "tallas": "35-40"
         },
@@ -254,26 +351,42 @@ window.CATALOGO = {
           "nombre": "Quilla Seda",
           "precio": 19990,
           "precioAntes": 22990,
-          "fotos": ["img/catalogo/quilla-seda.webp"],
+          "fotos": [
+            "img/catalogo/quilla-seda.webp"
+          ],
           "detalle": "Plataforma firme y taco con tachas doradas. Un diseño que no pasa desapercibido.",
           "descripcion": "Perfectas para elevar cualquier look, de día o de noche.\nCierre lateral y plataforma delantera, así el taco se siente más bajo de lo que se ve.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo y betún neutro.",
-          "colores": [{ "nombre": "Marrón", "hex": "#4a2d20" }],
+          "colores": [
+            {
+              "nombre": "Marrón",
+              "hex": "#4a2d20"
+            }
+          ],
           "nota": "Horma normal.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "tallas": "35-40"
         },
         {
           "id": "pachara-black",
           "nombre": "Pachara Black",
           "precio": 18990,
-          "fotos": ["img/catalogo/pachara-black.webp"],
+          "fotos": [
+            "img/catalogo/pachara-black.webp"
+          ],
           "detalle": "Botín outdoor con acabado gamuza premium, suela antideslizante y acolchado interno.",
           "descripcion": "Un nombre que representa fuerza, versatilidad y estilo urbano. Diseñado para mujeres activas que buscan comodidad sin perder actitud.\nTobillera alta para mayor sujeción y detalles en contraste rosa y gris.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo húmedo y jabón suave. No la metas a la lavadora.",
-          "colores": [{ "nombre": "Negro con rosa y gris", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro con rosa y gris",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -282,12 +395,19 @@ window.CATALOGO = {
           "id": "pachara-camel",
           "nombre": "Pachara Camel",
           "precio": 18990,
-          "fotos": ["img/catalogo/pachara-camel.webp"],
+          "fotos": [
+            "img/catalogo/pachara-camel.webp"
+          ],
           "detalle": "El Pachara en camel, con detalles en rosa y negro. Suela antideslizante y acolchado interno.",
           "descripcion": "Un nombre que transmite conexión con la naturaleza, calidez y fuerza. Diseñado para acompañarte en cada aventura con estilo.\nPerfecto para un look urbano con actitud.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo húmedo y jabón suave. No la metas a la lavadora.",
-          "colores": [{ "nombre": "Camel con rosa y negro", "hex": "#b1763a" }],
+          "colores": [
+            {
+              "nombre": "Camel con rosa y negro",
+              "hex": "#b1763a"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -303,17 +423,28 @@ window.CATALOGO = {
           "nombre": "Kallpa",
           "precio": 24990,
           "precioAntes": 30990,
-          "fotos": ["img/catalogo/kallpa-noir.webp", "img/catalogo/kallpa-white.webp"],
+          "fotos": [
+            "img/catalogo/kallpa-noir.webp",
+            "img/catalogo/kallpa-white.webp"
+          ],
           "detalle": "Bota estilizada con detalle de cadena y taco firme. En negro y en blanco.",
           "descripcion": "Sofisticación en cada paso.\nDiseño estilizado, detalle de cadena y taco firme que eleva cualquier look. Una bota pensada para mujeres seguras, que marcan presencia.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo. Guarda la bota de pie para que no se marque la caña.",
           "colores": [
-            { "nombre": "Negro", "hex": "#1d1d1f" },
-            { "nombre": "Blanco", "hex": "#f2f0ec" }
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Blanco",
+              "hex": "#f2f0ec"
+            }
           ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "destacado": true,
           "tallas": "35-40"
         },
@@ -322,14 +453,23 @@ window.CATALOGO = {
           "nombre": "Inti Oro",
           "precio": 24990,
           "precioAntes": 32990,
-          "fotos": ["img/catalogo/inti-oro.webp"],
+          "fotos": [
+            "img/catalogo/inti-oro.webp"
+          ],
           "detalle": "Diseño western bordado en tono camel, elegante y lleno de personalidad.",
           "descripcion": "Un modelo diferente, que combina con todo.\nPerfectas para elevar looks neutros, jeans, vestidos u outfits boho chic.",
           "material": "Tipo gamuza",
           "cuidados": "Cepillo seco de cerdas suaves.",
-          "colores": [{ "nombre": "Camel", "hex": "#a9682f" }],
+          "colores": [
+            {
+              "nombre": "Camel",
+              "hex": "#a9682f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "tallas": "35-40"
         },
         {
@@ -337,14 +477,23 @@ window.CATALOGO = {
           "nombre": "Yastay Ébano",
           "precio": 24990,
           "precioAntes": 29990,
-          "fotos": ["img/catalogo/yastay-ebano.webp"],
+          "fotos": [
+            "img/catalogo/yastay-ebano.webp"
+          ],
           "detalle": "Una bota que estiliza al instante: caña alta con efecto drapeado y taco firme.",
           "descripcion": "Perfectas para outfits elegantes, salidas nocturnas o eventos especiales.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo. Guárdala de pie para mantener la caña.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "tallas": "35-40"
         },
         {
@@ -352,26 +501,42 @@ window.CATALOGO = {
           "nombre": "Sumaq Atelier",
           "precio": 21990,
           "precioAntes": 25990,
-          "fotos": ["img/catalogo/sumaq-atelier.webp"],
+          "fotos": [
+            "img/catalogo/sumaq-atelier.webp"
+          ],
           "detalle": "Diseño urbano con hebilla metálica, cierre frontal y suela chunky.",
           "descripcion": "Versión elegante y moderna: una bota con presencia y actitud.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo y betún neutro.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": ["oferta"],
+          "etiquetas": [
+            "oferta"
+          ],
           "tallas": "35-40"
         },
         {
           "id": "aynara-terra",
           "nombre": "Aynara Street Terra",
           "precio": 21990,
-          "fotos": ["img/catalogo/aynara-terra.webp"],
+          "fotos": [
+            "img/catalogo/aynara-terra.webp"
+          ],
           "detalle": "Bota de gamuza premium en tono terracota, con suaves pliegues y hebillas delicadas.",
           "descripcion": "Un nombre que evoca libertad, conexión con la tierra y elegancia auténtica.\nSu taco firme asegura comodidad y estabilidad en cada paso.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo seco de cerdas suaves.",
-          "colores": [{ "nombre": "Terracota", "hex": "#7d3b2e" }],
+          "colores": [
+            {
+              "nombre": "Terracota",
+              "hex": "#7d3b2e"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -380,12 +545,19 @@ window.CATALOGO = {
           "id": "aynara-black",
           "nombre": "Aynara Street Black",
           "precio": 21990,
-          "fotos": ["img/catalogo/aynara-black.webp"],
+          "fotos": [
+            "img/catalogo/aynara-black.webp"
+          ],
           "detalle": "La Aynara en negro: pliegues suaves, hebillas y taco firme.",
           "descripcion": "Un nombre que refleja libertad, carácter y elegancia urbana.\nInspirada en la mujer que se mueve con seguridad y estilo propio.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo seco de cerdas suaves.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -400,14 +572,22 @@ window.CATALOGO = {
           "id": "kallpa-chaki",
           "nombre": "Kallpa Chaki",
           "precio": 18990,
-          "fotos": ["img/catalogo/kallpa-chaki-cafe.webp"],
+          "fotos": [
+            "img/catalogo/kallpa-chaki-cafe.webp"
+          ],
           "detalle": "Zapatilla deportiva con suela alta. Viene en negro y en café.",
           "descripcion": "Representa la fuerza y resistencia del espíritu andino, inspirada en el desierto de Atacama. Cada zapatilla refleja energía, identidad y superación personal.",
           "material": "Textil con detalles sintéticos",
           "cuidados": "Cepillo húmedo y jabón suave.",
           "colores": [
-            { "nombre": "Café", "hex": "#6b4a37" },
-            { "nombre": "Negro", "hex": "#1d1d1f" }
+            {
+              "nombre": "Café",
+              "hex": "#6b4a37"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
           ],
           "nota": "Horma normal.",
           "etiquetas": [],
@@ -418,12 +598,19 @@ window.CATALOGO = {
           "id": "rumi-chaki",
           "nombre": "Rumi Chaki",
           "precio": 18990,
-          "fotos": ["img/catalogo/rumi-chaki.webp"],
+          "fotos": [
+            "img/catalogo/rumi-chaki.webp"
+          ],
           "detalle": "Zapatilla blanca con detalles en rosado y suela alta.",
           "descripcion": "Representa la firmeza y resistencia de la piedra en el paisaje del desierto. Inspirada en la fortaleza de la cultura andina.",
           "material": "Textil con detalles sintéticos",
           "cuidados": "Cepillo húmedo y jabón suave.",
-          "colores": [{ "nombre": "Rosado y blanco", "hex": "#e8c9cd" }],
+          "colores": [
+            {
+              "nombre": "Rosado y blanco",
+              "hex": "#e8c9cd"
+            }
+          ],
           "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
@@ -432,12 +619,474 @@ window.CATALOGO = {
           "id": "hatun-nam",
           "nombre": "Hatun Ñam",
           "precio": 12990,
-          "fotos": ["img/catalogo/hatun-nam.webp"],
-          "detalle": "Zapatilla urbana de ecocuero negro con franjas blancas y suela de goma.",
+          "fotos": [
+            "img/catalogo/hatun-nam.webp",
+            "img/catalogo/hatun-nam-cafe.webp"
+          ],
+          "detalle": "Zapatilla urbana de ecocuero con franjas en contraste y suela de goma. En negro, café y rojo.",
           "descripcion": "Simboliza el gran camino de la vida y la historia ancestral andina. Inspirada en las rutas del desierto atacameño.",
           "material": "Ecocuero",
           "cuidados": "Paño húmedo con jabón suave.",
-          "colores": [{ "nombre": "Negro", "hex": "#1d1d1f" }],
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Café",
+              "hex": "#6b4a37"
+            },
+            {
+              "nombre": "Rojo",
+              "hex": "#9b2c2c"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "sumaq-one",
+          "nombre": "Sumaq One",
+          "precio": 17990,
+          "precioAntes": 22990,
+          "fotos": [
+            "img/catalogo/sumaq-one.webp"
+          ],
+          "detalle": "Zapatilla urbana de plataforma, cómoda y con actitud.",
+          "descripcion": "Comodidad total, diseño urbano y una actitud que destaca.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Blanca",
+              "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro gamuza",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "inti-prime",
+          "nombre": "Inti Prime",
+          "precio": 17990,
+          "precioAntes": 22990,
+          "fotos": [
+            "img/catalogo/inti-prime.webp"
+          ],
+          "detalle": "Zapatilla urbana de plataforma, liviana y con buen agarre.",
+          "descripcion": "La energía del sol hecha zapatilla: comodidad total, estilo urbano y un diseño que brilla en cada paso.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Blanca",
+              "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "nawi-street",
+          "nombre": "Ñawi Street",
+          "precio": 17990,
+          "precioAntes": 22990,
+          "fotos": [
+            "img/catalogo/nawi-street.webp"
+          ],
+          "detalle": "Zapatilla urbana de plataforma, con terminaciones limpias.",
+          "descripcion": "Diseño moderno, comodidad total y un toque único que llama la atención en cada paso.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Blanca",
+              "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "killa-mode",
+          "nombre": "Killa Mode",
+          "precio": 17990,
+          "precioAntes": 22990,
+          "fotos": [
+            "img/catalogo/killa-mode.webp"
+          ],
+          "detalle": "Zapatilla urbana de plataforma en charol.",
+          "descripcion": "Estilo urbano inspirado en la magia de la noche, con la comodidad que te acompaña en cada paso.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro charol",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "chaska-glow",
+          "nombre": "Chaska Glow",
+          "precio": 17990,
+          "fotos": [
+            "img/catalogo/chaska-glow.webp"
+          ],
+          "detalle": "Zapatilla urbana de plataforma con tachas.",
+          "descripcion": "La estrella que iluminará tu estilo.\nComodidad total, diseño urbano y el brillo perfecto para cada paso.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Blanca",
+              "hex": "#f2f0ec"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "nuevo"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "pacha-core",
+          "nombre": "Pacha Core",
+          "precio": 13990,
+          "precioAntes": 16990,
+          "fotos": [
+            "img/catalogo/pacha-core.webp"
+          ],
+          "detalle": "Zapatilla urbana con suela gruesa y detalles en contraste.",
+          "descripcion": "Un diseño urbano con la solidez y comodidad que te conecta con tu estilo en cada momento.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Pink",
+              "hex": "#e0a9b8"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "wayra-rush",
+          "nombre": "Wayra Rush",
+          "precio": 15990,
+          "precioAntes": 19990,
+          "fotos": [
+            "img/catalogo/wayra-rush.webp"
+          ],
+          "detalle": "Zapatilla urbana liviana, para los días largos.",
+          "descripcion": "Un diseño que combina fuerza y estilo, ideal para quienes no paran nunca.\nComodidad, carácter y actitud para destacar donde vayas.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Gris",
+              "hex": "#9a9aa0"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [
+            "oferta"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "inti-nam",
+          "nombre": "Inti Ñam",
+          "precio": 15990,
+          "fotos": [
+            "img/catalogo/inti-nam.webp"
+          ],
+          "detalle": "Zapatilla urbana de corte bajo, con franjas en contraste.",
+          "descripcion": "Simboliza el camino guiado por el sol del desierto. Representa energía, perseverancia y conexión.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Gris",
+              "hex": "#9a9aa0"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "chaska-nam",
+          "nombre": "Chaska Ñam",
+          "precio": 14990,
+          "fotos": [
+            "img/catalogo/chaska-nam.webp"
+          ],
+          "detalle": "Zapatilla de lona con plataforma y cordones.",
+          "descripcion": "Simboliza el camino guiado por las estrellas del cielo atacameño. Representa libertad, exploración y conexión espiritual.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        }
+      ]
+    },
+    {
+      "id": "sandalias",
+      "nombre": "Sandalias",
+      "productos": [
+        {
+          "id": "kori-desierto",
+          "nombre": "Kori del Desierto",
+          "precio": 16990,
+          "fotos": [
+            "img/catalogo/kori-desierto.webp"
+          ],
+          "detalle": "Sandalia de plataforma con doble hebilla y base de yute.",
+          "descripcion": "Evoca oro y brillo. Modelo elegante que simboliza el resplandor del sol sobre la arena.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [
+            "nuevo"
+          ],
+          "tallas": "35-40"
+        },
+        {
+          "id": "amera",
+          "nombre": "Améra",
+          "precio": 15990,
+          "fotos": [
+            "img/catalogo/amera.webp"
+          ],
+          "detalle": "Sandalia de plataforma de 9 cm con doble hebilla metálica.",
+          "descripcion": "Un modelo con carácter, pensado para mujeres seguras de su estilo.\nDiseño firme, cómodo y con presencia.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Gris",
+              "hex": "#9a9aa0"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "lumia",
+          "nombre": "Lúmia",
+          "precio": 18990,
+          "fotos": [
+            "img/catalogo/lumia.webp"
+          ],
+          "detalle": "Sandalia de plataforma de 9 cm con tiras finas y tachas.",
+          "descripcion": "Un diseño delicado con un toque sofisticado.\nPerfecta para quienes aman destacar con elegancia sutil.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "zeira",
+          "nombre": "Zéira",
+          "precio": 18990,
+          "fotos": [
+            "img/catalogo/zeira.webp"
+          ],
+          "detalle": "Sandalia de plataforma de 9 cm, de líneas limpias y hebilla al frente.",
+          "descripcion": "Un diseño limpio y sofisticado que se adapta a cualquier ocasión.\nComodidad y estilo para acompañarte todo el día, sin esfuerzo.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "naya",
+          "nombre": "Náya",
+          "precio": 15990,
+          "fotos": [
+            "img/catalogo/naya.webp"
+          ],
+          "detalle": "Sandalia de plataforma de 9 cm con tiras trenzadas acolchadas.",
+          "descripcion": "Pensada para quienes buscan comodidad sin perder estilo.\nUn diseño versátil que combina perfecto con tu día a día.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Blanco",
+              "hex": "#f2f0ec"
+            }
+          ],
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "caly",
+          "nombre": "Caly",
+          "precio": 15990,
+          "fotos": [
+            "img/catalogo/caly.webp"
+          ],
+          "detalle": "Sandalia de plataforma de 9 cm, de una sola tira ancha.",
+          "descripcion": "Una sandalia básica que nunca falla.\nIdeal para combinar con todo y usar en cualquier ocasión.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Blanco",
+              "hex": "#f2f0ec"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "tika-del-salar",
+          "nombre": "Tika del Salar",
+          "precio": 15990,
+          "fotos": [
+            "img/catalogo/tika-del-salar.webp"
+          ],
+          "detalle": "Sandalia de plataforma con hebilla dorada.",
+          "descripcion": "Modelo delicado inspirado en las flores que brotan cerca de los salares. Evoca pureza, suavidad y feminidad natural.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Blanco",
+              "hex": "#f2f0ec"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "nayra-florida",
+          "nombre": "Nayra Florida",
+          "precio": 11990,
+          "fotos": [
+            "img/catalogo/nayra-florida.webp"
+          ],
+          "detalle": "Sandalia cruzada con hebilla y suela acolchada.",
+          "descripcion": "Sandalia que representa conexión espiritual y belleza profunda.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            },
+            {
+              "nombre": "Blanco",
+              "hex": "#f2f0ec"
+            }
+          ],
+          "nota": "Horma normal.",
+          "etiquetas": [],
+          "tallas": "35-40"
+        },
+        {
+          "id": "suyai-brisa",
+          "nombre": "Suyai Brisa",
+          "precio": 11990,
+          "fotos": [
+            "img/catalogo/suyai-brisa.webp"
+          ],
+          "detalle": "Sandalia liviana de una tira, para andar todo el día.",
+          "descripcion": "Sandalia ligera inspirada en el viento del altiplano. Representan libertad, esperanza y movimiento.",
+          "material": "",
+          "cuidados": "",
+          "colores": [
+            {
+              "nombre": "Café",
+              "hex": "#b08a6a"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
+            }
+          ],
           "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"

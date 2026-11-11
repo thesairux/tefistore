@@ -1,9 +1,10 @@
 /* Entrada para Cloudflare Workers (si el proyecto se creó como Worker, con dirección .workers.dev).
    Los archivos de la página (dist/) los sirve Cloudflare directo; este archivo solo atiende las direcciones
    /api/… con el mismo servidor de functions/api/ que usa Cloudflare Pages. Ver wrangler.jsonc. */
+import * as admin from "./functions/api/admin.js";
 import * as asistente from "./functions/api/asistente.js";
 
-const RUTAS = { "/api/asistente": asistente };
+const RUTAS = { "/api/admin": admin, "/api/asistente": asistente };
 
 export default {
   async fetch(request, env, ctx) {

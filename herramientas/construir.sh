@@ -6,6 +6,7 @@
 set -e
 rm -rf dist
 mkdir -p dist
-cp index.html catalogo.js favicon.svg robots.txt _headers site.webmanifest dist/
+cp index.html admin.html catalogo.js favicon.svg robots.txt _headers site.webmanifest dist/
+if [ -d fotos ]; then cp -r fotos dist/; fi
 cp -r css js img dist/
 echo "Listo: dist/ ($(find dist -type f | wc -l | tr -d ' ') archivos)"

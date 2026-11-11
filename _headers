@@ -2,6 +2,15 @@
 /catalogo.js
   Cache-Control: no-cache
 
+/admin
+  X-Robots-Tag: noindex, nofollow
+
+/admin.html
+  X-Robots-Tag: noindex, nofollow
+
+/fotos/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=604800
+
 /site.webmanifest
   Content-Type: application/manifest+json; charset=utf-8
   Cache-Control: public, max-age=86400
