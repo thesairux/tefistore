@@ -424,8 +424,8 @@ window.CATALOGO = {
           "precio": 24990,
           "precioAntes": 30990,
           "fotos": [
-            "img/catalogo/kallpa-noir.webp",
-            "img/catalogo/kallpa-white.webp"
+            "img/catalogo/kallpa-white.webp",
+            "img/catalogo/kallpa-noir.webp"
           ],
           "detalle": "Bota estilizada con detalle de cadena y taco firme. En negro y en blanco.",
           "descripcion": "Sofisticación en cada paso.\nDiseño estilizado, detalle de cadena y taco firme que eleva cualquier look. Una bota pensada para mujeres seguras, que marcan presencia.",
@@ -433,12 +433,12 @@ window.CATALOGO = {
           "cuidados": "Paño húmedo. Guarda la bota de pie para que no se marque la caña.",
           "colores": [
             {
-              "nombre": "Negro",
-              "hex": "#1d1d1f"
-            },
-            {
               "nombre": "Blanco",
               "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
             }
           ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
@@ -478,7 +478,8 @@ window.CATALOGO = {
           "precio": 24990,
           "precioAntes": 29990,
           "fotos": [
-            "img/catalogo/yastay-ebano.webp"
+            "img/catalogo/yastay-ebano.webp",
+            "img/catalogo/yastay-ebano-2.webp"
           ],
           "detalle": "Una bota que estiliza al instante: caña alta con efecto drapeado y taco firme.",
           "descripcion": "Perfectas para outfits elegantes, salidas nocturnas o eventos especiales.",
@@ -573,7 +574,7 @@ window.CATALOGO = {
           "nombre": "Kallpa Chaki",
           "precio": 18990,
           "fotos": [
-            "img/catalogo/kallpa-chaki-cafe.webp"
+            "img/catalogo/kallpa-chaki.webp"
           ],
           "detalle": "Zapatilla deportiva con suela alta. Viene en negro y en café.",
           "descripcion": "Representa la fuerza y resistencia del espíritu andino, inspirada en el desierto de Atacama. Cada zapatilla refleja energía, identidad y superación personal.",
@@ -621,7 +622,8 @@ window.CATALOGO = {
           "precio": 12990,
           "fotos": [
             "img/catalogo/hatun-nam.webp",
-            "img/catalogo/hatun-nam-cafe.webp"
+            "img/catalogo/hatun-nam-cafe.webp",
+            "img/catalogo/hatun-nam-rojo.webp"
           ],
           "detalle": "Zapatilla urbana de ecocuero con franjas en contraste y suela de goma. En negro, café y rojo.",
           "descripcion": "Simboliza el gran camino de la vida y la historia ancestral andina. Inspirada en las rutas del desierto atacameño.",
@@ -651,7 +653,8 @@ window.CATALOGO = {
           "precio": 17990,
           "precioAntes": 22990,
           "fotos": [
-            "img/catalogo/sumaq-one.webp"
+            "img/catalogo/sumaq-one.webp",
+            "img/catalogo/sumaq-one-negro.webp"
           ],
           "detalle": "Zapatilla urbana de plataforma, cómoda y con actitud.",
           "descripcion": "Comodidad total, diseño urbano y una actitud que destaca.",
@@ -679,7 +682,8 @@ window.CATALOGO = {
           "precio": 17990,
           "precioAntes": 22990,
           "fotos": [
-            "img/catalogo/inti-prime.webp"
+            "img/catalogo/inti-prime.webp",
+            "img/catalogo/inti-prime-negro.webp"
           ],
           "detalle": "Zapatilla urbana de plataforma, liviana y con buen agarre.",
           "descripcion": "La energía del sol hecha zapatilla: comodidad total, estilo urbano y un diseño que brilla en cada paso.",
@@ -707,7 +711,8 @@ window.CATALOGO = {
           "precio": 17990,
           "precioAntes": 22990,
           "fotos": [
-            "img/catalogo/nawi-street.webp"
+            "img/catalogo/nawi-street.webp",
+            "img/catalogo/nawi-street-negro.webp"
           ],
           "detalle": "Zapatilla urbana de plataforma, con terminaciones limpias.",
           "descripcion": "Diseño moderno, comodidad total y un toque único que llama la atención en cada paso.",
@@ -782,7 +787,8 @@ window.CATALOGO = {
           "precio": 13990,
           "precioAntes": 16990,
           "fotos": [
-            "img/catalogo/pacha-core.webp"
+            "img/catalogo/pacha-core.webp",
+            "img/catalogo/pacha-core-negro.webp"
           ],
           "detalle": "Zapatilla urbana con suela gruesa y detalles en contraste.",
           "descripcion": "Un diseño urbano con la solidez y comodidad que te conecta con tu estilo en cada momento.",
@@ -971,7 +977,8 @@ window.CATALOGO = {
           "nombre": "Náya",
           "precio": 15990,
           "fotos": [
-            "img/catalogo/naya.webp"
+            "img/catalogo/naya.webp",
+            "img/catalogo/naya-negro.webp"
           ],
           "detalle": "Sandalia de plataforma de 9 cm con tiras trenzadas acolchadas.",
           "descripcion": "Pensada para quienes buscan comodidad sin perder estilo.\nUn diseño versátil que combina perfecto con tu día a día.",
@@ -979,12 +986,12 @@ window.CATALOGO = {
           "cuidados": "",
           "colores": [
             {
-              "nombre": "Negro",
-              "hex": "#1d1d1f"
-            },
-            {
               "nombre": "Blanco",
               "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
             }
           ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
@@ -996,7 +1003,8 @@ window.CATALOGO = {
           "nombre": "Caly",
           "precio": 15990,
           "fotos": [
-            "img/catalogo/caly.webp"
+            "img/catalogo/caly.webp",
+            "img/catalogo/caly-negro.webp"
           ],
           "detalle": "Sandalia de plataforma de 9 cm, de una sola tira ancha.",
           "descripcion": "Una sandalia básica que nunca falla.\nIdeal para combinar con todo y usar en cualquier ocasión.",
@@ -1004,12 +1012,12 @@ window.CATALOGO = {
           "cuidados": "",
           "colores": [
             {
-              "nombre": "Negro",
-              "hex": "#1d1d1f"
-            },
-            {
               "nombre": "Blanco",
               "hex": "#f2f0ec"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
             }
           ],
           "nota": "Horma normal.",
@@ -1021,7 +1029,8 @@ window.CATALOGO = {
           "nombre": "Tika del Salar",
           "precio": 15990,
           "fotos": [
-            "img/catalogo/tika-del-salar.webp"
+            "img/catalogo/tika-del-salar.webp",
+            "img/catalogo/tika-del-salar-blanco.webp"
           ],
           "detalle": "Sandalia de plataforma con hebilla dorada.",
           "descripcion": "Modelo delicado inspirado en las flores que brotan cerca de los salares. Evoca pureza, suavidad y feminidad natural.",
@@ -1046,7 +1055,8 @@ window.CATALOGO = {
           "nombre": "Nayra Florida",
           "precio": 11990,
           "fotos": [
-            "img/catalogo/nayra-florida.webp"
+            "img/catalogo/nayra-florida.webp",
+            "img/catalogo/nayra-florida-blanco.webp"
           ],
           "detalle": "Sandalia cruzada con hebilla y suela acolchada.",
           "descripcion": "Sandalia que representa conexión espiritual y belleza profunda.",
@@ -1071,7 +1081,8 @@ window.CATALOGO = {
           "nombre": "Suyai Brisa",
           "precio": 11990,
           "fotos": [
-            "img/catalogo/suyai-brisa.webp"
+            "img/catalogo/suyai-brisa.webp",
+            "img/catalogo/suyai-brisa-negro.webp"
           ],
           "detalle": "Sandalia liviana de una tira, para andar todo el día.",
           "descripcion": "Sandalia ligera inspirada en el viento del altiplano. Representan libertad, esperanza y movimiento.",
