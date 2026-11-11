@@ -31,18 +31,17 @@
 
   POR COMPLETAR (lo que falta para publicar)
   ------------------------------------------
-  1. "whatsapp": el número real de la tienda. Mientras diga 56900000000 los pedidos no llegan.
-  2. "direccion": la dirección del local. Si la dejas vacía, la página no muestra la sección Tienda
+  1. "direccion": la dirección del local. Si la dejas vacía, la página no muestra la sección Tienda
      ni el mapa, y el retiro se coordina por WhatsApp.
-  3. "envios": revisa los precios y los plazos reales.
-  4. Stock por talla: cuando lo tengas, cambia "35-40" por { "35": 2, ... } en cada modelo.
+  2. "envios": revisa los precios y los plazos reales.
+  3. Stock por talla: cuando lo tengas, cambia "35-40" por { "35": 2, ... } en cada modelo.
 */
 window.CATALOGO = {
   "negocio": {
     "nombre": "Tefi Store",
     "rubro": "Calzado",
-    "whatsapp": "56900000000",
-    "whatsappVisible": "+56 9 0000 0000",
+    "whatsapp": "56941706063",
+    "whatsappVisible": "+56 9 4170 6063",
     "instagram": "tefistore_style",
     "facebook": "",
     "correo": "",

@@ -231,9 +231,7 @@ sección aparece sola, con su mapa y su horario.
 
 ## 7. Lo que falta para publicar
 
-1. **El número de WhatsApp** (`negocio.whatsapp`). Mientras diga `56900000000`, los pedidos no
-   llegan a ninguna parte.
-2. **La dirección**, si quieres mostrar la tienda y el mapa.
-3. **Los precios de despacho** de `negocio.envios`: están puestos como ejemplo.
-4. **El stock por talla**, cuando lo tengas contado (ver «Las tallas»).
-5. Revisar que «Envíos a todo Chile» de la barra de arriba sea efectivo.
+1. **La dirección**, si quieres mostrar la tienda y el mapa.
+2. **Los precios de despacho** de `negocio.envios`: están puestos como ejemplo.
+3. **El stock por talla**, cuando lo tengas contado (ver «Las tallas»).
+4. Revisar que «Envíos a todo Chile» de la barra de arriba sea efectivo.
