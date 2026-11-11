@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Zapato taco medio Oficina">
+  <title>Zapato taco medio Oficina</title>
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e0e0e1"/>
+      <stop offset="1" stop-color="#bdbdbf"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#f)"/>
+  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+
+  <path d="M106 136 C132 148 152 164 178 184 C216 212 274 232 340 243 C352 245 358 248 356 251 L248 252 C204 250 174 242 148 226 C132 214 122 206 119 196 C105 180 101 158 106 136 Z" fill="#23222a"/>
+  <path d="M232 216 C270 231 308 239 340 243 C352 245 358 248 356 251 L248 252 C228 251 212 249 198 246 Z" fill="#65646a" opacity=".5"/>
+  <path d="M106 136 C104 158 109 178 119 196 C112 190 104 176 101 160 C99 148 101 140 106 136 Z" fill="#1b1b21"/>
+  <path d="M148 226 C174 242 204 250 248 252 L248 246 C206 244 176 236 152 222 Z" fill="#100f13"/>
+  <path d="M119 196 L146 214 L157 252 H132 Z" fill="#23222a"/>
+  <path d="M136 206 L146 214 L157 252 H146 Z" fill="#1b1b21"/>
+  <path d="M128 246 H162 C167 246 169 248 169 250 C169 252 167 253 162 253 H128 C123 253 121 252 121 250 C121 248 123 246 128 246 Z" fill="#100f13"/>
+</svg>

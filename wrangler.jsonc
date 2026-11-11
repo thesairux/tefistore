@@ -1,0 +1,15 @@
+// Configuración para Cloudflare Workers (proyecto con dirección .workers.dev).
+// Si usas Cloudflare Pages (.pages.dev), este archivo no se usa: Pages usa functions/ directamente.
+{
+  "name": "tefistore",
+  "main": "worker.js",
+  "compatibility_date": "2025-09-01",
+
+  // Arma dist/ (solo los archivos de la página) antes de publicar
+  "build": { "command": "sh herramientas/construir.sh" },
+  "assets": { "directory": "./dist", "binding": "ASSETS" },
+
+  // No borra las variables que pongas en Cloudflare (Settings → Variables and Secrets) al publicar
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

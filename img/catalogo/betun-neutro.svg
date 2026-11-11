@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Betún neutro">
+  <title>Betún neutro</title>
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efeff3"/>
+      <stop offset="1" stop-color="#dddce4"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#f)"/>
+  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+
+  <path d="M166 74 H234 C240 74 244 79 244 85 V104 H156 V85 C156 79 160 74 166 74 Z" fill="#6e6c81"/>
+  <path d="M142 104 H258 C272 104 282 115 282 128 V226 C282 240 272 250 258 250 H142 C128 250 118 240 118 226 V128 C118 115 128 104 142 104 Z" fill="#8d8aa6"/>
+  <path d="M212 104 H258 C272 104 282 115 282 128 V226 C282 240 272 250 258 250 H212 Z" fill="#6e6c81" opacity=".45"/>
+  <rect x="140" y="140" width="120" height="66" rx="10" fill="#ffffff" opacity=".9"/>
+  <path d="M140 122 H260" stroke="#afadc1" stroke-width="8" opacity=".7"/>
+</svg>

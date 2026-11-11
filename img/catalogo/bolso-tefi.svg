@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Bolso de tela Tefi">
+  <title>Bolso de tela Tefi</title>
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efeff3"/>
+      <stop offset="1" stop-color="#dddce4"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#f)"/>
+  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+
+  <path d="M136 116 C136 88 156 70 182 70 C208 70 228 88 228 116" fill="none" stroke="#8d8aa6" stroke-width="12" stroke-linecap="round"/>
+  <path d="M100 112 H298 C308 112 316 120 317 130 L330 234 C332 246 323 256 311 256 H115 C103 256 94 246 96 234 L100 112 Z" fill="#8d8aa6"/>
+  <path d="M240 112 H298 C308 112 316 120 317 130 L330 234 C332 246 323 256 311 256 H252 Z" fill="#6e6c81" opacity=".45"/>
+  <path d="M98 144 H326" stroke="#afadc1" stroke-width="10" opacity=".7"/>
+  <circle cx="213" cy="196" r="25" fill="none" stroke="#ffffff" stroke-width="8" opacity=".85"/>
+</svg>

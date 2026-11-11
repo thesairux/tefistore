@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Sandalia plana Marea">
+  <title>Sandalia plana Marea</title>
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f2e1"/>
+      <stop offset="1" stop-color="#efe3be"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#f)"/>
+  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+
+  <path d="M132 214 C142 180 174 160 212 162 C250 164 274 186 280 214 L256 214 C250 194 234 182 211 181 C186 180 166 194 157 214 Z" fill="#c9a227"/>
+  <path d="M212 162 C250 164 274 186 280 214 L256 214 C250 194 234 182 211 181 Z" fill="#d9be68" opacity=".5"/>
+  <path d="M286 214 C286 198 296 188 312 188 L314 206 C306 206 303 209 303 214 Z" fill="#c9a227"/>
+  <path d="M102 214 C96 186 104 164 124 154 L134 172 C122 180 116 194 120 214 Z" fill="#c9a227"/>
+  <path d="M118 152 H142 C147 152 149 156 149 160 C149 165 147 167 142 167 H118 C113 167 111 165 111 160 C111 156 113 152 118 152 Z" fill="#9d7e1e"/>
+  <path d="M64 214 H340 C354 214 360 222 356 231 C352 240 338 246 320 246 H90 C68 246 58 238 56 229 C54 220 56 214 64 214 Z" fill="#5a4912"/>
+  <path d="M70 216 H336 C344 216 348 220 348 226 C348 232 342 236 334 236 H80 C70 236 66 231 66 225 C66 220 66 216 70 216 Z" fill="#c9a227" opacity=".92"/>
+</svg>

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Cordones planos (par)">
+  <title>Cordones planos (par)</title>
+  <defs>
+    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#efeff3"/>
+      <stop offset="1" stop-color="#dddce4"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="300" fill="url(#f)"/>
+  <ellipse cx="206" cy="262" rx="150" ry="16" fill="#000" opacity=".10"/>
+
+  <path d="M120 230 C60 196 90 112 160 118 C214 122 226 182 180 196 C140 208 124 170 150 152" fill="none" stroke="#8d8aa6" stroke-width="16" stroke-linecap="round"/>
+  <path d="M232 92 C300 92 336 148 310 196 C290 232 240 240 208 216" fill="none" stroke="#8d8aa6" stroke-width="16" stroke-linecap="round"/>
+  <path d="M150 152 C168 140 196 136 214 148" fill="none" stroke="#afadc1" stroke-width="14" stroke-linecap="round"/>
+  <rect x="100" y="216" width="34" height="18" rx="8" transform="rotate(16 117 225)" fill="#6e6c81"/>
+  <rect x="196" y="206" width="34" height="18" rx="8" transform="rotate(-12 213 215)" fill="#6e6c81"/>
+</svg>
