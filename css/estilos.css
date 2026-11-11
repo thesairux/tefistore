@@ -260,11 +260,38 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 /* Pasos */
 .pasos { background: var(--principal-oscuro); color: #fff; padding: clamp(40px, 5vw, 66px) 0; }
 .pasos .titulo { margin-bottom: 30px; }
-.pasos-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
-@media (max-width: 760px) { .pasos-lista { grid-template-columns: 1fr; gap: 24px; } }
-.pasos-num { font-family: var(--titulo); font-size: 15px; color: var(--amarillo-claro); letter-spacing: .1em; }
-.pasos-lista h3 { font-size: 18px; font-weight: 600; margin: 8px 0 6px; }
+.pasos-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+@media (max-width: 760px) { .pasos-lista { grid-template-columns: 1fr; gap: 14px; } }
+.pasos-lista li {
+  background: rgb(255 255 255 / .06); border: 1px solid rgb(255 255 255 / .14);
+  border-radius: 14px; padding: 24px 24px 26px;
+}
+.pasos-cab { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.pasos-ico {
+  width: 46px; height: 46px; flex: none; display: grid; place-items: center; border-radius: 12px;
+  background: rgb(var(--amarillo-rgb) / .16); color: var(--amarillo-claro);
+}
+.pasos-ico .icono { width: 23px; height: 23px; }
+.pasos-num { font-family: var(--titulo); font-size: 30px; font-weight: 600; color: rgb(255 255 255 / .22); line-height: 1; }
+.pasos-lista h3 { font-size: 18px; font-weight: 600; margin: 0 0 7px; }
 .pasos-lista p { color: rgb(255 255 255 / .74); font-size: 15px; }
+
+/* Políticas de compra */
+.politicas { background: var(--suave); }
+.politicas-cab { margin-bottom: 24px; max-width: 60ch; }
+.politicas-bajada { color: var(--tinta-suave); margin-top: 8px; }
+.politicas-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
+.politica {
+  display: flex; align-items: start; gap: 13px;
+  background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; padding: 17px 19px;
+}
+.politica-ico { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; }
+.politica-ico .icono { width: 18px; height: 18px; stroke-width: 2; }
+.politica--no .politica-ico { background: #fbeaea; color: var(--rojo); }
+.politica--envio .politica-ico { background: var(--acento-fondo); color: var(--principal); }
+.politica--aviso .politica-ico { background: #fdf3e0; color: #9a6a12; }
+.politica span { font-size: 15px; line-height: 1.5; }
+.politica--ancha { grid-column: 1 / -1; }
 
 /* Tienda */
 .tienda-grilla { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 48px); align-items: start; }
@@ -341,6 +368,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .grupo-cab .error { color: var(--rojo); font-size: 13.5px; font-weight: 600; }
 
 .tallas-fila { display: flex; flex-wrap: wrap; gap: 9px; }
+.aviso-horma {
+  display: flex; align-items: start; gap: 9px; margin-top: 12px;
+  background: #fdf3e0; border: 1px solid #f0dcb4; border-radius: 10px; padding: 11px 13px;
+  font-size: 14px; color: #6d4a06;
+}
+.aviso-horma .icono { width: 18px; height: 18px; flex: none; color: #9a6a12; margin-top: 1px; }
 .talla {
   min-width: 56px; padding: 12px 8px; border: 1px solid var(--linea); background: var(--papel);
   font-size: 15px; font-weight: 500; cursor: pointer; font-variant-numeric: tabular-nums; text-align: center; border-radius: var(--radio);

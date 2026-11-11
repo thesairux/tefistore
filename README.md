@@ -57,8 +57,13 @@ cambia el rango por el detalle y la página empieza a mostrar el stock real sola
 - **Portada:** `"portada"` es una lista; cada elemento es una imagen con su título. Si hay más de
   una, aparecen los puntitos y van rotando.
 - **Despachos:** cada zona de `"envios"` puede tener sus `"comunas"` o sus `"regiones"`. Cuando el
-  cliente escribe su comuna en el checkout, la página elige sola la zona y su precio. La zona con
+  cliente escribe su comuna en el checkout, la página elige sola la zona. La zona con
   `"regiones": ["*"]` es la que se usa cuando no calza ninguna otra.
+- **Envíos por pagar:** con `"envioPorPagar": true` el despacho no se suma al total y la página lo
+  muestra como «Por pagar» en el checkout y en el mensaje de WhatsApp. Si algún día cobras el
+  envío, ponlo en `false` y agrega `"precio"` a cada zona.
+- **Políticas de compra:** las de `"politicas"` salen en su propia sección de la portada, en el pie
+  y en la ficha de cada producto, y el asistente las respeta cuando le preguntan.
 - El resto de los campos está explicado con comentarios al principio del mismo archivo.
 
 ### Las fotos
@@ -84,8 +89,8 @@ Las imágenes de la portada son `img/portada-1.webp`, `-2` y `-3`, y la de la ba
    «Agregar a favoritos». Abajo: descripción, materiales, cambios y despacho.
 3. **Carrito** (panel lateral) → cambia cantidades, ve el subtotal y sigue a «Finalizar compra».
    También puede saltarse el formulario con «Comprar por WhatsApp».
-4. **Checkout** → datos de contacto, envío a domicilio o retiro en la tienda, dirección,
-   **cupón de descuento** y el total con el despacho ya calculado.
+4. **Checkout** → datos de contacto, envío a domicilio o retiro, dirección y **cupón de
+   descuento**. El envío es por pagar, así que no se suma al total.
 5. **Enviar pedido por WhatsApp** → llega todo escrito al WhatsApp de la tienda.
 
 Desde la página no se cobra nada: el pago se coordina por WhatsApp. Por eso los precios y el stock
@@ -232,6 +237,6 @@ sección aparece sola, con su mapa y su horario.
 ## 7. Lo que falta para publicar
 
 1. **La dirección**, si quieres mostrar la tienda y el mapa.
-2. **Los precios de despacho** de `negocio.envios`: están puestos como ejemplo.
+2. **Los plazos de despacho** de `negocio.envios`: están puestos como estimación.
 3. **El stock por talla**, cuando lo tengas contado (ver «Las tallas»).
 4. Revisar que «Envíos a todo Chile» de la barra de arriba sea efectivo.

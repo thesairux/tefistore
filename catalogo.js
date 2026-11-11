@@ -25,7 +25,13 @@
   - "envios": cada zona puede tener sus "comunas" o sus "regiones". Cuando el cliente escribe su
     comuna en el checkout, la página elige sola la zona y su precio. La zona con "regiones": ["*"]
     es la que se usa cuando no calza ninguna otra.
-  - "envioGratisDesde": 60000 → sobre ese monto el despacho sale $0. Pon 0 para desactivarlo.
+  - "envioPorPagar": true → el cliente paga el envío al recibirlo, así que NO se suma al total del
+    pedido; la página lo muestra como «por pagar». Si algún día cobras el envío, ponlo en false y
+    agrégale "precio" a cada zona de "envios".
+  - "envioGratisDesde": 60000 → sobre ese monto el despacho sale $0. Pon 0 para desactivarlo
+    (con "envioPorPagar": true no se usa).
+  - "politicas": las reglas de compra. "tipo" puede ser "no" (✕), "envio" (camión) o "aviso" (!).
+  - "pasos": los tres pasos de «Comprar es simple». "icono": talla, camion, wsp, bolsa o tienda.
   - "cupones": códigos de descuento (uno por pedido). Está vacío; abajo quedó el ejemplo del formato.
   Cuidado con las comas: cada elemento de una lista va separado por una coma.
 
@@ -33,7 +39,7 @@
   ------------------------------------------
   1. "direccion": la dirección del local. Si la dejas vacía, la página no muestra la sección Tienda
      ni el mapa, y el retiro se coordina por WhatsApp.
-  2. "envios": revisa los precios y los plazos reales.
+  2. "envios": revisa los plazos reales de cada zona.
   3. Stock por talla: cuando lo tengas, cambia "35-40" por { "35": 2, ... } en cada modelo.
 */
 window.CATALOGO = {
@@ -54,11 +60,12 @@ window.CATALOGO = {
     "retiroEnTienda": true,
     "nombreRetiro": "Retiro en Copiapó",
     "notaRetiro": "Coordinamos el punto y la hora por WhatsApp.",
-    "envioGratisDesde": 60000,
+    "envioPorPagar": true,
+    "envioGratisDesde": 0,
     "envios": [
-      { "nombre": "Copiapó", "precio": 2500, "detalle": "1 a 2 días hábiles", "comunas": ["Copiapó", "Tierra Amarilla", "Caldera"] },
-      { "nombre": "Región de Atacama", "precio": 3990, "detalle": "2 a 3 días hábiles", "regiones": ["Atacama"] },
-      { "nombre": "Resto de Chile", "precio": 5990, "detalle": "3 a 5 días hábiles, por Starken o Chilexpress", "regiones": ["*"] }
+      { "nombre": "Copiapó", "detalle": "1 a 2 días hábiles (estimado)", "comunas": ["Copiapó", "Tierra Amarilla", "Caldera"] },
+      { "nombre": "Región de Atacama", "detalle": "2 a 3 días hábiles (estimado)", "regiones": ["Atacama"] },
+      { "nombre": "Resto de Chile", "detalle": "3 a 5 días hábiles (estimado), por Starken o Chilexpress", "regiones": ["*"] }
     ],
     "pagos": [
       "Transferencia",
@@ -66,8 +73,15 @@ window.CATALOGO = {
       "Crédito",
       "Efectivo al retirar"
     ],
-    "cambios": "Cambio de talla dentro de 10 días, con el zapato sin uso y su boleta.",
-    "garantia": ""
+    "cambios": "No se hacen cambios ni devoluciones.",
+    "garantia": "",
+    "politicas": [
+      { "tipo": "no", "texto": "No se hacen cambios ni devoluciones." },
+      { "tipo": "no", "texto": "No se hacen reservas." },
+      { "tipo": "no", "texto": "No se realizan reembolsos." },
+      { "tipo": "envio", "texto": "Todos los envíos son por pagar, no se hacen excepciones." },
+      { "tipo": "aviso", "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros." }
+    ]
   },
   "tema": {
     "color": "#6a1138",
@@ -111,6 +125,23 @@ window.CATALOGO = {
     "boton": "Ver el modelo",
     "enlace": "#/p/intiara-camel"
   },
+  "pasos": [
+    {
+      "icono": "talla",
+      "titulo": "Elige tu talla",
+      "texto": "Todos los modelos van de la 35 a la 40. Varios tienen horma pequeña: si dudas, pregúntanos antes de comprar."
+    },
+    {
+      "icono": "camion",
+      "titulo": "Completa tus datos",
+      "texto": "Envío a domicilio o retiro en Copiapó. El envío lo pagas al recibirlo, directo al transporte."
+    },
+    {
+      "icono": "wsp",
+      "titulo": "Confirmamos por WhatsApp",
+      "texto": "Te llega el detalle del pedido. Confirmamos que esté tu talla y el total, y recién ahí pagas."
+    }
+  ],
   "textos": {
     "catalogo": {
       "titulo": "Catálogo",
@@ -121,7 +152,9 @@ window.CATALOGO = {
       "titulo": "Guía de tallas",
       "bajada": "Mide tu pie en centímetros, del talón al dedo más largo, de pie y sobre una hoja. Ojo: varios modelos tienen horma pequeña, así que conviene pedir una talla más."
     },
-    "tienda": { "titulo": "Visítanos en la tienda" }
+    "tienda": { "titulo": "Visítanos en la tienda" },
+    "pasos": { "titulo": "Comprar es simple" },
+    "politicas": { "titulo": "Políticas de compra", "bajada": "Para que no haya sorpresas, esto es lo que acordamos en cada compra." }
   },
   "regiones": [
     "Arica y Parinacota", "Tarapacá", "Antofagasta", "Atacama", "Coquimbo", "Valparaíso",

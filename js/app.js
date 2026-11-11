@@ -43,7 +43,12 @@
     bolsa: '<path d="M6 8h12l-1 12H7L6 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/>',
     corazon: '<path d="M12 20s-7-4.3-7-9.3A4 4 0 0 1 12 8a4 4 0 0 1 7 2.7c0 5-7 9.3-7 9.3Z"/>',
     basura: '<path d="M5 7h14M10 7V5h4v2M7 7l1 13h8l1-13"/>',
-    ok: '<path d="M5 13l4 4L19 7"/>'
+    ok: '<path d="M5 13l4 4L19 7"/>',
+    talla: '<path d="M3 9.5h18v5H3Z"/><path d="M7 9.5v3M11 9.5v3M15 9.5v3M19 9.5v3"/>',
+    camion: '<path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.8"/><circle cx="17.5" cy="17" r="1.8"/>',
+    tienda: '<path d="M4 10v9h16v-9"/><path d="M3 6h18l-1.5 4h-15Z"/>',
+    no: '<circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6"/>',
+    aviso: '<path d="M12 4 2.8 20h18.4Z"/><path d="M12 10v4M12 17.2v.1"/>'
   };
   function ico(n, clase) { return '<svg class="' + (clase || "icono") + '" viewBox="0 0 24 24" aria-hidden="true">' + SVG[n] + "</svg>"; }
 
@@ -260,12 +265,23 @@
     var r = buscarCupon(datos.cupon);
     return r.cupon || null;
   }
+  function porPagar() { return !!N.envioPorPagar && datos.entrega !== "retiro"; }
   function envioBase() {
+    if (porPagar()) return 0;
     var z = zonaActual();
     if (!z) return 0;
     return z.precio || 0;
   }
+  /* Texto del despacho en el resumen y en las tarjetas de entrega */
+  function textoEnvio() {
+    if (datos.entrega === "retiro") return "Gratis";
+    if (porPagar()) return "Por pagar";
+    if (envioGratisPorMonto() || descuentoEnvio() > 0) return "Gratis";
+    var z = zonaActual();
+    return z && z.precio ? plata(z.precio) : "Según zona";
+  }
   function envioGratisPorMonto() {
+    if (porPagar()) return false;
     return !!(N.envioGratisDesde && subtotal() - descuentoProductos() >= N.envioGratisDesde);
   }
   function descuentoProductos() {
@@ -497,6 +513,38 @@
       }).join("");
     }
 
+    var pasos = $("[data-pasos]");
+    if (pasos) {
+      pasos.innerHTML = (C.pasos || []).map(function (x, i) {
+        return "<li><div class=\"pasos-cab\"><span class=\"pasos-ico\">" + ico(x.icono || "bolsa") + "</span>" +
+          '<span class="pasos-num">' + ("0" + (i + 1)).slice(-2) + "</span></div>" +
+          "<h3>" + esc(x.titulo) + "</h3><p>" + esc(x.texto) + "</p></li>";
+      }).join("");
+      if (!(C.pasos || []).length) pasos.closest(".pasos").setAttribute("hidden", "");
+    }
+
+    var pol = $("[data-politicas]");
+    var polBloque = $("[data-politicas-bloque]");
+    var lista = N.politicas || [];
+    if (pol && polBloque) {
+      if (!lista.length) polBloque.setAttribute("hidden", "");
+      else {
+        polBloque.removeAttribute("hidden");
+        pol.innerHTML = lista.map(function (x) {
+          var tipo = x.tipo || "aviso";
+          var icono = tipo === "no" ? "no" : tipo === "envio" ? "camion" : "aviso";
+          return '<li class="politica politica--' + esc(tipo) + (x.texto.length > 90 ? " politica--ancha" : "") + '">' +
+            '<span class="politica-ico">' + ico(icono) + "</span><span>" + esc(x.texto) + "</span></li>";
+        }).join("");
+      }
+    }
+    var piePol = $("[data-pie-politicas]");
+    if (piePol) {
+      piePol.innerHTML = lista.slice(0, 4).map(function (x) {
+        return "<li>" + esc(x.texto.length > 58 ? x.texto.slice(0, 55).trim() + "…" : x.texto) + "</li>";
+      }).join("");
+    }
+
     var hoy = ahora().fecha;
     var cupones = (C.cupones || []).filter(function (c) {
       return c && c.activo !== false && c.visible !== false &&
@@ -549,29 +597,13 @@
     var titulo = filtro.favoritos ? "Favoritos" : cat ? cat.nombre : (enRuta(C.textos, "catalogo.titulo") || "Catálogo");
     var bajada = filtro.favoritos ? "Los modelos que guardaste con el corazón." : (enRuta(C.textos, "catalogo.bajada") || "");
 
-    // tallas que existen en lo que se está mirando
-    var base = PRODUCTOS.filter(function (p) {
-      return (!filtro.categoria || p._cat === filtro.categoria) && (!filtro.favoritos || esFavorito(p.id));
-    });
-    var hay = {};
-    base.forEach(function (p) { tallasDe(p).forEach(function (t) { hay[t] = true; }); });
-    var tallas = TODAS_TALLAS.filter(function (t) { return hay[t]; });
-    if (filtro.talla && tallas.indexOf(filtro.talla) < 0) filtro.talla = "";
-
     var lista = filtrados();
     vista.innerHTML =
       '<div class="contenedor">' +
         '<div class="cat-cab"><h1 class="titulo">' + esc(titulo) + "</h1>" +
           (bajada ? '<p class="cat-bajada">' + esc(bajada) + "</p>" : "") + "</div>" +
         '<div class="filtros">' +
-          (tallas.length
-            ? '<div><span class="filtro-rotulo">Tu talla</span><div class="pildoras pildoras--tallas">' +
-              '<button class="pildora" type="button" data-talla="" aria-pressed="' + (filtro.talla ? "false" : "true") + '">Todas</button>' +
-              tallas.map(function (t) {
-                return '<button class="pildora" type="button" data-talla="' + esc(t) + '" aria-pressed="' +
-                  (filtro.talla === t ? "true" : "false") + '">' + esc(t) + "</button>";
-              }).join("") + "</div></div>"
-            : "<div></div>") +
+          "<div></div>" +
           '<div class="filtro-orden"><span class="filtro-rotulo">Ordenar</span>' +
             '<select data-orden aria-label="Ordenar el catálogo">' +
               ["destacados|Destacados", "precio-asc|Precio: de menor a mayor", "precio-desc|Precio: de mayor a menor", "nombre|Nombre (A-Z)"].map(function (o) {
@@ -581,7 +613,7 @@
             "</select></div>" +
         "</div>" +
         '<p class="cat-cuenta">' + (lista.length ? lista.length + (lista.length === 1 ? " modelo" : " modelos") +
-          (filtro.talla ? " con talla " + filtro.talla : "") + (filtro.texto ? ' para "' + esc(filtro.texto) + '"' : "") : "") + "</p>" +
+          (filtro.texto ? ' para "' + esc(filtro.texto) + '"' : "") : "") + "</p>" +
         '<div class="rejilla rejilla--4">' +
           (lista.length ? lista.map(tarjeta).join("")
             : '<div class="vacio"><b>No encontramos nada con eso</b>' +
@@ -661,7 +693,7 @@
                       ' aria-pressed="' + (ficha.talla === t ? "true" : "false") + '">' + esc(t) +
                       (stockContado(p, t) && s > 0 && s <= 2 ? "<small>" + (s === 1 ? "última" : "quedan 2") + "</small>" : "") + "</button>";
                   }).join("") + "</div>" +
-                  (p.nota ? '<p class="nota" style="margin-top:10px">' + esc(p.nota) + "</p>" : "") + "</div>"
+                  (p.nota ? '<p class="aviso-horma">' + ico("aviso") + "<span>" + esc(p.nota) + "</span></p>" : "") + "</div>"
                 : "") +
 
             (agotado ? "" :
@@ -801,7 +833,7 @@
     }
     var esEnvio = datos.entrega !== "retiro";
     var zona = zonaActual();
-    var gratis = envioGratisPorMonto() || descuentoEnvio() > 0;
+    var gratis = !porPagar() && (envioGratisPorMonto() || descuentoEnvio() > 0);
 
     function campo(id, etiqueta, tipo, k, extra) {
       var e = erroresForm[k];
@@ -826,7 +858,7 @@
                 '<span class="entrega-marca"></span><span class="entrega-datos"><b>Envío a domicilio</b>' +
                 "<small>Recibe en la dirección que indiques</small></span>" +
                 '<span class="entrega-precio' + (gratis ? " entrega-precio--gratis" : "") + '" data-precio-envio>' +
-                  (gratis ? "Gratis" : zona ? plata(zona.precio) : "Según zona") + "</span></button>" +
+                  textoEnvio() + "</span></button>" +
               (N.retiroEnTienda
                 ? '<button class="entrega" type="button" data-entrega="retiro" aria-pressed="' + (esEnvio ? "false" : "true") + '">' +
                   '<span class="entrega-marca"></span><span class="entrega-datos"><b>' + esc(N.nombreRetiro || "Retiro en la tienda") + "</b>" +
@@ -880,13 +912,15 @@
         '<div class="total-fila"><span>Productos</span><span>' + plata(subtotal()) + "</span></div>" +
         (descuentoProductos() ? '<div class="total-fila total-fila--dcto"><span>Cupón ' + esc(String(datos.cupon).toUpperCase()) +
           "</span><span>−" + plata(descuentoProductos()) + "</span></div>" : "") +
-        '<div class="total-fila"><span>' + (esEnvio ? "Despacho" + (zona ? " · " + esc(zona.nombre) : "") : "Retiro en la tienda") + "</span><span>" +
-          (costoEnvio() ? plata(costoEnvio()) : "Gratis") + "</span></div>" +
+        '<div class="total-fila"><span>' + (esEnvio ? "Despacho" + (zona ? " · " + esc(zona.nombre) : "") : "Retiro") + "</span><span>" +
+          (costoEnvio() ? plata(costoEnvio()) : esEnvio && porPagar() ? "Por pagar" : "Gratis") + "</span></div>" +
         (descuentoEnvio() ? '<div class="total-fila total-fila--dcto"><span>Cupón de despacho</span><span>−' + plata(descuentoEnvio()) + "</span></div>" : "") +
         '<div class="total-fila total-fila--grande"><span>Total</span><span>' + plata(total()) + "</span></div>" +
       "</div>" +
       '<button class="boton" type="button" data-enviar>' + ico("wsp") + "Enviar pedido por WhatsApp</button>" +
-      '<p class="nota" style="margin-top:12px">Confirmamos stock y total por WhatsApp. Desde la página no se cobra nada.</p>';
+      '<p class="nota" style="margin-top:12px">' +
+        (esEnvio && porPagar() ? "El envío se paga aparte, al recibirlo. " : "") +
+        "Confirmamos tu talla y el total por WhatsApp. Desde la página no se cobra nada.</p>";
   }
 
   function pintarResumen() {
@@ -894,9 +928,8 @@
     if (caja) caja.innerHTML = resumenHtml();
     var precio = $("[data-precio-envio]");
     if (precio) {
-      var libre = datos.entrega === "retiro" || envioGratisPorMonto() || descuentoEnvio() > 0;
-      var z0 = zonaDe(datos.region, datos.comuna);
-      precio.textContent = libre ? "Gratis" : z0 ? plata(z0.precio) : "Según zona";
+      var libre = !porPagar() && (datos.entrega === "retiro" || envioGratisPorMonto() || descuentoEnvio() > 0);
+      precio.textContent = textoEnvio();
       precio.classList.toggle("entrega-precio--gratis", libre);
     }
     var nota = $("[data-zona-nota]");
@@ -967,8 +1000,9 @@
     l.push("Productos: " + plata(subtotal()));
     if (descuentoProductos()) l.push("Cupón " + String(datos.cupon).toUpperCase() + ": −" + plata(descuentoProductos()));
     var zona = zonaActual();
-    if (datos.entrega === "retiro") l.push("Retiro en la tienda: gratis");
-    else l.push("Despacho" + (zona ? " (" + zona.nombre + ")" : "") + ": " + (costoEnvio() ? plata(costoEnvio()) : "gratis"));
+    if (datos.entrega === "retiro") l.push((N.nombreRetiro || "Retiro en la tienda") + ": gratis");
+    else l.push("Despacho" + (zona ? " (" + zona.nombre + ")" : "") + ": " +
+      (costoEnvio() ? plata(costoEnvio()) : porPagar() ? "por pagar" : "gratis"));
     l.push("TOTAL: " + plata(total()));
     l.push("");
     l.push("Nombre: " + datos.nombre);
@@ -1085,6 +1119,15 @@
 
       if ((el = t.closest("[data-abrir-tallas]"))) { ev.preventDefault(); $("[data-ventana-tallas]").showModal(); return; }
       if (t.closest("[data-cerrar-ventana]")) { $("[data-ventana-tallas]").close(); return; }
+      if ((el = t.closest("[data-ir-politicas]"))) {
+        ev.preventDefault();
+        location.hash = "#/";
+        setTimeout(function () {
+          var s = $("#politicas");
+          if (s) s.scrollIntoView({ behavior: "smooth" });
+        }, 60);
+        return;
+      }
       if ((el = t.closest("[data-ir-tienda]"))) {
         ev.preventDefault();
         location.hash = "#/";
@@ -1092,13 +1135,6 @@
           var s = $("#tienda");
           if (s) s.scrollIntoView({ behavior: "smooth" });
         }, 60);
-        return;
-      }
-
-      // Catálogo
-      if ((el = t.closest("[data-talla]"))) {
-        filtro.talla = el.getAttribute("data-talla");
-        pintarCatalogo();
         return;
       }
 

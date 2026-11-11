@@ -104,12 +104,18 @@
     </section>
     <section class="pasos" aria-labelledby="pasos-titulo">
       <div class="contenedor">
-        <h2 class="titulo titulo--claro" id="pasos-titulo">Comprar es simple</h2>
-        <ol class="pasos-lista">
-          <li><span class="pasos-num">01</span><h3>Elige tu talla</h3><p>Mostramos el stock real de cada talla. Agrega los pares que quieras al carrito.</p></li>
-          <li><span class="pasos-num">02</span><h3>Completa tus datos</h3><p>Envío a domicilio o retiro en la tienda. Si tienes cupón, lo aplicas ahí mismo.</p></li>
-          <li><span class="pasos-num">03</span><h3>Confirmamos por WhatsApp</h3><p>Te llega el detalle del pedido. Confirmamos stock y total, y recién ahí pagas.</p></li>
-        </ol>
+        <h2 class="titulo titulo--claro" id="pasos-titulo" data-texto="pasos.titulo">Comprar es simple</h2>
+        <ol class="pasos-lista" data-pasos></ol>
+      </div>
+    </section>
+
+    <section class="bloque politicas" id="politicas" data-politicas-bloque hidden aria-labelledby="politicas-titulo">
+      <div class="contenedor">
+        <div class="politicas-cab">
+          <h2 class="titulo" id="politicas-titulo" data-texto="politicas.titulo">Políticas de compra</h2>
+          <p class="politicas-bajada" data-texto="politicas.bajada"></p>
+        </div>
+        <ul class="politicas-lista" data-politicas></ul>
       </div>
     </section>
     <section class="bloque" id="tienda" data-si="direccion" hidden aria-labelledby="tienda-titulo">
@@ -173,14 +179,14 @@
       <b class="pie-titulo">Ayuda</b>
       <ul class="pie-lista">
         <li><a href="#" data-abrir-tallas>Guía de tallas</a></li>
+        <li><a href="#/" data-ir-politicas>Políticas de compra</a></li>
         <li data-si="direccion" hidden><a href="#/" data-ir-tienda>Dónde estamos</a></li>
         <li><a data-wsp href="#" target="_blank" rel="noopener">Hablar por WhatsApp</a></li>
       </ul>
     </div>
     <div>
-      <b class="pie-titulo">Cambios y garantía</b>
-      <p class="pie-texto" data-dato="cambios"></p>
-      <p class="pie-texto" data-dato="garantia"></p>
+      <b class="pie-titulo">Antes de comprar</b>
+      <ul class="pie-lista" data-pie-politicas></ul>
     </div>
   </div>
   <div class="contenedor pie-abajo">

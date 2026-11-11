@@ -50,7 +50,7 @@
     ofertas: { t: "🏷️ Ofertas", q: "¿Qué está en oferta?" },
     envio: { t: "🚚 Despacho", q: "¿Cuánto cuesta el despacho?" },
     pagos: { t: "💳 Formas de pago", q: "¿Cómo puedo pagar?" },
-    cambios: { t: "🔄 Cambios", q: "¿Puedo cambiar la talla?" },
+    cambios: { t: "📋 Políticas de compra", q: "¿Cuáles son las políticas?" },
     horario: { t: "🕒 Horario", q: "¿A qué hora abren?" },
     ubicacion: { t: "📍 Dónde están", q: "¿Dónde están ubicados?" },
     cupones: { t: "🎟️ Cupones", q: "¿Tienen cupones?" },
@@ -114,15 +114,19 @@
       };
     }
 
-    if (hay("despacho", "envio", "envian", "delivery", "llega a", "despachan")) {
+    if (hay("despacho", "envio", "envian", "delivery", "llega a", "despachan", "por pagar")) {
       var e = (N.envios || []).map(function (x) {
-        return "• " + x.nombre + ": " + plata(x.precio) + (x.detalle ? " (" + x.detalle + ")" : "");
+        return "• " + x.nombre + (x.precio && !N.envioPorPagar ? ": " + plata(x.precio) : "") +
+          (x.detalle ? " — " + x.detalle : "");
       }).join("\n");
       return {
-        texto: "Despachamos así:\n" + e +
-          (N.envioGratisDesde ? "\nY sobre " + plata(N.envioGratisDesde) + " el despacho es gratis 🚚" : "") +
-          (N.retiroEnTienda ? "\nTambién puedes retirar gratis en la tienda." : ""),
-        opciones: ["¿Dónde están?", "¿Cómo pago?"]
+        texto: (N.envioPorPagar
+          ? "Todos los envíos son por pagar 🚚 Eso quiere decir que el despacho lo pagas al recibirlo, directo al transporte, así que no se suma al total del pedido.\n"
+          : "Despachamos así:\n") + e +
+          (N.envioPorPagar ? "\nLos plazos son estimados: dependen del transporte." : "") +
+          (N.envioGratisDesde && !N.envioPorPagar ? "\nY sobre " + plata(N.envioGratisDesde) + " el despacho es gratis 🚚" : "") +
+          (N.retiroEnTienda ? "\nTambién puedes retirar gratis" + (N.ciudad ? " en " + N.ciudad : "") + "." : ""),
+        opciones: ["¿Cómo pago?", "Ver el catálogo"]
       };
     }
 
@@ -140,10 +144,14 @@
       };
     }
 
-    if (hay("cambio", "cambiar", "devol", "garantia", "no me queda")) {
+    if (hay("cambio", "cambiar", "devol", "garantia", "no me queda", "reembolso", "reserva", "reservar", "politica")) {
+      var pol = (N.politicas || []).map(function (x) { return "• " + x.texto; }).join("\n");
       return {
-        texto: (N.cambios || "Puedes cambiar la talla en la tienda.") + (N.garantia ? "\nGarantía: " + N.garantia : ""),
-        opciones: ["¿Dónde están?", "Hablar por WhatsApp"]
+        texto: pol
+          ? "Estas son nuestras políticas de compra:\n" + pol +
+            "\nPor eso, si tienes dudas con la talla, pregúntame antes de comprar y la vemos juntas 🙂"
+          : (N.cambios || "") + (N.garantia ? "\nGarantía: " + N.garantia : ""),
+        opciones: ["¿Cómo sé mi talla?", "Hablar por WhatsApp"]
       };
     }
 
