@@ -30,7 +30,8 @@
     agrégale "precio" a cada zona de "envios".
   - "envioGratisDesde": 60000 → sobre ese monto el despacho sale $0. Pon 0 para desactivarlo
     (con "envioPorPagar": true no se usa).
-  - "politicas": las reglas de compra. "tipo" puede ser "no" (✕), "envio" (camión) o "aviso" (!).
+  - "politicas": las reglas de compra, cada una con su "titulo" y su "texto". Salen numeradas en
+    la portada, en el pie y en la ficha de cada producto.
   - "pasos": los tres pasos de «Comprar es simple». "icono": talla, camion, wsp, bolsa o tienda.
   - "cupones": códigos de descuento (uno por pedido). Está vacío; abajo quedó el ejemplo del formato.
   Cuidado con las comas: cada elemento de una lista va separado por una coma.
@@ -53,18 +54,18 @@ window.CATALOGO = {
     "correo": "",
     "direccion": "",
     "sector": "",
-    "ciudad": "Copiapó",
-    "region": "Atacama",
+    "ciudad": "La Serena",
+    "region": "Coquimbo",
     "mapa": "",
     "mapaBusqueda": "",
     "retiroEnTienda": true,
-    "nombreRetiro": "Retiro en Copiapó",
+    "nombreRetiro": "Retiro en La Serena",
     "notaRetiro": "Coordinamos el punto y la hora por WhatsApp.",
     "envioPorPagar": true,
     "envioGratisDesde": 0,
     "envios": [
-      { "nombre": "Copiapó", "detalle": "1 a 2 días hábiles (estimado)", "comunas": ["Copiapó", "Tierra Amarilla", "Caldera"] },
-      { "nombre": "Región de Atacama", "detalle": "2 a 3 días hábiles (estimado)", "regiones": ["Atacama"] },
+      { "nombre": "La Serena y Coquimbo", "detalle": "1 a 2 días hábiles (estimado)", "comunas": ["La Serena", "Coquimbo"] },
+      { "nombre": "Región de Coquimbo", "detalle": "2 a 3 días hábiles (estimado)", "regiones": ["Coquimbo"] },
       { "nombre": "Resto de Chile", "detalle": "3 a 5 días hábiles (estimado), por Starken o Chilexpress", "regiones": ["*"] }
     ],
     "pagos": [
@@ -76,11 +77,11 @@ window.CATALOGO = {
     "cambios": "No se hacen cambios ni devoluciones.",
     "garantia": "",
     "politicas": [
-      { "tipo": "no", "texto": "No se hacen cambios ni devoluciones." },
-      { "tipo": "no", "texto": "No se hacen reservas." },
-      { "tipo": "no", "texto": "No se realizan reembolsos." },
-      { "tipo": "envio", "texto": "Todos los envíos son por pagar, no se hacen excepciones." },
-      { "tipo": "aviso", "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros." }
+      { "titulo": "Cambios y devoluciones", "texto": "No se hacen cambios ni devoluciones. Por eso, si tienes dudas con la talla, escríbenos antes de comprar y la vemos juntas." },
+      { "titulo": "Reservas", "texto": "No se hacen reservas. El pedido queda tomado cuando se confirma." },
+      { "titulo": "Reembolsos", "texto": "No se realizan reembolsos." },
+      { "titulo": "Envíos", "texto": "Todos los envíos son por pagar: el despacho lo pagas al recibirlo, directo al transporte. No se hacen excepciones." },
+      { "titulo": "Plazos de entrega", "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros." }
     ]
   },
   "tema": {
@@ -134,7 +135,7 @@ window.CATALOGO = {
     {
       "icono": "camion",
       "titulo": "Completa tus datos",
-      "texto": "Envío a domicilio o retiro en Copiapó. El envío lo pagas al recibirlo, directo al transporte."
+      "texto": "Envío a domicilio o retiro en La Serena. El envío lo pagas al recibirlo, directo al transporte."
     },
     {
       "icono": "wsp",

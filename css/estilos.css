@@ -277,21 +277,22 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .pasos-lista p { color: rgb(255 255 255 / .74); font-size: 15px; }
 
 /* Políticas de compra */
-.politicas { background: var(--suave); }
-.politicas-cab { margin-bottom: 24px; max-width: 60ch; }
-.politicas-bajada { color: var(--tinta-suave); margin-top: 8px; }
-.politicas-lista { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 12px; }
-.politica {
-  display: flex; align-items: start; gap: 13px;
-  background: var(--papel); border: 1px solid var(--linea); border-radius: 12px; padding: 17px 19px;
+.politicas { background: var(--papel); border-top: 1px solid var(--linea); }
+.politicas-grilla { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(26px, 5vw, 76px); align-items: start; }
+@media (max-width: 860px) { .politicas-grilla { grid-template-columns: 1fr; gap: 22px; } }
+.politicas-intro { display: grid; justify-items: start; gap: 14px; }
+@media (min-width: 861px) { .politicas-intro { position: sticky; top: calc(var(--alto-cabecera) + 16px); } }
+.politicas-bajada { color: var(--tinta-suave); max-width: 36ch; }
+.politicas-lista { display: grid; }
+.politica { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 22px; padding: 22px 0; border-top: 1px solid var(--linea); }
+.politica:last-child { border-bottom: 1px solid var(--linea); }
+.politica-num { font-family: var(--titulo); font-size: 15px; font-weight: 600; color: var(--principal); padding-top: 3px; font-variant-numeric: tabular-nums; }
+.politica-titulo { display: block; font-size: 11.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--tinta-suave); font-weight: 600; margin-bottom: 7px; }
+.politica-texto { display: block; font-size: 16px; line-height: 1.55; max-width: 54ch; }
+@media (max-width: 560px) {
+  .politica { grid-template-columns: 1fr; gap: 0; padding: 18px 0; }
+  .politica-num { display: none; }
 }
-.politica-ico { width: 32px; height: 32px; flex: none; display: grid; place-items: center; border-radius: 50%; }
-.politica-ico .icono { width: 18px; height: 18px; stroke-width: 2; }
-.politica--no .politica-ico { background: #fbeaea; color: var(--rojo); }
-.politica--envio .politica-ico { background: var(--acento-fondo); color: var(--principal); }
-.politica--aviso .politica-ico { background: #fdf3e0; color: #9a6a12; }
-.politica span { font-size: 15px; line-height: 1.5; }
-.politica--ancha { grid-column: 1 / -1; }
 
 /* Tienda */
 .tienda-grilla { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 48px); align-items: start; }

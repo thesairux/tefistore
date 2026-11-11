@@ -530,18 +530,18 @@
       if (!lista.length) polBloque.setAttribute("hidden", "");
       else {
         polBloque.removeAttribute("hidden");
-        pol.innerHTML = lista.map(function (x) {
-          var tipo = x.tipo || "aviso";
-          var icono = tipo === "no" ? "no" : tipo === "envio" ? "camion" : "aviso";
-          return '<li class="politica politica--' + esc(tipo) + (x.texto.length > 90 ? " politica--ancha" : "") + '">' +
-            '<span class="politica-ico">' + ico(icono) + "</span><span>" + esc(x.texto) + "</span></li>";
+        pol.innerHTML = lista.map(function (x, i) {
+          return '<li class="politica">' +
+            '<span class="politica-num">' + ("0" + (i + 1)).slice(-2) + "</span>" +
+            "<span>" + (x.titulo ? '<span class="politica-titulo">' + esc(x.titulo) + "</span>" : "") +
+            '<span class="politica-texto">' + esc(x.texto) + "</span></span></li>";
         }).join("");
       }
     }
     var piePol = $("[data-pie-politicas]");
     if (piePol) {
-      piePol.innerHTML = lista.slice(0, 4).map(function (x) {
-        return "<li>" + esc(x.texto.length > 58 ? x.texto.slice(0, 55).trim() + "…" : x.texto) + "</li>";
+      piePol.innerHTML = lista.map(function (x) {
+        return '<li><a href="#/" data-ir-politicas>' + esc(x.titulo || x.texto) + "</a></li>";
       }).join("");
     }
 
@@ -714,7 +714,13 @@
             '<div class="acordeon">' +
               (p.descripcion ? detalle("Descripción", p.descripcion, true) : "") +
               (p.material || p.cuidados ? detalle("Material y cuidados", [p.material ? "Material: " + p.material : "", p.cuidados].filter(Boolean).join("\n")) : "") +
-              (N.cambios || N.garantia ? detalle("Cambios y devoluciones", [N.cambios, N.garantia ? "Garantía: " + N.garantia : ""].filter(Boolean).join("\n")) : "") +
+              ((N.politicas || []).length
+                ? detalle("Políticas de compra", N.politicas.map(function (x) {
+                    return "· " + (x.titulo ? x.titulo + ": " : "") + x.texto;
+                  }).join("\n"))
+                : N.cambios || N.garantia
+                  ? detalle("Cambios y devoluciones", [N.cambios, N.garantia ? "Garantía: " + N.garantia : ""].filter(Boolean).join("\n"))
+                  : "") +
               detalle("Despacho y retiro", (N.envios || []).map(function (e) {
                 return "· " + e.nombre + ": " + plata(e.precio) + (e.detalle ? " (" + e.detalle + ")" : "");
               }).concat([
