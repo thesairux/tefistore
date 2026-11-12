@@ -204,6 +204,45 @@ muestra las claves).
 **El panel no se indexa** en Google (`robots.txt` y la cabecera `noindex`), pero igual conviene una
 contraseña larga: con ella se puede cambiar todo lo que se ve en la página.
 
+### Tu propia cuenta
+
+El usuario y la contraseña de las variables (`ADMIN_USER` / `ADMIN_PASSWORD`) son la **llave
+maestra**: con ellas se entra siempre, incluso si la base de datos está caída. Sirven para quien
+desarrolló la página y como respaldo.
+
+Además, la dueña de la tienda puede crearse **su propia cuenta**, con un usuario y una contraseña
+que solo ella conoce. Está en el panel, pestaña **Cuenta**:
+
+1. Entra con la llave maestra y abre **Cuenta → Crea tu cuenta**.
+2. Elige un usuario (3 a 24 caracteres) y una contraseña de **12 caracteres o más, con letras y
+   números**.
+3. Al darle a *Crear mi cuenta* aparece un **código de recuperación** con el formato
+   `XXXXX-XXXX-XXXX`. **Hay que sacarle una captura ahí mismo**: no se vuelve a mostrar.
+
+Desde esa misma pestaña se cambia la contraseña y se pide un código nuevo (al pedir uno nuevo, el
+anterior deja de servir).
+
+**Si olvida la contraseña:** en la pantalla de entrada, *¿Olvidaste tu contraseña?* → usuario +
+código + contraseña nueva. El código **se usa una sola vez** y en el momento aparece el siguiente,
+para volver a guardarlo. Si también se perdió el código, se entra con la llave maestra y se pide
+uno nuevo desde la pestaña Cuenta.
+
+La contraseña **no se guarda en claro** en ninguna parte: se guarda cifrada con PBKDF2-SHA256
+(25.000 vueltas, sal distinta para cada cuenta), y el código de recuperación también. Lo habitual
+hoy serían cientos de miles de vueltas, pero el plan gratuito de Cloudflare da **10 ms de CPU por
+petición** y 100.000 se pasan de ese tope (medido: ~14 ms). Se compensa con el mínimo de 12
+caracteres, la espera al fallar y un código de recuperación largo. El número de vueltas va escrito
+dentro del dato guardado, así que se puede subir después sin romper las contraseñas que ya existen.
+
+Las cuentas propias se guardan en la misma base de datos de las estadísticas (punto 5). **Sin esa
+base no se pueden crear**, y el panel lo dice: mientras no esté, se entra solo con la llave
+maestra.
+
+> **Las credenciales no llegan por correo.** Enviar correos desde Cloudflare gratis ya no se puede
+> (MailChannels lo cerró), y cualquier otra opción pide una cuenta aparte y un dominio verificado.
+> Además, mandar una contraseña escrita en un correo es mala práctica: queda guardada en el buzón
+> para siempre. Por eso se entrega el código en pantalla, para la captura.
+
 ---
 
 ## 4. El asistente
@@ -271,7 +310,8 @@ agregados.
 **No se guarda nada de la persona**: ni IP, ni nombre, ni teléfono, ni qué compró cada una. Solo
 contadores por día y cuántas veces se vio o se agregó cada modelo.
 
-Para activarlas hace falta una base de datos gratuita de Cloudflare (D1). Se hace una sola vez:
+Para activarlas hace falta una base de datos gratuita de Cloudflare (D1) —la misma que guarda las
+cuentas del panel (punto 3)—. Se hace una sola vez:
 
 1. En Cloudflare: **Storage & Databases → D1 → Create**. Nómbrala `tefistore-estadisticas`.
 2. Copia el **Database ID**.
@@ -279,8 +319,9 @@ Para activarlas hace falta una base de datos gratuita de Cloudflare (D1). Se hac
    barras del principio y pega ahí el ID.
 4. Guarda y espera el despliegue. Desde ahí se empiezan a contar las visitas.
 
-Sin la base, la página funciona igual: no se cuenta nada y el panel explica estos pasos. En Vercel
-no hay D1, así que ahí la analítica queda apagada.
+Sin la base, la página funciona igual: no se cuenta nada, no se pueden crear cuentas propias (se
+entra con la llave maestra) y el panel explica estos pasos. En Vercel no hay D1, así que ahí la
+analítica queda apagada.
 
 ---
 
@@ -379,3 +420,7 @@ sección aparece sola, con su mapa y su horario.
 2. **Los plazos de despacho** de `negocio.envios`: están puestos como estimación.
 3. **El stock por talla**, cuando lo tengas contado (ver «Las tallas»).
 4. Revisar que «Envíos a todo Chile» de la barra de arriba sea efectivo.
+5. **Crear la base de datos D1** y pegar el ID en `wrangler.jsonc` (ver punto 5): sin eso no hay
+   estadísticas ni cuentas propias.
+6. **Crear la cuenta propia** de la tienda desde el panel y guardar la captura del código de
+   recuperación (ver «Tu propia cuenta»).

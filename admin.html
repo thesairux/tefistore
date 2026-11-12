@@ -81,6 +81,22 @@ a{color:var(--vino)}
 .marca{display:flex;align-items:baseline;gap:7px;letter-spacing:.14em;font-size:19px;justify-content:center;margin-bottom:6px}
 .marca b{font-weight:800}.marca span{font-weight:300}
 .entrar-caja p.sub{text-align:center;color:var(--suave-txt);font-size:13.5px;margin:0 0 24px}
+.entrar-pie{text-align:center;margin:16px 0 0}
+.enlace-suave{border:0;background:none;padding:0;font:inherit;font-size:13.5px;color:var(--vino);
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.recuperar-titulo{font-family:var(--titulo);font-size:20px;font-weight:600;margin:0 0 4px;text-align:center}
+/* El código de recuperación: se muestra una sola vez, grande y copiable */
+.codigo-caja{display:grid;gap:14px;justify-items:center;text-align:center;
+  border:2px dashed var(--vino);border-radius:12px;padding:22px 18px;background:#fbf3f6;margin:4px 0 0}
+.codigo-valor{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:clamp(22px,5vw,30px);
+  font-weight:700;letter-spacing:.08em;color:var(--vino);user-select:all;word-break:break-all}
+.codigo-acciones{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ventana-codigo{border:0;padding:0;background:none;max-width:none;max-height:none;width:100%;height:100%}
+.ventana-codigo:not([open]){display:none}
+.ventana-codigo::backdrop{background:rgb(22 10 34 / .55)}
+.ventana-codigo{display:grid;place-items:center}
+.ventana-codigo-caja{width:min(100% - 32px,430px);background:#fff;border-radius:14px;padding:26px 24px}
+.ventana-codigo-caja h2{font-family:var(--titulo);font-size:21px;font-weight:600;margin:0 0 6px}
 .aviso{font-size:13.5px;border-radius:var(--radio);padding:10px 12px;margin-bottom:14px}
 .aviso--mal{background:#fdf0ef;color:var(--rojo)}
 .aviso--ok{background:#eef8f2;color:var(--verde)}
@@ -252,6 +268,21 @@ a{color:var(--vino)}
       <input id="c" type="password" autocomplete="current-password" required>
     </div>
     <button class="boton" type="submit" style="width:100%">Entrar</button>
+    <p class="entrar-pie"><button type="button" class="enlace-suave" data-olvide hidden>¿Olvidaste tu contraseña?</button></p>
+  </form>
+
+  <form class="entrar-caja" data-form-recuperar hidden>
+    <h2 class="recuperar-titulo">Recuperar la contraseña</h2>
+    <p class="ayuda" style="margin:0 0 16px">Escribe tu usuario y el código que guardaste cuando creaste la cuenta.</p>
+    <div class="aviso aviso--mal" data-error-recuperar hidden></div>
+    <div class="campo"><label for="ru">Usuario</label><input id="ru" type="text" autocomplete="username" required></div>
+    <div class="campo"><label for="rc">Código de recuperación</label>
+      <input id="rc" type="text" placeholder="XXXXX-XXXX-XXXX" autocapitalize="characters" autocomplete="off" required></div>
+    <div class="campo"><label for="rn">Contraseña nueva</label>
+      <input id="rn" type="password" autocomplete="new-password" required>
+      <span class="ayuda">Mínimo 12 caracteres, con letras y números.</span></div>
+    <button class="boton" type="submit" style="width:100%">Cambiar la contraseña</button>
+    <p class="entrar-pie"><button type="button" class="enlace-suave" data-volver-entrar>Volver</button></p>
   </form>
   </div>
 </section>
@@ -277,6 +308,7 @@ a{color:var(--vino)}
     <button type="button" data-ir="cupones">Cupones</button>
     <button type="button" data-ir="ajustes">Ajustes</button>
     <button type="button" data-ir="estadisticas">Estadísticas</button>
+    <button type="button" data-ir="cuenta">Cuenta</button>
   </nav>
 
   <main class="cuerpo">
@@ -299,8 +331,25 @@ a{color:var(--vino)}
     <section data-vista="cupones" hidden></section>
     <section data-vista="ajustes" hidden></section>
     <section data-vista="estadisticas" hidden></section>
+    <section data-vista="cuenta" hidden></section>
   </main>
 </div>
+
+<dialog class="ventana-codigo" data-ventana-codigo>
+  <div class="ventana-codigo-caja">
+    <h2>Guarda este código</h2>
+    <p class="ayuda" data-codigo-texto></p>
+    <div class="codigo-caja">
+      <span class="codigo-valor" data-codigo-valor></span>
+      <div class="codigo-acciones">
+        <button class="boton boton--linea boton--chico" type="button" data-copiar-codigo>Copiar</button>
+      </div>
+    </div>
+    <p class="ayuda" style="margin-top:14px"><b>Sácale una captura ahora.</b> No se vuelve a mostrar, y es lo único
+      que te deja recuperar la cuenta si olvidas la contraseña.</p>
+    <button class="boton" type="button" data-cerrar-codigo style="width:100%;margin-top:16px">Ya lo guardé</button>
+  </div>
+</dialog>
 
 <div class="guardado" data-aviso></div>
 
@@ -372,6 +421,13 @@ a{color:var(--vino)}
     grande: "El catálogo quedó muy grande.",
     foto: "La foto no se pudo subir (debe ser JPG y pesar menos de 3,5 MB).",
     limite: "Demasiados intentos. Espera unos minutos.",
+    "sin-base": "Esto necesita la base de datos de Cloudflare conectada. Mira la pestaña Estadísticas.",
+    "sin-cuenta": "Todavía no has creado una cuenta propia.",
+    "usuario-ocupado": "Ese usuario ya existe.",
+    "usuario-malo": "El usuario va de 3 a 24 caracteres: letras, números, punto, guion o guion bajo.",
+    "clave-corta-cuenta": "La contraseña debe tener 12 caracteres o más.",
+    "clave-simple": "La contraseña necesita al menos una letra y un número.",
+    "codigo-malo": "Ese código no corresponde. Revísalo en la captura que guardaste.",
     origen: "Pedido bloqueado por seguridad."
   };
 
@@ -414,6 +470,8 @@ a{color:var(--vino)}
       el.hidden = false;
     }
     if (s.usuario) $("#u").value = s.usuario;
+    // El enlace de recuperar solo sirve si hay una cuenta propia creada
+    if (s.cuentaPropia) $("[data-olvide]").hidden = false;
   }).catch(function () { /* el panel igual deja intentar */ });
 
   $("[data-form-entrar]").addEventListener("submit", function (ev) {
@@ -441,6 +499,55 @@ a{color:var(--vino)}
       boton.textContent = "Entrar";
     });
   });
+
+  /* ---- recuperar la contraseña con el código ---- */
+  function verRecuperar(si) {
+    $("[data-form-entrar]").hidden = !!si;
+    $("[data-form-recuperar]").hidden = !si;
+    $("[data-error-recuperar]").hidden = true;
+  }
+  $("[data-olvide]").addEventListener("click", function () { verRecuperar(true); });
+  $("[data-volver-entrar]").addEventListener("click", function () { verRecuperar(false); });
+
+  $("[data-form-recuperar]").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var err = $("[data-error-recuperar]");
+    err.hidden = true;
+    var boton = ev.target.querySelector("button[type=submit]");
+    boton.disabled = true;
+    boton.textContent = "Cambiando…";
+    fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ accion: "recuperar", usuario: $("#ru").value.trim(), codigo: $("#rc").value, nuevaClave: $("#rn").value })
+    }).then(function (r) {
+      return r.text().then(function (crudo) {
+        var d = {};
+        try { d = JSON.parse(crudo); } catch (x) { d = {}; }
+        if (!r.ok || d.error) throw new Error(ERRORES[d.error] || ("El servidor respondió HTTP " + r.status + "."));
+        return d;
+      });
+    }).then(function (d) {
+      verRecuperar(false);
+      $("#u").value = $("#ru").value.trim();
+      $("#c").value = "";
+      mostrarCodigo(d.codigo, "Tu contraseña quedó cambiada. Este es tu código nuevo: el anterior ya no sirve.");
+    }).catch(function (e) {
+      err.textContent = e.message;
+      err.hidden = false;
+    }).then(function () {
+      boton.disabled = false;
+      boton.textContent = "Cambiar la contraseña";
+    });
+  });
+
+  /* El código se ve una sola vez: aquí o en una captura */
+  function mostrarCodigo(codigo, texto) {
+    var dlg = $("[data-ventana-codigo]");
+    $("[data-codigo-texto]").textContent = texto;
+    $("[data-codigo-valor]").textContent = codigo;
+    dlg.showModal();
+  }
 
   $("[data-salir]").addEventListener("click", function () {
     if (cambios && !confirm("Tienes cambios sin guardar. ¿Salir igual?")) return;
@@ -487,6 +594,7 @@ a{color:var(--vino)}
     if (pestana === "tienda") pintarTienda();
     if (pestana === "cupones") pintarCupones();
     if (pestana === "ajustes") pintarAjustes();
+    if (pestana === "cuenta") cargarCuenta();
     if (pestana === "estadisticas") {
       // se piden una sola vez por visita, salvo que cambies el período
       if (!statsPedidas) { statsPedidas = true; cargarEstadisticas(); } else pintarEstadisticas();
@@ -1197,6 +1305,64 @@ a{color:var(--vino)}
       "</div>";
   }
 
+  /* ============ cuenta ============ */
+  var miCuenta = null;
+
+  function pintarCuenta() {
+    var v = $('[data-vista="cuenta"]');
+    if (!miCuenta) { v.innerHTML = '<p class="st-vacio">Cargando…</p>'; return; }
+    if (!miCuenta.base) {
+      v.innerHTML = '<div class="tarjeta"><h3>Falta la base de datos</h3>' +
+        pista("Las cuentas se guardan en la misma base de Cloudflare que las estadísticas. " +
+          "Mientras no esté conectada, se entra solo con el usuario y la contraseña de las " +
+          "variables del proyecto. Los pasos están en la pestaña <b>Estadísticas</b>.") + "</div>";
+      return;
+    }
+
+    var tuya = miCuenta.hayCuenta;
+    v.innerHTML =
+      '<div class="tarjeta"><h3>' + (tuya ? "Tu cuenta" : "Crea tu cuenta") + "</h3>" +
+      (tuya
+        ? pista("Estás entrando con <b>" + esc(miCuenta.usuario) + "</b>, tu cuenta propia, creada el " +
+            esc(miCuenta.creada || "—") + ". Desde aquí cambias la contraseña o pides un código nuevo.") +
+          '<div class="fila">' +
+            campo("Contraseña actual", '<input type="password" data-cc-actual autocomplete="current-password">') +
+            campo("Contraseña nueva", '<input type="password" data-cc-nueva autocomplete="new-password">' +
+              '<span class="ayuda">Mínimo 12 caracteres, con letras y números.</span>') +
+          "</div>" +
+          '<button class="boton" type="button" data-cambiar-clave>Cambiar la contraseña</button>' +
+          '<p class="sub-titulo">Código de recuperación</p>' +
+          pista("Es lo único que te deja volver a entrar si olvidas la contraseña. Si perdiste el que " +
+            "tenías, pide uno nuevo: el anterior deja de servir en ese momento.") +
+          '<button class="boton boton--linea" type="button" data-nuevo-codigo>Quiero un código nuevo</button>'
+        : pista("Crea tu usuario y tu contraseña para entrar con los tuyos, sin depender de los que " +
+            "vienen configurados en el proyecto. Al terminar te mostramos un <b>código de recuperación</b>: " +
+            "sácale una captura, porque es lo único que te deja volver a entrar si olvidas la contraseña.") +
+          '<div class="fila">' +
+            campo("Usuario", '<input type="text" data-nc-usuario autocomplete="username" placeholder="tefi">' +
+              '<span class="ayuda">De 3 a 24 letras, números, punto, guion o guion bajo.</span>') +
+            campo("Contraseña", '<input type="password" data-nc-clave autocomplete="new-password">' +
+              '<span class="ayuda">Mínimo 12 caracteres, con letras y números.</span>') +
+          "</div>" +
+          '<button class="boton" type="button" data-crear-cuenta>Crear mi cuenta</button>') +
+      "</div>" +
+
+      '<div class="tarjeta"><h3>Cómo funciona</h3>' +
+        pista("Hay dos formas de entrar: con <b>tu cuenta</b>, que se guarda en la base de datos con la " +
+          "contraseña cifrada, y con el usuario y la contraseña de las <b>variables del proyecto</b>, que " +
+          "es la llave de respaldo de quien desarrolló la página. Las dos siguen funcionando: si " +
+          "algún día la base falla, con la de respaldo se entra igual.") +
+      "</div>";
+  }
+
+  function cargarCuenta() {
+    miCuenta = null;
+    pintarCuenta();
+    api("mi-cuenta").then(function (d) { miCuenta = d; }).catch(function (e) {
+      miCuenta = { base: true, hayCuenta: false, error: e.message };
+    }).then(pintarCuenta);
+  }
+
   /* ============ estadísticas ============ */
   var statsDias = 30, statsDatos = null, statsPedidas = false;
   var PERIODOS = [[7, "7 días"], [30, "30 días"], [90, "3 meses"]];
@@ -1445,6 +1611,48 @@ a{color:var(--vino)}
       D.categorias.push({ id: slug(nombre) || ("cat-" + Date.now().toString(36)), nombre: nombre, foto: "", productos: [] });
       tocar(); pintarAjustes(); return;
     }
+    if (ev.target.closest("[data-crear-cuenta]")) {
+      var u = $("[data-nc-usuario]").value.trim();
+      var c = $("[data-nc-clave]").value;
+      var b = ev.target.closest("[data-crear-cuenta]");
+      b.disabled = true;
+      api("crear-cuenta", { nuevoUsuario: u, nuevaClave: c }).then(function (d) {
+        mostrarCodigo(d.codigo, "Tu cuenta «" + d.usuario + "» quedó creada. Este es tu código de recuperación.");
+        cuenta.usuario = d.usuario;      // se sigue trabajando con la cuenta nueva
+        cuenta.clave = c;
+        cargarCuenta();
+        avisar("Cuenta creada.");
+      }).catch(function (e) { avisar(e.message, true); }).then(function () { b.disabled = false; });
+      return;
+    }
+    if (ev.target.closest("[data-cambiar-clave]")) {
+      var actual = $("[data-cc-actual]").value;
+      var nueva = $("[data-cc-nueva]").value;
+      var b2 = ev.target.closest("[data-cambiar-clave]");
+      b2.disabled = true;
+      // el servidor comprueba la actual con la clave de la sesión
+      api("cambiar-clave", { nuevaClave: nueva, clave: actual }).then(function () {
+        cuenta.clave = nueva;
+        $("[data-cc-actual]").value = "";
+        $("[data-cc-nueva]").value = "";
+        avisar("Contraseña cambiada.");
+      }).catch(function (e) { avisar(e.message, true); }).then(function () { b2.disabled = false; });
+      return;
+    }
+    if (ev.target.closest("[data-nuevo-codigo]")) {
+      var b3 = ev.target.closest("[data-nuevo-codigo]");
+      b3.disabled = true;
+      api("nuevo-codigo").then(function (d) {
+        mostrarCodigo(d.codigo, "Este es tu código nuevo. El anterior ya no sirve.");
+      }).catch(function (e) { avisar(e.message, true); }).then(function () { b3.disabled = false; });
+      return;
+    }
+    if (ev.target.closest("[data-copiar-codigo]")) {
+      var txt = $("[data-codigo-valor]").textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function () { avisar("Código copiado."); });
+      return;
+    }
+    if (ev.target.closest("[data-cerrar-codigo]")) { $("[data-ventana-codigo]").close(); return; }
     if ((el = ev.target.closest("[data-stats-dias]"))) {
       statsDias = +el.getAttribute("data-stats-dias");
       cargarEstadisticas();

@@ -14,7 +14,7 @@
   El panel se abre en tu-pagina/admin y guarda catalogo.js. Las fotos que subas quedan en fotos/.
 */
 import { json, sleep, ipDe, mismoSitio, leerJson, aBase64, deBase64, igualSeguro, limitador } from "../../lib/comun.js";
-import { resumen as resumenEstadisticas } from "./estadisticas.js";
+import { resumen as resumenEstadisticas, hayBase } from "./estadisticas.js";
 
 let ENV = {};
 
@@ -38,11 +38,24 @@ const CABECERA = `/*
 
 /* ---------- entrar ---------- */
 function usuarioEsperado() { return (ENV.ADMIN_USER || USUARIO_POR_DEFECTO).trim().toLowerCase(); }
-function clavesOk(usuario, clave) {
+/* La llave maestra: las variables del proyecto. Siempre funciona. */
+function esMaestra(usuario, clave) {
   if (typeof usuario !== "string" || typeof clave !== "string" || !usuario || !clave) return false;
   const u = igualSeguro(usuario.trim().toLowerCase(), usuarioEsperado());
   const c = igualSeguro(clave, ENV.ADMIN_PASSWORD || "");
   return u && c && !!ENV.ADMIN_PASSWORD;
+}
+/* Entra con la cuenta propia (guardada en la base) o con la maestra */
+async function clavesOk(env, usuario, clave) {
+  if (esMaestra(usuario, clave)) return "maestra";
+  if (typeof usuario !== "string" || typeof clave !== "string" || !usuario || !clave) return false;
+  try {
+    const cuenta = await leerCuenta(env, usuario.trim().toLowerCase());
+    if (cuenta && await coincide(clave, cuenta.clave)) return "cuenta";
+  } catch (e) {
+    console.error("admin: cuentas", e.message);   // si la base falla, queda la maestra
+  }
+  return false;
 }
 
 /* ---------- GitHub ---------- */
@@ -82,6 +95,129 @@ async function gh(ruta, opts = {}) {
 }
 
 function deCliente(codigo, estado) { return Object.assign(new Error(codigo), { cliente: codigo, estado: estado || 400 }); }
+
+/* =========================================================================
+   Cuentas del panel
+   -------------------------------------------------------------------------
+   ADMIN_USER/ADMIN_PASSWORD (las variables del proyecto) siguen siendo la
+   llave maestra: con ellas se entra siempre, aunque la base esté caída.
+   Además, la dueña de la tienda puede crearse su propia cuenta, que se
+   guarda en la base D1 con la contraseña cifrada (nunca en claro).
+
+   Sobre el cifrado: se usa PBKDF2-SHA256 con 25.000 vueltas. Lo normal hoy
+   serían cientos de miles, pero el plan gratuito de Cloudflare da 10 ms de
+   CPU por petición y 100.000 vueltas se pasan de ese tope (medido: ~14 ms).
+   Se compensa con una contraseña de 12 caracteres como mínimo, un tope de
+   intentos y un código de recuperación largo. El número de vueltas va
+   guardado dentro del hash, así que se puede subir después sin romper las
+   contraseñas que ya existen.
+   ========================================================================= */
+const VUELTAS = 25000;
+const MIN_CLAVE_CUENTA = 12;
+/* Sin letras que se confundan al copiar de una captura: ni O/0 ni I/1 */
+const ALFABETO = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+const aB64 = b => btoa(String.fromCharCode.apply(null, Array.from(b)));
+const deB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function cifrar(clave, sal, vueltas) {
+  const s = sal || crypto.getRandomValues(new Uint8Array(16));
+  const v = vueltas || VUELTAS;
+  const llave = await crypto.subtle.importKey("raw", new TextEncoder().encode(clave), "PBKDF2", false, ["deriveBits"]);
+  const bits = await crypto.subtle.deriveBits({ name: "PBKDF2", salt: s, iterations: v, hash: "SHA-256" }, llave, 256);
+  return "pbkdf2$" + v + "$" + aB64(s) + "$" + aB64(new Uint8Array(bits));
+}
+async function coincide(clave, guardado) {
+  const p = String(guardado || "").split("$");
+  if (p.length !== 4 || p[0] !== "pbkdf2") return false;
+  let sal;
+  try { sal = deB64(p[2]); } catch (e) { return false; }
+  const calculado = await cifrar(clave, sal, parseInt(p[1], 10) || VUELTAS);
+  return igualSeguro(calculado, guardado);
+}
+
+/* XXXXX-XXXX-XXXX: se muestra una sola vez y se guarda cifrado */
+function codigoNuevo() {
+  const al = crypto.getRandomValues(new Uint8Array(13));
+  const letras = Array.from(al, b => ALFABETO[b % ALFABETO.length]);
+  return letras.slice(0, 5).join("") + "-" + letras.slice(5, 9).join("") + "-" + letras.slice(9, 13).join("");
+}
+const normalizarCodigo = c => String(c || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+let tablaCuentas = false;
+async function prepararCuentas(db) {
+  if (tablaCuentas) return;
+  await db.prepare(`CREATE TABLE IF NOT EXISTS cuentas (
+    usuario TEXT PRIMARY KEY, clave TEXT NOT NULL, recupera TEXT, creada TEXT)`).run();
+  tablaCuentas = true;
+}
+async function leerCuenta(env, usuario) {
+  if (!hayBase(env) || !usuario) return null;
+  await prepararCuentas(env.DB);
+  const r = await env.DB.prepare("SELECT * FROM cuentas WHERE usuario = ?1").bind(String(usuario).toLowerCase()).first();
+  return r || null;
+}
+async function hayCuentas(env) {
+  if (!hayBase(env)) return false;
+  await prepararCuentas(env.DB);
+  const r = await env.DB.prepare("SELECT COUNT(*) AS n FROM cuentas").first();
+  return !!(r && r.n);
+}
+
+function revisarClaveNueva(clave) {
+  const c = String(clave || "");
+  if (c.length < MIN_CLAVE_CUENTA) throw deCliente("clave-corta-cuenta");
+  if (!/[a-zA-Z]/.test(c) || !/[0-9]/.test(c)) throw deCliente("clave-simple");
+  return c;
+}
+function revisarUsuario(usuario) {
+  const u = String(usuario || "").trim().toLowerCase();
+  if (!/^[a-z0-9._-]{3,24}$/.test(u)) throw deCliente("usuario-malo");
+  return u;
+}
+
+async function crearCuenta(env, usuario, clave) {
+  if (!hayBase(env)) throw deCliente("sin-base", 400);
+  const u = revisarUsuario(usuario);
+  const c = revisarClaveNueva(clave);
+  await prepararCuentas(env.DB);
+  if (await leerCuenta(env, u)) throw deCliente("usuario-ocupado");
+  const codigo = codigoNuevo();
+  await env.DB.prepare("INSERT INTO cuentas (usuario, clave, recupera, creada) VALUES (?1, ?2, ?3, ?4)")
+    .bind(u, await cifrar(c), await cifrar(normalizarCodigo(codigo)), new Date().toISOString().slice(0, 10)).run();
+  return { usuario: u, codigo };
+}
+
+async function cambiarClave(env, usuario, claveActual, claveNueva) {
+  const cuenta = await leerCuenta(env, usuario);
+  if (!cuenta) throw deCliente("sin-cuenta");
+  if (!(await coincide(String(claveActual || ""), cuenta.clave))) throw deCliente("acceso", 401);
+  const c = revisarClaveNueva(claveNueva);
+  await env.DB.prepare("UPDATE cuentas SET clave = ?2 WHERE usuario = ?1").bind(cuenta.usuario, await cifrar(c)).run();
+  return true;
+}
+
+/* Código nuevo: el anterior deja de servir */
+async function renovarCodigo(env, usuario) {
+  const cuenta = await leerCuenta(env, usuario);
+  if (!cuenta) throw deCliente("sin-cuenta");
+  const codigo = codigoNuevo();
+  await env.DB.prepare("UPDATE cuentas SET recupera = ?2 WHERE usuario = ?1")
+    .bind(cuenta.usuario, await cifrar(normalizarCodigo(codigo))).run();
+  return codigo;
+}
+
+/* Con el código se pone una clave nueva. El código se usa una sola vez. */
+async function recuperar(env, usuario, codigo, claveNueva) {
+  const cuenta = await leerCuenta(env, usuario);
+  const bueno = cuenta && cuenta.recupera && await coincide(normalizarCodigo(codigo), cuenta.recupera);
+  if (!bueno) { await sleep(1200); throw deCliente("codigo-malo", 401); }
+  const c = revisarClaveNueva(claveNueva);
+  const nuevo = codigoNuevo();
+  await env.DB.prepare("UPDATE cuentas SET clave = ?2, recupera = ?3 WHERE usuario = ?1")
+    .bind(cuenta.usuario, await cifrar(c), await cifrar(normalizarCodigo(nuevo))).run();
+  return nuevo;
+}
 
 /* catalogo.js trae un comentario arriba y después "window.CATALOGO = { … };" */
 const sinProto = (k, v) => (k === "__proto__" ? undefined : v);
@@ -357,9 +493,13 @@ async function publicar(datos, fotos, versionQueTenia) {
 /* ---------- límite de intentos ---------- */
 const permitido = limitador(15 * 60 * 1000, 40);
 
-function estado() {
+async function estado(env) {
   const r = repo();
+  let cuentas = false;
+  try { cuentas = await hayCuentas(env); } catch (e) { cuentas = false; }
   return {
+    base: hayBase(env) ? "conectada" : "FALTA",
+    cuentaPropia: cuentas,
     ok: true,
     clave: ENV.ADMIN_PASSWORD ? (ENV.ADMIN_PASSWORD.length >= MIN_CLAVE ? "configurada" : "DEMASIADO CORTA (mínimo 12)") : "FALTA",
     github: token() ? "configurado" : "FALTA",
@@ -427,7 +567,7 @@ async function probarGitHub() {
 export async function onRequest({ request, env }) {
   ENV = env || {};
   if (request.method === "GET") {
-    const base = estado();
+    const base = await estado(env);
     if (new URL(request.url).searchParams.get("probar") !== "1" || !token() || !repo().full) return json(200, base);
     return json(200, Object.assign(base, { prueba: await probarGitHub() }));
   }
@@ -443,7 +583,21 @@ export async function onRequest({ request, env }) {
   if (!ENV.ADMIN_PASSWORD) return json(500, { error: "sin-clave" });
   if (ENV.ADMIN_PASSWORD.length < MIN_CLAVE) return json(500, { error: "clave-corta" });
 
-  if (!clavesOk(body.usuario, body.clave)) {
+  // Recuperar la clave es lo único que se puede hacer sin estar dentro
+  if (body.accion === "recuperar") {
+    if (!hayBase(env)) return json(400, { error: "sin-base" });
+    try {
+      const codigo = await recuperar(env, body.usuario, body.codigo, body.nuevaClave);
+      return json(200, { ok: true, codigo });
+    } catch (e) {
+      if (e.cliente) return json(e.estado || 400, { error: e.cliente });
+      console.error("admin: recuperar", e.message);
+      return json(500, { error: "github" });
+    }
+  }
+
+  const quien = await clavesOk(env, body.usuario, body.clave);
+  if (!quien) {
     await sleep(1200);
     return json(401, { error: "acceso" });
   }
@@ -456,6 +610,25 @@ export async function onRequest({ request, env }) {
     }
     if (body.accion === "foto") return json(200, { ok: true, sha: await subirFoto(body.datos) });
     if (body.accion === "estadisticas") return json(200, await resumenEstadisticas(env, body.dias));
+
+    if (body.accion === "mi-cuenta") {
+      const cuenta = await leerCuenta(env, body.usuario);
+      return json(200, {
+        ok: true, base: hayBase(env), entradaCon: quien,
+        usuario: cuenta ? cuenta.usuario : "", creada: cuenta ? cuenta.creada : "",
+        hayCuenta: !!cuenta, otrasCuentas: await hayCuentas(env)
+      });
+    }
+    if (body.accion === "crear-cuenta") {
+      return json(200, Object.assign({ ok: true }, await crearCuenta(env, body.nuevoUsuario, body.nuevaClave)));
+    }
+    if (body.accion === "cambiar-clave") {
+      await cambiarClave(env, body.usuario, body.clave, body.nuevaClave);
+      return json(200, { ok: true });
+    }
+    if (body.accion === "nuevo-codigo") {
+      return json(200, { ok: true, codigo: await renovarCodigo(env, body.usuario) });
+    }
     if (body.accion === "publicar") {
       const version = await publicar(body.catalogo, body.fotos, body.version);
       return json(200, { ok: true, version });
