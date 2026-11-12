@@ -148,8 +148,12 @@ Cada producto tiene dos modos:
 - **Stock por talla**: escribes cuántos pares quedan de cada una. En 0 la talla sale tachada, y con
   1 o 2 la ficha avisa «última» o «quedan 2». El filtro del catálogo empieza a esconder los modelos
   que no tengan la talla buscada.
+- **Stock por color y talla** (solo si el modelo tiene dos o más colores): una tabla por color. En
+  la página, la clienta elige primero el color y ve solo las tallas que hay de ese color; un color
+  sin pares aparece tachado como «sin stock», y el color elegido viaja en el pedido de WhatsApp.
+  En `catalogo.js` queda como un `"tallas"` dentro de cada color.
 
-Para pasar de uno a otro, el botón está arriba de las tallas.
+Para pasar de uno a otro, los botones están arriba de las tallas.
 
 ### Las fotos
 

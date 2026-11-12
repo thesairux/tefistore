@@ -153,10 +153,18 @@ function limpiarProducto(p) {
     material: texto(p.material, 120),
     cuidados: texto(p.cuidados, 400),
     nota: texto(p.nota, 200),
-    colores: lista(p.colores).slice(0, 8).map(c => ({
-      nombre: texto(c && c.nombre, 40),
-      hex: /^#[0-9a-fA-F]{6}$/.test(c && c.hex) ? c.hex : "#888888"
-    })).filter(c => c.nombre),
+    colores: lista(p.colores).slice(0, 8).map(c => {
+      const o = {
+        nombre: texto(c && c.nombre, 40),
+        hex: /^#[0-9a-fA-F]{6}$/.test(c && c.hex) ? c.hex : "#888888"
+      };
+      // cada color puede llevar su propio stock por talla
+      if (c && c.tallas != null) {
+        const tl = limpiarTallas(c.tallas);
+        if (tl && (typeof tl !== "object" || Object.keys(tl).length)) o.tallas = tl;
+      }
+      return o;
+    }).filter(c => c.nombre),
     etiquetas: lista(p.etiquetas).map(e => texto(e, 20)).filter(e => ["nuevo", "oferta", "ultimos"].includes(e)).slice(0, 2),
     tallas: limpiarTallas(p.tallas)
   };
