@@ -272,6 +272,11 @@ a{color:var(--vino)}
     "clave-corta": "La contraseña del proyecto debe tener 12 caracteres o más.",
     config: "Falta el token de GitHub o el nombre del repositorio.",
     github: "GitHub no aceptó el cambio. Intenta de nuevo en un minuto.",
+    "token-malo": "El token de GitHub no sirve o ya venció. Genera uno nuevo y cámbialo en las variables del proyecto.",
+    "token-sin-permiso": "El token de GitHub no tiene permiso para escribir en el repositorio. Necesita «Contents: Read and write».",
+    "repo-no-encontrado": "No encuentro el repositorio con ese token. Revisa el nombre en GITHUB_REPO y que el token tenga acceso a ese repositorio.",
+    conflicto: "El repositorio cambió mientras guardabas. Vuelve a entrar al panel y guarda de nuevo.",
+    "github-caido": "GitHub está con problemas ahora mismo. Intenta en unos minutos.",
     catalogo: "No se pudo leer el catálogo publicado.",
     datos: "Hay datos que no se pueden guardar así.",
     grande: "El catálogo quedó muy grande.",
@@ -289,7 +294,8 @@ a{color:var(--vino)}
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) {
         if (!r.ok || d.error) {
-          var e = new Error(ERRORES[d.error] || ("Error " + r.status));
+          var e = new Error((ERRORES[d.error] || ("Error " + r.status)) +
+            (d.github ? "\nGitHub dijo: " + d.github : ""));
           e.codigo = d.error;
           throw e;
         }

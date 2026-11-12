@@ -70,6 +70,11 @@ async function gh(ruta, opts = {}) {
   if (!res.ok) {
     const e = new Error("GitHub " + res.status);
     e.status = res.status;
+    try {
+      const d = await res.json();
+      e.detalle = [d && d.message, (d && d.errors || []).map(x => x.message || x.code).join("; ")]
+        .filter(Boolean).join(" — ").slice(0, 300);
+    } catch (x) { /* sin detalle */ }
     throw e;
   }
   return res.status === 204 ? null : res.json();
@@ -343,9 +348,52 @@ function estado() {
   };
 }
 
+/* Qué significa cada respuesta de GitHub, en algo que se pueda accionar */
+function porQueFallo(estado) {
+  if (estado === 401) return "token-malo";
+  if (estado === 403) return "token-sin-permiso";
+  if (estado === 404) return "repo-no-encontrado";
+  if (estado === 409 || estado === 422) return "conflicto";
+  if (estado >= 500) return "github-caido";
+  return "github";
+}
+
+/* Revisa el token sin escribir nada: que el repositorio exista, que el token
+   pueda empujar cambios y que la rama esté donde se espera. */
+async function probarGitHub() {
+  const r = repo();
+  const out = { repositorio: r.full, rama: r.branch };
+  try {
+    const info = await gh("");
+    out.repoEncontrado = true;
+    out.ramaPorOmision = info.default_branch;
+    out.puedeEscribir = !!(info.permissions && info.permissions.push);
+    if (!out.puedeEscribir) out.aviso = "el token llega al repositorio pero no tiene permiso de escritura (Contents: Read and write)";
+  } catch (e) {
+    out.repoEncontrado = false;
+    out.falla = porQueFallo(e.status);
+    out.codigo = e.status || 0;
+    out.github = e.detalle || "";
+    return out;
+  }
+  try {
+    await gh(`/git/ref/heads/${encodeURIComponent(r.branch)}`);
+    out.ramaEncontrada = true;
+  } catch (e) {
+    out.ramaEncontrada = false;
+    out.codigo = e.status || 0;
+    out.github = e.detalle || "";
+  }
+  return out;
+}
+
 export async function onRequest({ request, env }) {
   ENV = env || {};
-  if (request.method === "GET") return json(200, estado());
+  if (request.method === "GET") {
+    const base = estado();
+    if (new URL(request.url).searchParams.get("probar") !== "1" || !token() || !repo().full) return json(200, base);
+    return json(200, Object.assign(base, { prueba: await probarGitHub() }));
+  }
   if (request.method !== "POST") return json(405, { error: "metodo" });
   if (!mismoSitio(request)) return json(403, { error: "origen" });
   if (!/^application\/json\b/i.test(request.headers.get("Content-Type") || "")) return json(415, { error: "tipo" });
@@ -371,7 +419,7 @@ export async function onRequest({ request, env }) {
     return json(400, { error: "accion" });
   } catch (e) {
     if (e.cliente) return json(e.estado || 400, { error: e.cliente });
-    console.error("admin:", e.message);
-    return json(502, { error: "github", status: e.status || 0 });
+    console.error("admin:", e.message, e.detalle || "");
+    return json(502, { error: porQueFallo(e.status), status: e.status || 0, github: e.detalle || "" });
   }
 }
