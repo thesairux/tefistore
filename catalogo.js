@@ -223,6 +223,27 @@ window.CATALOGO = {
       "foto": "img/catalogo/quilla-seda.webp",
       "productos": [
         {
+          "id": "nuevo-mwd1ytle",
+          "nombre": "Modelo nuevo test",
+          "precio": 90000000,
+          "fotos": [
+            "fotos/modelo-nuevo-test-1t0rq.jpg"
+          ],
+          "detalle": "nose",
+          "descripcion": "hola",
+          "material": "Triton",
+          "cuidados": "Bailar",
+          "nota": "Si",
+          "colores": [],
+          "etiquetas": [
+            "ultimos"
+          ],
+          "tallas": "34-41",
+          "precioAntes": 200,
+          "destacado": true,
+          "disponible": false
+        },
+        {
           "id": "intiara",
           "nombre": "Intiara",
           "precio": 22990,
