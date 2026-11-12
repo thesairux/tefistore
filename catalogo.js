@@ -159,7 +159,7 @@ window.CATALOGO = {
     "bajada": "Botín de gamuza premium con doble hebilla, taco cómodo y estable. En camel y en negro.",
     "foto": "img/catalogo/intiara-camel.webp",
     "boton": "Ver el modelo",
-    "enlace": "#/p/intiara-camel"
+    "enlace": "#/p/intiara"
   },
   "pasos": [
     {
@@ -259,13 +259,14 @@ window.CATALOGO = {
       "foto": "img/catalogo/quilla-seda.webp",
       "productos": [
         {
-          "id": "intiara-camel",
-          "nombre": "Intiara Camel",
+          "id": "intiara",
+          "nombre": "Intiara",
           "precio": 22990,
           "fotos": [
-            "img/catalogo/intiara-camel.webp"
+            "img/catalogo/intiara-camel.webp",
+            "img/catalogo/intiara-black.webp"
           ],
-          "detalle": "Botín de gamuza premium con doble hebilla lateral, cómodo y versátil para tu día a día.",
+          "detalle": "Botín de gamuza premium con doble hebilla lateral, cómodo y versátil para tu día a día. En camel y en negro.",
           "descripcion": "Un nombre que simboliza luz, sofisticación y fuerza interior.\nAcabado tipo gamuza premium, de líneas refinadas y diseño contemporáneo. Sus delicadas hebillas y su estructura firme aportan carácter, y el taco estable hace que se pueda usar todo el día.",
           "material": "Tipo gamuza premium",
           "cuidados": "Limpia con cepillo seco de cerdas suaves. No lo mojes ni uses betún líquido.",
@@ -273,25 +274,7 @@ window.CATALOGO = {
             {
               "nombre": "Camel",
               "hex": "#a9682f"
-            }
-          ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": [],
-          "destacado": true,
-          "tallas": "35-40"
-        },
-        {
-          "id": "intiara-black",
-          "nombre": "Intiara Black",
-          "precio": 22990,
-          "fotos": [
-            "img/catalogo/intiara-black.webp"
-          ],
-          "detalle": "El mismo Intiara en negro: líneas limpias, hebillas delicadas y taco firme.",
-          "descripcion": "Un nombre que representa luz interior, poder y elegancia atemporal.\nAcabado tipo gamuza premium con diseño refinado. Sus hebillas aportan carácter y su taco firme brinda una pisada cómoda y segura.",
-          "material": "Tipo gamuza premium",
-          "cuidados": "Limpia con cepillo seco de cerdas suaves. No lo mojes ni uses betún líquido.",
-          "colores": [
+            },
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
@@ -373,41 +356,25 @@ window.CATALOGO = {
           "tallas": "35-40"
         },
         {
-          "id": "pachara-black",
-          "nombre": "Pachara Black",
+          "id": "pachara",
+          "nombre": "Pachara",
           "precio": 18990,
           "fotos": [
+            "img/catalogo/pachara-camel.webp",
             "img/catalogo/pachara-black.webp"
           ],
-          "detalle": "Botín outdoor con acabado gamuza premium, suela antideslizante y acolchado interno.",
+          "detalle": "Botín outdoor con acabado gamuza premium, suela antideslizante y acolchado interno. En camel con rosa y en negro con rosa y gris.",
           "descripcion": "Un nombre que representa fuerza, versatilidad y estilo urbano. Diseñado para mujeres activas que buscan comodidad sin perder actitud.\nTobillera alta para mayor sujeción y detalles en contraste rosa y gris.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo húmedo y jabón suave. No la metas a la lavadora.",
           "colores": [
             {
-              "nombre": "Negro con rosa y gris",
-              "hex": "#1d1d1f"
-            }
-          ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": [],
-          "tallas": "35-40"
-        },
-        {
-          "id": "pachara-camel",
-          "nombre": "Pachara Camel",
-          "precio": 18990,
-          "fotos": [
-            "img/catalogo/pachara-camel.webp"
-          ],
-          "detalle": "El Pachara en camel, con detalles en rosa y negro. Suela antideslizante y acolchado interno.",
-          "descripcion": "Un nombre que transmite conexión con la naturaleza, calidez y fuerza. Diseñado para acompañarte en cada aventura con estilo.\nPerfecto para un look urbano con actitud.",
-          "material": "Tipo gamuza premium",
-          "cuidados": "Cepillo húmedo y jabón suave. No la metas a la lavadora.",
-          "colores": [
-            {
-              "nombre": "Camel con rosa y negro",
+              "nombre": "Camel",
               "hex": "#b1763a"
+            },
+            {
+              "nombre": "Negro",
+              "hex": "#1d1d1f"
             }
           ],
           "nota": "Horma pequeña: se recomienda pedir una talla más.",
@@ -525,13 +492,14 @@ window.CATALOGO = {
           "tallas": "35-40"
         },
         {
-          "id": "aynara-terra",
-          "nombre": "Aynara Street Terra",
+          "id": "aynara-street",
+          "nombre": "Aynara Street",
           "precio": 21990,
           "fotos": [
-            "img/catalogo/aynara-terra.webp"
+            "img/catalogo/aynara-terra.webp",
+            "img/catalogo/aynara-black.webp"
           ],
-          "detalle": "Bota de gamuza premium en tono terracota, con suaves pliegues y hebillas delicadas.",
+          "detalle": "Bota de gamuza premium con suaves pliegues y hebillas delicadas. En terracota y en negro.",
           "descripcion": "Un nombre que evoca libertad, conexión con la tierra y elegancia auténtica.\nSu taco firme asegura comodidad y estabilidad en cada paso.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo seco de cerdas suaves.",
@@ -539,24 +507,7 @@ window.CATALOGO = {
             {
               "nombre": "Terracota",
               "hex": "#7d3b2e"
-            }
-          ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
-          "etiquetas": [],
-          "tallas": "35-40"
-        },
-        {
-          "id": "aynara-black",
-          "nombre": "Aynara Street Black",
-          "precio": 21990,
-          "fotos": [
-            "img/catalogo/aynara-black.webp"
-          ],
-          "detalle": "La Aynara en negro: pliegues suaves, hebillas y taco firme.",
-          "descripcion": "Un nombre que refleja libertad, carácter y elegancia urbana.\nInspirada en la mujer que se mueve con seguridad y estilo propio.",
-          "material": "Tipo gamuza premium",
-          "cuidados": "Cepillo seco de cerdas suaves.",
-          "colores": [
+            },
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
