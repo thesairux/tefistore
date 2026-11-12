@@ -362,6 +362,25 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .filtro-tallas { min-width: 0; flex: 1 1 360px; }
 .pildoras--tallas .pildora { min-width: 44px; padding: 7px 10px; text-align: center; font-variant-numeric: tabular-nums; }
 .filtro-orden select { border: 1px solid var(--linea); background: var(--papel); padding: 8px 14px; font-size: 14px; border-radius: 999px; cursor: pointer; }
+.filtro-buscar { flex: 1 1 260px; max-width: 340px; min-width: 0; }
+.filtro-buscar-caja {
+  display: flex; align-items: center; gap: 8px;
+  border: 1px solid var(--linea); background: var(--papel); border-radius: 999px; padding: 0 6px 0 14px;
+}
+.filtro-buscar-caja:focus-within { border-color: var(--principal); }
+.filtro-buscar-caja > .icono { width: 17px; height: 17px; flex: none; color: var(--tinta-suave); }
+.filtro-buscar-caja input {
+  flex: 1; min-width: 0; border: 0; background: none; outline: none;
+  padding: 9px 0; font: inherit; font-size: 14px; color: var(--tinta);
+}
+.filtro-buscar-caja input::-webkit-search-cancel-button { display: none; }
+.filtro-buscar-caja button {
+  display: grid; place-items: center; width: 28px; height: 28px; flex: none;
+  border: 0; border-radius: 50%; background: none; color: var(--tinta-suave); cursor: pointer; padding: 0;
+}
+.filtro-buscar-caja button:hover { background: var(--suave); color: var(--tinta); }
+.filtro-buscar-caja button .icono { width: 15px; height: 15px; }
+@media (max-width: 560px) { .filtro-buscar { flex: 1 1 100%; max-width: none; } }
 .cat-cuenta { color: var(--tinta-suave); font-size: 14px; margin: 18px 0 22px; }
 .vacio { grid-column: 1 / -1; text-align: center; padding: 54px 20px; }
 .vacio b { display: block; font-family: var(--titulo); font-size: 22px; margin-bottom: 8px; }

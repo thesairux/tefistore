@@ -48,7 +48,9 @@
     camion: '<path d="M3 7h11v8H3zM14 10h4l3 3v2h-7z"/><circle cx="7" cy="17" r="1.8"/><circle cx="17.5" cy="17" r="1.8"/>',
     tienda: '<path d="M4 10v9h16v-9"/><path d="M3 6h18l-1.5 4h-15Z"/>',
     no: '<circle cx="12" cy="12" r="8"/><path d="M9 9l6 6M15 9l-6 6"/>',
-    aviso: '<path d="M12 4 2.8 20h18.4Z"/><path d="M12 10v4M12 17.2v.1"/>'
+    aviso: '<path d="M12 4 2.8 20h18.4Z"/><path d="M12 10v4M12 17.2v.1"/>',
+    lupa: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
+    cerrar: '<path d="M6 6l12 12M18 6 6 18"/>'
   };
   function ico(n, clase) { return '<svg class="' + (clase || "icono") + '" viewBox="0 0 24 24" aria-hidden="true">' + SVG[n] + "</svg>"; }
 
@@ -869,6 +871,14 @@
                   (filtro.talla === x ? "true" : "false") + '">' + esc(x) + "</button>";
               }).join("") + "</div></div>"
             : "<div></div>") +
+          '<div class="filtro-buscar"><span class="filtro-rotulo">Buscar por nombre</span>' +
+            '<div class="filtro-buscar-caja">' +
+              ico("lupa") +
+              '<input type="search" data-buscar-cat value="' + esc(filtro.texto) + '"' +
+                ' placeholder="Intiara, Kallpa, Náya…" aria-label="Buscar un modelo por su nombre"' +
+                ' autocomplete="off" enterkeyhint="search">' +
+              (filtro.texto ? '<button type="button" data-limpiar-busqueda aria-label="Borrar la búsqueda">' + ico("cerrar") + "</button>" : "") +
+            "</div></div>" +
           '<div class="filtro-orden"><span class="filtro-rotulo">Ordenar</span>' +
             '<select data-orden aria-label="Ordenar el catálogo">' +
               ["destacados|Destacados", "precio-asc|Precio: de menor a mayor", "precio-desc|Precio: de mayor a menor", "nombre|Nombre (A-Z)"].map(function (o) {
@@ -1569,6 +1579,15 @@
         pintarCatalogo();
         return;
       }
+      if (t.closest("[data-limpiar-busqueda]")) {
+        filtro.texto = "";
+        var cab = $("[data-buscar]");
+        if (cab) cab.value = "";
+        pintarCatalogo();
+        var caja = $("[data-buscar-cat]");
+        if (caja) caja.focus();
+        return;
+      }
       if ((el = t.closest("[data-tipo]"))) {
         var tipo = el.getAttribute("data-tipo");
         location.hash = tipo ? "#/c/" + tipo : "#/catalogo";
@@ -1669,6 +1688,18 @@
 
     document.addEventListener("input", function (ev) {
       var el = ev.target;
+      if (el.matches("[data-buscar-cat]")) {
+        filtro.texto = el.value;
+        filtro.favoritos = false;
+        var pos = el.selectionStart;
+        pintarCatalogo();
+        // pintarCatalogo rehace el formulario: hay que devolver el foco y el cursor
+        var nuevo = $("[data-buscar-cat]");
+        if (nuevo) { nuevo.focus(); try { nuevo.setSelectionRange(pos, pos); } catch (e) { /* da igual */ } }
+        var cabecera = $("[data-buscar]");
+        if (cabecera) cabecera.value = filtro.texto;
+        return;
+      }
       if (el.matches("[data-buscar]")) {
         filtro.texto = el.value;
         filtro.favoritos = false;
