@@ -14,6 +14,7 @@
   El panel se abre en tu-pagina/admin y guarda catalogo.js. Las fotos que subas quedan en fotos/.
 */
 import { json, sleep, ipDe, mismoSitio, leerJson, aBase64, deBase64, igualSeguro, limitador } from "../../lib/comun.js";
+import { resumen as resumenEstadisticas } from "./estadisticas.js";
 
 let ENV = {};
 
@@ -454,6 +455,7 @@ export async function onRequest({ request, env }) {
       return json(200, { ok: true, catalogo: pub && pub.datos, version: pub && pub.version });
     }
     if (body.accion === "foto") return json(200, { ok: true, sha: await subirFoto(body.datos) });
+    if (body.accion === "estadisticas") return json(200, await resumenEstadisticas(env, body.dias));
     if (body.accion === "publicar") {
       const version = await publicar(body.catalogo, body.fotos, body.version);
       return json(200, { ok: true, version });

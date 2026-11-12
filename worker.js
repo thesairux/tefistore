@@ -3,8 +3,9 @@
    /api/… con el mismo servidor de functions/api/ que usa Cloudflare Pages. Ver wrangler.jsonc. */
 import * as admin from "./functions/api/admin.js";
 import * as asistente from "./functions/api/asistente.js";
+import * as estadisticas from "./functions/api/estadisticas.js";
 
-const RUTAS = { "/api/admin": admin, "/api/asistente": asistente };
+const RUTAS = { "/api/admin": admin, "/api/asistente": asistente, "/api/estadisticas": estadisticas };
 
 export default {
   async fetch(request, env, ctx) {

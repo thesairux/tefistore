@@ -150,6 +150,31 @@ a{color:var(--vino)}
 .talla-stock span{display:block;font-size:12px;color:var(--suave-txt);text-align:center;margin-bottom:3px}
 .talla-stock input{width:100%;text-align:center;border:1px solid var(--linea);border-radius:var(--radio);padding:7px 4px}
 .talla-stock input[data-cero]{background:#fdf0ef;border-color:#f0c9c6}
+/* estadísticas */
+.st-periodos{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.st-periodos button{border:1px solid var(--linea);background:#fff;border-radius:999px;padding:6px 14px;font-size:13.5px;cursor:pointer}
+.st-periodos button[aria-pressed="true"]{background:var(--vino);border-color:var(--vino);color:#fff}
+.st-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:18px}
+.st-tile{border:1px solid var(--linea);border-radius:10px;padding:14px 16px;background:#fff}
+.st-tile b{display:block;font-size:26px;font-weight:600;line-height:1.1;font-variant-numeric:tabular-nums}
+.st-tile span{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--suave-txt);font-weight:600;margin-bottom:6px}
+.st-tile small{display:block;color:var(--suave-txt);font-size:12.5px;margin-top:4px;line-height:1.4}
+.st-barras{display:flex;align-items:flex-end;gap:4px;height:130px;padding:10px 0;border-bottom:1px solid var(--linea)}
+.st-barras div{flex:1;background:var(--vino);border-radius:3px 3px 0 0;min-height:2px;opacity:.85}
+.st-barras div:hover{opacity:1}
+.st-pie-fechas{display:flex;justify-content:space-between;font-size:11.5px;color:var(--suave-txt);margin-top:6px}
+.st-paso{display:grid;grid-template-columns:minmax(0,1fr) 2.2fr auto auto;gap:10px;align-items:center;padding:7px 0;font-size:14px}
+.st-paso span.b{background:var(--suave-2);border-radius:999px;height:10px;overflow:hidden}
+.st-paso span.b i{display:block;height:100%;background:var(--vino)}
+.st-paso b{font-variant-numeric:tabular-nums}
+.st-paso small{color:var(--suave-txt);min-width:46px;text-align:right}
+.st-dos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.st-dos{grid-template-columns:1fr}}
+.st-rank{display:grid;gap:7px}
+.st-rank li{display:flex;gap:10px;align-items:center;font-size:14px}
+.st-rank li b{margin-left:auto;font-variant-numeric:tabular-nums}
+.st-vacio{color:var(--suave-txt);font-size:13.5px}
+.st-pasos{margin:10px 0 0 18px;display:grid;gap:7px;font-size:14px;line-height:1.5}
 .color-punto{display:inline-block;width:12px;height:12px;border-radius:50%;
   border:1px solid rgb(0 0 0 / .18);vertical-align:-1px;margin-right:2px}
 .repe-cab .ayuda{margin-left:auto;font-size:12.5px;color:var(--suave-txt)}
@@ -213,6 +238,7 @@ a{color:var(--vino)}
     <button type="button" data-ir="tienda">Tienda</button>
     <button type="button" data-ir="cupones">Cupones</button>
     <button type="button" data-ir="ajustes">Ajustes</button>
+    <button type="button" data-ir="estadisticas">Estadísticas</button>
   </nav>
 
   <main class="cuerpo">
@@ -234,6 +260,7 @@ a{color:var(--vino)}
     <section data-vista="tienda" hidden></section>
     <section data-vista="cupones" hidden></section>
     <section data-vista="ajustes" hidden></section>
+    <section data-vista="estadisticas" hidden></section>
   </main>
 </div>
 
@@ -422,6 +449,10 @@ a{color:var(--vino)}
     if (pestana === "tienda") pintarTienda();
     if (pestana === "cupones") pintarCupones();
     if (pestana === "ajustes") pintarAjustes();
+    if (pestana === "estadisticas") {
+      // se piden una sola vez por visita, salvo que cambies el período
+      if (!statsPedidas) { statsPedidas = true; cargarEstadisticas(); } else pintarEstadisticas();
+    }
   }
 
   /* ============ productos ============ */
@@ -1110,6 +1141,113 @@ a{color:var(--vino)}
       "</div>";
   }
 
+  /* ============ estadísticas ============ */
+  var statsDias = 30, statsDatos = null, statsPedidas = false;
+  var PERIODOS = [[7, "7 días"], [30, "30 días"], [90, "3 meses"]];
+
+  function nf(x) { return String(Math.round(x || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
+  function pct(a, b) { return b ? Math.round(a / b * 100) + "%" : "—"; }
+  function diaCorto(f) { var p = String(f).split("-"); return p[2] + "/" + p[1]; }
+  function nombreModelo(id) {
+    var x = buscarProd(id);
+    return x ? x.p.nombre : id;
+  }
+  function tile(titulo, valor, nota) {
+    return '<div class="st-tile"><span>' + esc(titulo) + "</span><b>" + esc(valor) + "</b>" +
+      (nota ? "<small>" + esc(nota) + "</small>" : "") + "</div>";
+  }
+  function columnas(titulo, dias, campo) {
+    var max = Math.max.apply(null, dias.map(function (d) { return d[campo] || 0; }).concat([1]));
+    return "<h4>" + esc(titulo) + "</h4>" +
+      '<div class="st-barras">' + dias.map(function (d) {
+        return '<div style="height:' + Math.round((d[campo] || 0) / max * 100) + '%" title="' +
+          esc(diaCorto(d.fecha) + ": " + nf(d[campo] || 0)) + '"></div>';
+      }).join("") + "</div>" +
+      '<div class="st-pie-fechas"><span>' + esc(diaCorto(dias[0].fecha)) + "</span><span>" +
+      esc(diaCorto(dias[dias.length - 1].fecha)) + "</span></div>";
+  }
+  function ranking(titulo, lista, vacio) {
+    return '<div class="tarjeta"><h3>' + esc(titulo) + "</h3>" +
+      (lista && lista.length
+        ? '<ol class="st-rank">' + lista.map(function (r) {
+            return "<li>" + esc(nombreModelo(r.id)) + "<b>" + nf(r.n) + "</b></li>";
+          }).join("") + "</ol>"
+        : '<p class="st-vacio">' + esc(vacio) + "</p>") + "</div>";
+  }
+
+  function pintarEstadisticas() {
+    var v = $('[data-vista="estadisticas"]');
+    var periodos = '<div class="st-periodos">' + PERIODOS.map(function (x) {
+      return '<button type="button" data-stats-dias="' + x[0] + '" aria-pressed="' + (x[0] === statsDias) + '">' + x[1] + "</button>";
+    }).join("") + "</div>";
+
+    if (!statsDatos) { v.innerHTML = periodos + '<p class="st-vacio">Cargando…</p>'; return; }
+    if (statsDatos.error) { v.innerHTML = periodos + '<p class="st-vacio">' + esc(statsDatos.error) + "</p>"; return; }
+    if (!statsDatos.configurado) {
+      v.innerHTML = '<div class="tarjeta"><h3>Falta un paso para contar las visitas</h3>' +
+        '<p class="ayuda">La página funciona igual sin esto. Para guardar las visitas y los pedidos necesita una ' +
+        'base de datos gratuita de Cloudflare (D1). Se hace una sola vez:</p>' +
+        '<ol class="st-pasos">' +
+          "<li>En Cloudflare, abre <b>Storage &amp; Databases → D1</b> y toca <b>Create</b>. Ponle de nombre <b>tefistore-estadisticas</b>.</li>" +
+          "<li>Copia el <b>Database ID</b> que te muestra.</li>" +
+          "<li>En el repositorio, abre <b>wrangler.jsonc</b>: adentro está la línea de <b>d1_databases</b> comentada. Quítale las barras del principio y pega ahí el ID.</li>" +
+          "<li>Guarda y espera a que Cloudflare vuelva a publicar. Desde ahí se empiezan a contar las visitas.</li>" +
+        "</ol>" +
+        '<p class="ayuda" style="margin-top:12px">Si prefieres, dime y lo dejo listo yo: solo necesito que me pases el Database ID (no es secreto).</p></div>';
+      return;
+    }
+
+    var d = statsDatos;
+    var tot = { visita: 0, wsp: 0, asistente: 0, agregar: 0, abrir: 0, enviar: 0, ingresos: 0 };
+    d.dias.forEach(function (x) { Object.keys(tot).forEach(function (k) { tot[k] += x[k] || 0; }); });
+    var embudo = [["Visitas", tot.visita], ["Agregaron algo", tot.agregar],
+      ["Abrieron el carrito", tot.abrir], ["Enviaron el pedido", tot.enviar]];
+    var maxE = Math.max(1, tot.visita, tot.agregar, tot.abrir, tot.enviar);
+    var abandono = Math.max(0, tot.agregar - tot.enviar);
+
+    v.innerHTML = periodos +
+      '<div class="tarjeta"><h3>Cómo usan tu página</h3>' +
+        '<div class="st-tiles">' +
+          tile("Visitas", nf(tot.visita), "veces que abrieron la página") +
+          tile("Clics a WhatsApp", nf(tot.wsp)) +
+          tile("Usaron el asistente", nf(tot.asistente)) +
+        "</div>" +
+        columnas("Visitas por día", d.dias, "visita") +
+      "</div>" +
+
+      '<div class="tarjeta"><h3>Cuántas terminan pidiendo</h3>' +
+        embudo.map(function (e, i) {
+          return '<div class="st-paso"><span>' + esc(e[0]) + '</span><span class="b"><i style="width:' +
+            (e[1] / maxE * 100) + '%"></i></span><b>' + nf(e[1]) + "</b><small>" +
+            (i ? pct(e[1], tot.visita) : "") + "</small></div>";
+        }).join("") +
+        '<div class="st-tiles" style="margin-top:16px">' +
+          tile("Conversión", pct(tot.enviar, tot.visita), "visitas que enviaron un pedido") +
+          tile("Carritos abandonados", nf(abandono), "agregaron algo y no lo enviaron") +
+          tile("Pedidos enviados", nf(tot.enviar)) +
+          tile("Total referencial", plata(tot.ingresos), "suma de los pedidos enviados") +
+          tile("Pedido promedio", plata(tot.enviar ? tot.ingresos / tot.enviar : 0)) +
+        "</div>" +
+        '<p class="ayuda">Los pedidos llegan por WhatsApp: «enviados» son los que la clienta mandó desde la página. ' +
+        'El total es referencial, tú lo confirmas en la conversación.</p>' +
+      "</div>" +
+
+      '<div class="st-dos">' +
+        ranking("Modelos más vistos", d.ver, "Todavía nadie abre un modelo.") +
+        ranking("Modelos más agregados", d.agr, "Todavía nadie agrega al carrito.") +
+      "</div>";
+  }
+
+  function cargarEstadisticas() {
+    statsDatos = null;
+    pintarEstadisticas();
+    api("estadisticas", { dias: statsDias }).then(function (d) {
+      statsDatos = d;
+    }).catch(function (e) {
+      statsDatos = { error: e.message || "No se pudieron leer las estadísticas." };
+    }).then(pintarEstadisticas);
+  }
+
   /* ============ ajustes ============ */
   function pintarAjustes() {
     var T = D.tema || (D.tema = {});
@@ -1248,6 +1386,11 @@ a{color:var(--vino)}
       if (!nombre) return;
       D.categorias.push({ id: slug(nombre) || ("cat-" + Date.now().toString(36)), nombre: nombre, foto: "", productos: [] });
       tocar(); pintarAjustes(); return;
+    }
+    if ((el = ev.target.closest("[data-stats-dias]"))) {
+      statsDias = +el.getAttribute("data-stats-dias");
+      cargarEstadisticas();
+      return;
     }
     if ((el = ev.target.closest("[data-cat-borra]"))) {
       i = +el.getAttribute("data-cat-borra");

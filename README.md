@@ -139,6 +139,7 @@ Qué se puede editar:
 | **Tienda** | WhatsApp, Instagram, dirección, retiro, zonas de despacho, formas de pago y las políticas de compra. |
 | **Cupones** | Crear, apagar y borrar cupones. |
 | **Ajustes** | Colores de la marca, categorías (con su foto), guía de tallas y los títulos de cada sección. |
+| **Estadísticas** | Visitas, clics a WhatsApp, embudo de compra y los modelos más vistos. Ver la sección 5. |
 
 ### Las tallas, desde el panel
 
@@ -257,7 +258,29 @@ por persona. El catálogo se manda con caché para que las preguntas seguidas sa
 
 ---
 
-## 5. Publicar la página
+## 5. Las estadísticas
+
+En el panel, la pestaña **Estadísticas** muestra visitas, clics a WhatsApp, uso del asistente, el
+embudo (cuántas agregan algo, abren el carrito y envían el pedido) y los modelos más vistos y más
+agregados.
+
+**No se guarda nada de la persona**: ni IP, ni nombre, ni teléfono, ni qué compró cada una. Solo
+contadores por día y cuántas veces se vio o se agregó cada modelo.
+
+Para activarlas hace falta una base de datos gratuita de Cloudflare (D1). Se hace una sola vez:
+
+1. En Cloudflare: **Storage & Databases → D1 → Create**. Nómbrala `tefistore-estadisticas`.
+2. Copia el **Database ID**.
+3. En el repositorio, abre `wrangler.jsonc`: la línea de `d1_databases` está comentada. Quítale las
+   barras del principio y pega ahí el ID.
+4. Guarda y espera el despliegue. Desde ahí se empiezan a contar las visitas.
+
+Sin la base, la página funciona igual: no se cuenta nada y el panel explica estos pasos. En Vercel
+no hay D1, así que ahí la analítica queda apagada.
+
+---
+
+## 6. Publicar la página
 
 El comando de construcción arma `dist/` con **solo** los archivos de la página (los servidores y las
 herramientas no quedan a la vista).
@@ -292,7 +315,7 @@ y abre `http://localhost:8787`. Así el chat anda en modo básico (no hay servid
 
 ---
 
-## 6. Los archivos
+## 7. Los archivos
 
 ```
 catalogo.js              ← TODO lo que se edita: tienda, colores, portada, despachos, cupones, productos
@@ -320,7 +343,7 @@ Se pueden compartir: cada una abre directo donde corresponde.
 
 ---
 
-## 7. Preguntas frecuentes
+## 8. Preguntas frecuentes
 
 **¿Se cobra desde la página?**
 No. La página arma el pedido y lo manda por WhatsApp; el pago se coordina ahí.
@@ -346,7 +369,7 @@ sección aparece sola, con su mapa y su horario.
 
 ---
 
-## 8. Lo que falta para publicar
+## 9. Lo que falta para publicar
 
 1. **La dirección**, si quieres mostrar la tienda y el mapa.
 2. **Los plazos de despacho** de `negocio.envios`: están puestos como estimación.
