@@ -108,12 +108,12 @@ window.CATALOGO = {
     }
   ],
   "temporada": {
-    "etiqueta": "Lo más pedido",
-    "titulo": "Modelo Intiara",
-    "bajada": "Botín de gamuza premium con doble hebilla, taco cómodo y estable. En camel y en negro.",
-    "foto": "img/catalogo/intiara-camel.webp",
-    "boton": "Ver el modelo",
-    "enlace": "#/p/intiara"
+    "etiqueta": "",
+    "titulo": "",
+    "bajada": "",
+    "foto": "",
+    "boton": "",
+    "enlace": ""
   },
   "textos": {
     "catalogo": {
@@ -350,7 +350,7 @@ window.CATALOGO = {
     {
       "id": "botas",
       "nombre": "Botas",
-      "foto": "img/catalogo/inti-oro.webp",
+      "foto": "img/catalogo/kallpa-white.webp",
       "productos": [
         {
           "id": "kallpa",

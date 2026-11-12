@@ -322,10 +322,23 @@
     refrescarCarrito();
   }
   function esFavorito(id) { return favoritos.indexOf(id) >= 0; }
+  /* El corazón de la cabecera muestra cuántos modelos hay guardados */
+  function refrescarFavoritos() {
+    var g = $("[data-contador-fav]");
+    if (!g) return;
+    var cuantos = favoritos.filter(function (id) { return PORID[id]; }).length;
+    g.textContent = cuantos;
+    if (cuantos) g.removeAttribute("hidden"); else g.setAttribute("hidden", "");
+    var a = g.parentNode;
+    a.setAttribute("aria-label", cuantos
+      ? "Tus favoritos, " + cuantos + (cuantos === 1 ? " modelo" : " modelos")
+      : "Tus favoritos");
+  }
   function cambiarFavorito(id) {
     if (esFavorito(id)) favoritos = favoritos.filter(function (x) { return x !== id; });
     else favoritos = favoritos.concat([id]);
     guardar(LLAVE_FAVORITOS, favoritos);
+    refrescarFavoritos();
     avisar(esFavorito(id) ? "Lo agregaste a favoritos ♥" : "Lo sacamos de favoritos");
     return esFavorito(id);
   }
@@ -500,7 +513,7 @@
     if (menu) menu.innerHTML = enlaces.map(function (e) { return '<a href="' + e.h + '">' + esc(e.t) + "</a>"; }).join("");
     var mm = $("[data-menu-movil-lista]");
     if (mm) {
-      mm.innerHTML = enlaces.map(function (e) {
+      mm.innerHTML = enlaces.concat([{ h: "#/favoritos", t: "Tus favoritos" }]).map(function (e) {
         return '<a href="' + e.h + '">' + esc(e.t) + ico("flecha") + "</a>";
       }).join("");
     }
@@ -508,7 +521,7 @@
     if (pc) {
       pc.innerHTML = CATEGORIAS.map(function (c) {
         return '<li><a href="#/c/' + esc(c.id) + '">' + esc(c.nombre) + "</a></li>";
-      }).join("");
+      }).concat(['<li><a href="#/favoritos">Tus favoritos</a></li>']).join("");
     }
 
     // Horario
@@ -820,7 +833,7 @@
   function pintarCatalogo() {
     var vista = $('[data-vista="catalogo"]');
     var cat = CATEGORIAS.filter(function (c) { return c.id === filtro.categoria; })[0];
-    var titulo = filtro.favoritos ? "Favoritos" : cat ? cat.nombre : (enRuta(C.textos, "catalogo.titulo") || "Catálogo");
+    var titulo = filtro.favoritos ? "Tus favoritos" : cat ? cat.nombre : (enRuta(C.textos, "catalogo.titulo") || "Catálogo");
     var bajada = filtro.favoritos ? "Los modelos que guardaste con el corazón." : (enRuta(C.textos, "catalogo.bajada") || "");
 
     // las tallas que existen en lo que se está mirando
@@ -869,6 +882,10 @@
           (filtro.texto ? ' para "' + esc(filtro.texto) + '"' : "") : "") + "</p>" +
         '<div class="rejilla rejilla--4">' +
           (lista.length ? lista.map(tarjeta).join("")
+            : filtro.favoritos
+              ? '<div class="vacio"><b>Todavía no guardaste ninguno</b>' +
+                "<p>Toca el corazón que está sobre la foto de un modelo y lo vas a encontrar aquí.</p>" +
+                '<a class="boton" href="#/catalogo">Ver el catálogo</a></div>'
             : '<div class="vacio"><b>No encontramos nada con eso</b>' +
               "<p>" + (filtro.talla ? "Prueba con otra talla o escríbenos: " : "Prueba con otra palabra o escríbenos: ") +
               "si no está acá, igual podemos buscarlo.</p>" +
@@ -1721,6 +1738,7 @@
     contar("visita");
     revisarCarrito();
     armarFijos();
+    refrescarFavoritos();
     armarPortada();
     deslizarPortada();
     armarInicio();
