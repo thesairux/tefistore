@@ -339,8 +339,9 @@ export async function onRequestGet({ request, env }) {
 
   if (proveedor(env) === "gemini") {
     const llave = llaveGemini(env);
-    const lista = await modelosGemini(llave);
-    estado.modelosDeTuCuenta = ordenarModelos(lista).slice(0, 12);
+    const lista = ordenarModelos(await modelosGemini(llave));
+    estado.modelosDeTuCuenta = lista.filter(x => !/pro/.test(x)).slice(0, 14);
+    estado.modelosPro = lista.filter(x => /pro/.test(x)).slice(0, 10);
     if (!lista.length) estado.aviso = "la cuenta no devolvió ningún modelo: revisa que la clave sea válida";
   }
   try {
