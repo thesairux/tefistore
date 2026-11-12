@@ -193,23 +193,37 @@ Funciona de dos maneras:
 
 | | Cuándo | Qué responde |
 |---|---|---|
-| **Con IA** | Hay una clave de Claude configurada | Entiende preguntas escritas de cualquier forma, usando el catálogo completo |
+| **Con IA** | Hay una clave de Gemini o de Claude configurada | Entiende preguntas escritas de cualquier forma, usando el catálogo completo |
 | **Modo básico** | No hay clave, o se abre el archivo sin servidor | Responde solo con el catálogo: tallas, stock, despachos, pagos, cambios, horario y búsqueda |
 
 **La página nunca deja de funcionar por no tener la clave.** Sin ella el chat sigue respondiendo.
 
 ### Configurar la IA
 
-1. Saca una clave en [console.anthropic.com](https://console.anthropic.com).
+Sirve cualquiera de las dos. **Gemini tiene plan gratuito**; Claude es de pago.
+
+| Variable | Dónde se saca | Costo |
+|---|---|---|
+| `GEMINI_API_KEY` | [aistudio.google.com](https://aistudio.google.com) → Get API key | Plan gratuito con un tope de mensajes por día |
+| `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) | De pago, por uso |
+
+1. Saca la clave donde corresponda.
 2. Guárdala como variable del proyecto, **nunca dentro del código**:
-   - **Cloudflare:** Settings → Variables and Secrets → `ANTHROPIC_API_KEY` (tipo *Secret*).
-   - **Vercel:** Settings → Environment Variables → `ANTHROPIC_API_KEY`.
-3. Vuelve a publicar.
+   - **Cloudflare:** Settings → Variables and Secrets → el nombre de arriba, tipo **Secret**.
+   - **Vercel:** Settings → Environment Variables.
+3. Vuelve a publicar (las variables no se aplican hasta el siguiente despliegue).
 
-Opcional: `ASISTENTE_MODELO` para cambiar el modelo (por defecto `claude-haiku-5-5`, rápido y barato).
+Si pones las dos, manda Gemini.
 
-Para revisar que quedó bien, abre `tu-pagina/api/asistente` en el navegador: dice si la clave está
-puesta (nunca la muestra).
+Opcionales: `GEMINI_MODELO` y `ASISTENTE_MODELO` para elegir el modelo. Google les cambia el
+nombre seguido, así que si el que pusiste ya no existe, el servidor busca solo uno de la familia
+*flash* que tu cuenta sí tenga; por eso normalmente no hace falta tocar nada.
+
+Para revisar que quedó bien, abre `tu-pagina/api/asistente` en el navegador: dice si hay clave,
+cuál de las dos se está usando y con qué modelo (nunca muestra la clave).
+
+**Cuando se acaba el cupo diario del plan gratuito**, Google responde 429 y el chat vuelve solo al
+modo básico, sin romperse ni mostrar errores raros.
 
 **Cuidado con el gasto:** cada mensaje del cliente es una llamada a la API. El servidor ya trae dos
 protecciones: solo responde a peticiones de la propia página y limita a 25 mensajes cada 10 minutos
@@ -227,14 +241,14 @@ herramientas no quedan a la vista).
 1. Conecta el repositorio en Cloudflare → Workers & Pages → Create → Pages.
 2. Build command: `sh herramientas/construir.sh`
 3. Build output directory: `dist`
-4. Agrega la variable `ANTHROPIC_API_KEY` y vuelve a publicar.
+4. Agrega la variable `GEMINI_API_KEY` (o `ANTHROPIC_API_KEY`) y vuelve a publicar.
 
 La carpeta `functions/` la toma Cloudflare sola: ahí vive `/api/asistente`.
 
 ### Vercel
 
 1. Importa el repositorio. La configuración ya está en `vercel.json`.
-2. Agrega `ANTHROPIC_API_KEY` en Environment Variables.
+2. Agrega `GEMINI_API_KEY` (o `ANTHROPIC_API_KEY`) en Environment Variables.
 
 La carpeta `api/` es la que usa Vercel; por dentro llama al mismo servidor de `functions/`.
 

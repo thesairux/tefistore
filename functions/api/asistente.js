@@ -1,18 +1,30 @@
 /*
   Asistente de la página: responde preguntas de los clientes con IA, usando el catálogo publicado.
 
-  Se configura en las variables del proyecto (Cloudflare: Settings → Variables and Secrets;
-  Vercel: Settings → Environment Variables):
-    ANTHROPIC_API_KEY  (obligatoria para la IA, como «Secret») clave de la API de Claude (console.anthropic.com).
-                       Solo la usa el servidor; nunca llega al navegador.
-    ASISTENTE_MODELO   (opcional) modelo de Claude. Si no existe: claude-haiku-5-5 (rápido y barato).
+  Sirve cualquiera de las dos claves. Se ponen en las variables del proyecto
+  (Cloudflare: Settings → Variables and Secrets; Vercel: Settings → Environment Variables),
+  siempre como «Secret»/encriptada. Solo las usa el servidor: nunca llegan al navegador.
 
-  Sin la clave, el chat de la página igual funciona: responde solo, con el catálogo (modo básico).
-  Abrir /api/asistente en el navegador dice si la clave está puesta (nunca la muestra).
+    GEMINI_API_KEY     clave de Google AI Studio (aistudio.google.com). Tiene plan gratuito.
+    ANTHROPIC_API_KEY  clave de Claude (console.anthropic.com). Es de pago.
+
+  Si están las dos, manda Gemini. Opcionales:
+    GEMINI_MODELO      modelo de Gemini. Si el que pongas no existe, el servidor busca solo
+                       uno de la familia «flash» que sí exista en tu cuenta.
+    ASISTENTE_MODELO   modelo de Claude. Si no existe: claude-haiku-5-5.
+
+  Sin ninguna clave, el chat de la página igual funciona: responde solo, con el catálogo
+  (modo básico). Abrir /api/asistente en el navegador dice qué hay puesto (nunca la clave).
 */
 import { json, ipDe, leerJson, leerCatalogo, limitador, mismoSitio } from "../../lib/comun.js";
 
-const modelo = env => (env.ASISTENTE_MODELO || "claude-haiku-5-5").trim();
+const llaveGemini = env => (env.GEMINI_API_KEY || "").trim();
+const llaveClaude = env => (env.ANTHROPIC_API_KEY || "").trim();
+const hayIA = env => !!(llaveGemini(env) || llaveClaude(env));
+const proveedor = env => (llaveGemini(env) ? "gemini" : "claude");
+const modelo = env => (llaveGemini(env)
+  ? (env.GEMINI_MODELO || "gemini-flash-latest").trim()
+  : (env.ASISTENTE_MODELO || "claude-haiku-5-5").trim());
 const ZONA = "America/Santiago";
 const MAX_MENSAJES = 12;
 const MAX_LARGO = 600;
@@ -179,7 +191,65 @@ function momento(C, carrito) {
     (carrito ? "\nLo que el cliente lleva en su carrito: " + String(carrito).slice(0, 800) : "\nEl carrito del cliente está vacío.");
 }
 
-async function preguntar(env, C, mensajes, carrito) {
+/* Google cambia de nombre los modelos seguido: si el configurado no existe,
+   se busca uno de la familia «flash» que la cuenta sí tenga. Se recuerda
+   mientras viva el worker para no preguntar en cada mensaje. */
+const GOOGLE = "https://generativelanguage.googleapis.com/v1beta";
+let modeloGemini = "";
+
+async function buscarModeloGemini(llave) {
+  const r = await fetch(GOOGLE + "/models?pageSize=200", { headers: { "x-goog-api-key": llave } });
+  if (!r.ok) return "";
+  const data = await r.json().catch(() => ({}));
+  const sirve = m => {
+    const metodos = m.supportedGenerationMethods || m.supportedActions || [];
+    return Array.isArray(metodos) ? metodos.includes("generateContent") : true;
+  };
+  const nombres = (data.models || []).filter(sirve).map(m => String(m.name || "").replace(/^models\//, ""));
+  // primero un flash-lite o flash (son los del plan gratuito), si no, cualquiera
+  return nombres.find(x => /flash-lite/.test(x)) || nombres.find(x => /flash/.test(x)) || nombres[0] || "";
+}
+
+async function preguntarGemini(env, C, mensajes, carrito) {
+  const llave = llaveGemini(env);
+  const cuerpo = {
+    system_instruction: { parts: [{ text: instrucciones(C) + "\n\n" + momento(C, carrito) }] },
+    contents: mensajes.map(m => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }]
+    })),
+    generationConfig: { temperature: 0.4, maxOutputTokens: 700 }
+  };
+  const pedir = async nombre => fetch(GOOGLE + "/models/" + encodeURIComponent(nombre) + ":generateContent", {
+    method: "POST",
+    headers: { "x-goog-api-key": llave, "content-type": "application/json" },
+    body: JSON.stringify(cuerpo)
+  });
+
+  let nombre = modeloGemini || modelo(env);
+  let r = await pedir(nombre);
+  if (r.status === 404) {
+    // el modelo no existe (o se llama distinto): se busca uno que sí
+    const otro = await buscarModeloGemini(llave);
+    if (otro && otro !== nombre) {
+      modeloGemini = otro;
+      r = await pedir(otro);
+    }
+  } else if (r.ok) {
+    modeloGemini = nombre;
+  }
+  if (!r.ok) {
+    const e = new Error("api " + r.status);
+    e.status = r.status;
+    try { e.detalle = (await r.json()).error; } catch (x) { /* sin detalle */ }
+    throw e;
+  }
+  const data = await r.json();
+  const partes = ((data.candidates || [])[0] || {}).content || {};
+  return (partes.parts || []).map(x => x.text || "").join("").trim();
+}
+
+async function preguntarClaude(env, C, mensajes, carrito) {
   const system = [
     { type: "text", text: instrucciones(C), cache_control: { type: "ephemeral" } },
     { type: "text", text: momento(C, carrito) }
@@ -187,7 +257,7 @@ async function preguntar(env, C, mensajes, carrito) {
   const r = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      "x-api-key": env.ANTHROPIC_API_KEY.trim(),
+      "x-api-key": llaveClaude(env),
       "anthropic-version": "2023-06-01",
       "content-type": "application/json"
     },
@@ -201,6 +271,12 @@ async function preguntar(env, C, mensajes, carrito) {
   }
   const data = await r.json();
   return (data.content || []).filter(b => b.type === "text").map(b => b.text).join("").trim();
+}
+
+function preguntar(env, C, mensajes, carrito) {
+  return proveedor(env) === "gemini"
+    ? preguntarGemini(env, C, mensajes, carrito)
+    : preguntarClaude(env, C, mensajes, carrito);
 }
 
 /* Saca los [[id]] (modelos que existen) y las {{respuestas sugeridas}} del texto. */
@@ -222,11 +298,16 @@ function separarProductos(C, texto) {
 }
 
 export async function onRequestGet({ env }) {
-  return json(200, { ok: true, ia: env.ANTHROPIC_API_KEY ? "configurada" : "FALTA (el chat responde en modo básico)", modelo: modelo(env) });
+  return json(200, {
+    ok: true,
+    ia: hayIA(env) ? "configurada" : "FALTA (el chat responde en modo básico)",
+    proveedor: hayIA(env) ? proveedor(env) : "ninguno",
+    modelo: hayIA(env) ? (modeloGemini || modelo(env)) : ""
+  });
 }
 
 export async function onRequestPost({ request, env }) {
-  if (!env.ANTHROPIC_API_KEY) return json(503, { error: "sin-ia" });
+  if (!hayIA(env)) return json(503, { error: "sin-ia" });
   if (!mismoSitio(request)) return json(403, { error: "origen" });
   if (!permitido(ipDe(request))) return json(429, { error: "limite" });
   let body;

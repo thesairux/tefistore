@@ -1,7 +1,7 @@
 /* =========================================================================
    Tefi Store — asistente (el chat de abajo a la derecha)
 
-   Con la IA configurada (ANTHROPIC_API_KEY en las variables del proyecto, ver
+   Con la IA configurada (GEMINI_API_KEY o ANTHROPIC_API_KEY en las variables del proyecto, ver
    functions/api/asistente.js) responde con IA usando el catálogo publicado.
    Sin la clave, o abriendo index.html directo, responde solo con el catálogo
    (modo básico): tallas, stock, despachos, pagos, cambios, horario y búsqueda.
