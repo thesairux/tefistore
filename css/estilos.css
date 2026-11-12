@@ -702,3 +702,21 @@ dialog::backdrop { background: rgb(20 20 20 / .5); }
   .dest-pausa { right: 14px; bottom: auto; top: 46px; }
 }
 .dest-foto .cinta { top: 36px; }   /* bajo las barritas de avance */
+
+/* ---------- Firma de quien hizo la página ---------- */
+.pie-firma { display: flex; align-items: center; gap: 8px; }
+.firma {
+  display: inline-flex; align-items: center; gap: 8px;
+  border: 1px solid var(--linea); border-radius: 999px; padding: 5px 14px 5px 6px;
+  background: var(--papel); color: var(--tinta-media); text-decoration: none;
+  font-size: 13px; line-height: 1; transition: border-color .18s, color .18s, transform .18s, box-shadow .18s;
+}
+.firma-marca {
+  display: grid; place-items: center; width: 24px; height: 24px; flex: none;
+  border-radius: 50%; background: var(--principal); color: #fff;
+}
+.firma-marca svg { width: 13px; height: 13px; fill: currentColor; stroke: none; }
+.firma-texto b { font-weight: 600; letter-spacing: .01em; color: var(--tinta); }
+.firma:hover { border-color: var(--principal); color: var(--principal); transform: translateY(-1px); box-shadow: 0 4px 14px rgb(106 17 56 / .12); }
+.firma:hover .firma-texto b { color: var(--principal); }
+@media (max-width: 560px) { .pie-abajo { flex-direction: column; align-items: flex-start; gap: 14px; } }
