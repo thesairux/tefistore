@@ -126,6 +126,18 @@
   });
 
   function fotos(p) { return (p && p.fotos && p.fotos.length) ? p.fotos : ["img/catalogo/_sinfoto.svg"]; }
+  /* De cada foto del catálogo hay una copia de 700 px. En una tarjeta chica no
+     tiene sentido bajar la de 1400, así que se le ofrecen las dos al navegador
+     y él elige según el tamaño en pantalla. Las subidas desde el panel y las de
+     portada no tienen copia chica: ahí se usa la única que hay. */
+  function chica(f) {
+    return /^img\/catalogo\/.+\.webp$/.test(f || "") ? f.replace(/\.webp$/, "-700.webp") : "";
+  }
+  function juego(f, tamanos) {
+    var c = chica(f);
+    if (!c) return 'src="' + esc(f) + '"';
+    return 'src="' + esc(c) + '" srcset="' + esc(c) + " 700w, " + esc(f) + ' 1400w" sizes="' + tamanos + '"';
+  }
   function foto(p) { return fotos(p)[0]; }
   /* La foto del color pedido. Se emparejan por orden: el 1er color con la 1ra
      foto, y así. Si hay más colores que fotos (recién agregaste uno y todavía
@@ -423,7 +435,8 @@
     return '<a class="tarjeta' + (hayStock(p) ? "" : " tarjeta--agotada") + '" href="#/p/' + esc(p.id) + '">' +
       '<span class="tarjeta-foto">' +
         (et ? '<span class="cinta cinta--' + et.clase + '">' + esc(et.texto) + "</span>" : "") +
-        '<img src="' + esc(foto(p)) + '" alt="' + esc(p.nombre) + '" loading="lazy" width="400" height="300">' +
+        "<img " + juego(foto(p), "(max-width: 560px) 48vw, (max-width: 860px) 32vw, 300px") +
+          ' alt="' + esc(p.nombre) + '" loading="lazy" decoding="async" width="400" height="300">' +
       "</span>" +
       '<span class="tarjeta-nombre">' + esc(p.nombre) + "</span>" +
       '<span class="tarjeta-precios"><span class="tarjeta-precio">' + plata(p.precio) + "</span>" +
@@ -651,7 +664,8 @@
             }).join("") + "</div>"
           : "") +
         '<a class="dest-foto" href="#/p/' + esc(p.id) + '">' +
-          '<img src="' + esc(foto(p)) + '" alt="' + esc(p.nombre) + '" width="1400" height="1050">' +
+          "<img " + juego(foto(p), "(max-width: 760px) 100vw, 55vw") +
+            ' alt="' + esc(p.nombre) + '" width="1400" height="1050" fetchpriority="high" decoding="async">' +
           (d ? '<span class="cinta cinta--oferta">-' + d + "%</span>" : "") + "</a>" +
         '<div class="dest-texto">' +
           '<span class="dest-ojo">' + esc(p._catNombre) + "</span>" +
@@ -683,6 +697,27 @@
     destacados.timer = setInterval(function () { verDestacado(destacados.i + 1); }, destacados.ms);
   }
 
+  /* Deslizar con el dedo para cambiar de imagen en la portada */
+  function deslizarPortada() {
+    var caja = $("[data-portada]");
+    if (!caja) return;
+    var x0 = 0, y0 = 0, siguiendo = false;
+    caja.addEventListener("touchstart", function (ev) {
+      if (ev.touches.length !== 1) return;
+      x0 = ev.touches[0].clientX; y0 = ev.touches[0].clientY; siguiendo = true;
+    }, { passive: true });
+    caja.addEventListener("touchend", function (ev) {
+      if (!siguiendo) return;
+      siguiendo = false;
+      var t2 = ev.changedTouches[0];
+      var dx = t2.clientX - x0, dy = t2.clientY - y0;
+      // solo si el gesto fue claramente horizontal: si no, es la página bajando
+      if (Math.abs(dx) < 45 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+      verSlide(slide + (dx < 0 ? 1 : -1));
+      clearInterval(slideTimer);
+    }, { passive: true });
+  }
+
   function armarInicio() {
     destacados.lista = PRODUCTOS.filter(function (p) { return p.destacado && hayStock(p); }).slice(0, 10);
     if (!destacados.lista.length) destacados.lista = PRODUCTOS.filter(hayStock).slice(0, 3);
@@ -693,7 +728,8 @@
     var cajaT = $("[data-temporada]");
     if (cajaT && T.titulo) {
       cajaT.innerHTML = '<div class="temporada-grilla">' +
-        '<div class="temporada-foto"><img src="' + esc(T.foto || "") + '" alt="" loading="lazy" width="1100" height="820"></div>' +
+        '<div class="temporada-foto">' + "<img " + juego(T.foto || "", "(max-width: 760px) 100vw, 50vw") +
+          ' alt="" loading="lazy" decoding="async" width="1100" height="820"></div>' +
         '<div class="temporada-texto">' +
           (T.etiqueta ? '<span class="temporada-etiqueta">' + esc(T.etiqueta) + "</span>" : "") +
           '<h2 class="temporada-titulo">' + esc(T.titulo) + "</h2>" +
@@ -709,7 +745,8 @@
         var p = (c.productos || []).filter(function (x) { return x.disponible !== false; })[0];
         var f = c.foto || (p ? foto(p) : "");
         return '<a href="#/c/' + esc(c.id) + '">' +
-          (f ? '<img src="' + esc(f) + '" alt="" loading="lazy" width="400" height="300">' : "") +
+          (f ? "<img " + juego(f, "(max-width: 760px) 48vw, 300px") +
+            ' alt="" loading="lazy" decoding="async" width="400" height="300">' : "") +
           "<b>" + esc(c.nombre) + "</b></a>";
       }).join("");
     }
@@ -885,7 +922,8 @@
         '<div class="producto-grilla">' +
           "<div>" +
             '<div class="galeria-marco">' +
-              '<img src="' + esc(ims[ficha.imagen] || ims[0]) + '" alt="' + esc(p.nombre) + '" width="1200" height="900" data-galeria-foto>' +
+              "<img " + juego(ims[ficha.imagen] || ims[0], "(max-width: 860px) 100vw, 55vw") +
+                ' alt="' + esc(p.nombre) + '" width="1200" height="900" fetchpriority="high" data-galeria-foto>' +
               '<button class="corazon" type="button" data-favorito="' + esc(p.id) + '"' +
                 ' aria-pressed="' + (fav ? "true" : "false") + '"' +
                 ' aria-label="' + (fav ? "Sacar de favoritos" : "Agregar a favoritos") + '">' +
@@ -902,7 +940,7 @@
                   return '<button type="button" data-galeria-ir="' + i + '"' + (i === ficha.imagen ? ' aria-current="true"' : "") +
                     ' aria-label="' + esc(col ? "Ver el color " + col : "Ver la foto " + (i + 1)) + '"' +
                     (col ? ' title="' + esc(col) + '"' : "") + '>' +
-                    '<img src="' + esc(f) + '" alt="" loading="lazy" width="400" height="300">' +
+                    "<img " + juego(f, "92px") + ' alt="" loading="lazy" decoding="async" width="400" height="300">' +
                     (col ? '<span class="miniatura-color">' + esc(col) + "</span>" : "") + "</button>";
                 }).join("") + "</div>"
               : "") +
@@ -1060,7 +1098,12 @@
     var ims = fotos(p);
     ficha.imagen = (i + ims.length) % ims.length;
     var grande = $("[data-galeria-foto]");
-    if (grande) grande.src = ims[ficha.imagen];
+    if (grande) {
+      // al cambiar de foto hay que mover también el srcset, si no se queda la anterior
+      var f = ims[ficha.imagen], c = chica(f);
+      grande.srcset = c ? c + " 700w, " + f + " 1400w" : "";
+      grande.src = c || f;
+    }
     $$("[data-galeria-ir]").forEach(function (b, n) {
       if (n === ficha.imagen) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
     });
@@ -1119,7 +1162,8 @@
     cuerpo.innerHTML = ls.map(function (l) {
       var p = PORID[l.id];
       return '<div class="linea">' +
-        '<a class="linea-foto" href="#/p/' + esc(p.id) + '" data-cerrar-carrito><img src="' + esc(fotoColor(p, l.color)) + '" alt="" width="400" height="300"></a>' +
+        '<a class="linea-foto" href="#/p/' + esc(p.id) + '" data-cerrar-carrito>' +
+          "<img " + juego(fotoColor(p, l.color), "80px") + ' alt="" loading="lazy" decoding="async" width="400" height="300"></a>' +
         '<div class="linea-datos">' +
           '<a class="linea-nombre" href="#/p/' + esc(p.id) + '" data-cerrar-carrito>' + esc(p.nombre) + "</a>" +
           (p.tallaUnica ? "" : '<span class="linea-talla">Talla ' + esc(l.talla) +
@@ -1226,7 +1270,8 @@
     return "<b>Tu pedido</b>" +
       '<div class="resumen-lineas">' + ls.map(function (l) {
         var p = PORID[l.id];
-        return '<div class="resumen-linea"><img src="' + esc(fotoColor(p, l.color)) + '" alt="" width="400" height="300">' +
+        return '<div class="resumen-linea">' + "<img " + juego(fotoColor(p, l.color), "64px") +
+          ' alt="" loading="lazy" decoding="async" width="400" height="300">' +
           "<div><b>" + esc(p.nombre) + "</b><small>" +
           (p.tallaUnica ? "" : "Talla " + esc(l.talla) + " · ") +
           (l.color ? esc(l.color) + " · " : "") + "Cantidad " + l.cantidad + "</small></div>" +
@@ -1677,6 +1722,7 @@
     revisarCarrito();
     armarFijos();
     armarPortada();
+    deslizarPortada();
     armarInicio();
     refrescarCarrito();
     escuchar();
@@ -1704,6 +1750,7 @@
     abrirPedido: abrirCarrito,
     agregar: agregar,
     contar: contar,
+    fotoChica: function (p) { return chica(foto(p)) || foto(p); },
     resumenBolsa: function () {
       return lineas().map(function (l) {
         var p = PORID[l.id];

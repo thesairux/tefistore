@@ -83,6 +83,11 @@ bien encuadradas.
 4:3, ~1200 px de ancho, de preferencia fondo blanco) y escribe la ruta en `"fotos"`. Si la foto no
 es 4:3 no pasa nada: la página la recorta centrada.
 
+De cada foto del catálogo hay además una copia de 700 px (`nombre-700.webp`), que es la que baja el
+navegador en las tarjetas chicas: el catálogo pesa así menos de la mitad. Las genera el script
+`herramientas/miniaturas.py`; hay que volver a correrlo si agregas fotos a mano (las que subes
+desde el panel no la necesitan, porque ya van achicadas).
+
 Las imágenes de la portada son `img/portada-1.webp`, `-2` y `-3`. La banda del medio y las fotos
 de «Compra por categoría» apuntan a una foto del catálogo, y se pueden cambiar desde el panel.
 

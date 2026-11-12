@@ -493,7 +493,7 @@
         if (!p) return "";
         var tallas = P.tallas(p).filter(function (x) { return P.stockTalla(p, x) > 0; });
         return '<button class="chat-producto" type="button" data-chat-producto="' + esc(p.id) + '">' +
-          '<img src="' + esc(P.foto(p)) + '" alt="" width="400" height="300" loading="lazy">' +
+          '<img src="' + esc(P.fotoChica ? P.fotoChica(p) : P.foto(p)) + '" alt="" width="400" height="300" loading="lazy" decoding="async">' +
           '<span class="chat-producto-datos"><b>' + esc(p.nombre) + "</b>" +
           "<small>" + (tallas.length ? "Tallas " + tallas.join(", ") : "Talla única") + "</small></span>" +
           '<span class="chat-producto-precio">' + plata(p.precio) + "</span></button>";
