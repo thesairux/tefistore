@@ -112,7 +112,8 @@
     }
 
     // ¿preguntan por las tallas en general, sin decir un número? ("¿qué tallas tienen?")
-    if (hay("talla") && !hay("que talla soy", "mi talla", "guia de talla", "como se mi talla", "medir")) {
+    if (hay("talla") && !hay("que talla soy", "mi talla", "guia de talla", "como se mi talla", "medir",
+      "cambi", "devol", "reembols", "reserv", "garantia")) {
       var numeros = {};
       P.productos().forEach(function (p) { P.tallas(p).forEach(function (n) { numeros[n] = true; }); });
       var rango = Object.keys(numeros).sort(function (a, b) { return a - b; });
@@ -348,9 +349,14 @@
     }
 
     // ¿piden una categoría entera? ("ver botas", "zapatillas", "sandalias")
-    var cat = (C.categorias || []).filter(function (c) {
-      return q.indexOf(t(c.nombre)) >= 0 || q.indexOf(t(c.id)) >= 0;
-    })[0];
+    // Solo si la frase es corta o pide ver algo: "¿estas botas aguantan lluvia?"
+    // no es un pedido de categoría.
+    var corta = q.trim().split(/\s+/).length <= 4;
+    var cat = (corta || hay("ver ", "muestra", "quiero", "busco", "tienen"))
+      ? (C.categorias || []).filter(function (c) {
+          return q.indexOf(t(c.nombre)) >= 0 || q.indexOf(t(c.id)) >= 0;
+        })[0]
+      : null;
     if (cat) {
       var deCat = (cat.productos || []).filter(P.hayStock).slice(0, 4);
       if (deCat.length) {
@@ -383,6 +389,7 @@
     }
 
     return {
+      generica: true,
       texto: "Esa no la manejo 😅 Escríbenos por WhatsApp (" + (N.whatsappVisible || "") + ") y te respondemos al tiro.\n" +
         "De lo que sí te puedo contar: tallas y horma, despacho y plazos, retiro, formas de pago, cupones, políticas de compra y los modelos del catálogo.",
       opciones: ["¿Qué tallas tienen?", "¿Cuánto es el despacho?", "Ver el catálogo"]
@@ -567,8 +574,13 @@
       agregarRespuesta(r);
     };
 
-    if (!modoIA) {
-      setTimeout(function () { terminar(responderBasico(texto)); }, 320);
+    /* Primero contesta el catálogo. Lo que sale de aquí es exacto: precios,
+       tallas, despacho y políticas salen tal cual están publicados, y además
+       es instantáneo y no gasta nada. La IA queda para lo que el guion no
+       supo responder. */
+    var local = responderBasico(texto);
+    if (!modoIA || !local.generica) {
+      setTimeout(function () { terminar(local); }, 320);
       return;
     }
 
@@ -589,13 +601,11 @@
         terminar({ texto: res.d.texto, productos: res.d.productos, opciones: res.d.opciones });
         return;
       }
-      // Sin IA configurada (o error): de aquí en adelante respondemos con el catálogo
+      // Sin IA configurada (o error): se queda la respuesta del catálogo
       if (res.status === 503 || res.status === 404 || res.status === 405) modoIA = false;
-      var r = responderBasico(texto);
-      if (res.status === 429) r = { texto: "Uf, muchas preguntas seguidas 😅 Espera un momentito y volvemos. Si es urgente, escríbenos por WhatsApp.", opciones: ["Hablar por WhatsApp"] };
-      terminar(r);
+      terminar(local);
     }).catch(function () {
-      terminar(responderBasico(texto));
+      terminar(local);
     });
   }
 

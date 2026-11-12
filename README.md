@@ -191,12 +191,20 @@ tocarla se abre su ficha.
 
 Funciona de dos maneras:
 
-| | Cuándo | Qué responde |
-|---|---|---|
-| **Con IA** | Hay una clave de Gemini o de Claude configurada | Entiende preguntas escritas de cualquier forma, usando el catálogo completo |
-| **Modo básico** | No hay clave, o se abre el archivo sin servidor | Responde solo con el catálogo: tallas, stock, despachos, pagos, cambios, horario y búsqueda |
+El chat siempre intenta primero con el catálogo, y solo pasa a la IA lo que el catálogo no supo
+responder:
 
-**La página nunca deja de funcionar por no tener la clave.** Sin ella el chat sigue respondiendo.
+| | Quién contesta | Qué responde |
+|---|---|---|
+| **Siempre** | El catálogo, en el navegador | Tallas, horma, stock, precios, despacho, plazos, retiro, pagos, cupones, políticas, categorías y búsqueda. Es instantáneo, no gasta cupo y lo que dice es exactamente lo publicado. |
+| **Solo si hay clave** | La IA (Gemini o Claude) | Las preguntas raras, las que están mal escritas o las que piden una recomendación. |
+
+Ese orden importa por dos razones: los datos que no pueden salir mal (sobre todo que **no hay
+cambios ni devoluciones**) nunca los inventa un modelo, y con el plan gratuito de Gemini el cupo
+diario rinde mucho más, porque la mayoría de las preguntas ni siquiera llega a Google.
+
+**La página nunca deja de funcionar por no tener la clave**, y si el cupo se acaba el chat sigue
+igual: la clienta no ve ningún error.
 
 ### Configurar la IA
 
