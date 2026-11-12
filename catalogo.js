@@ -29,7 +29,7 @@ window.CATALOGO = {
     "envioGratisDesde": 0,
     "envios": [
       {
-        "nombre": "La Serena y Coquimbo",
+        "nombre": "La Serena",
         "detalle": "1 a 2 días hábiles (estimado)",
         "comunas": [
           "La Serena",
