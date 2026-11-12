@@ -285,8 +285,8 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .pasos { background: var(--suave); color: var(--tinta); padding: clamp(44px, 5vw, 72px) 0; }
 .pasos .titulo { margin-bottom: 30px; }
 .pasos-titulo-2 { display: block; color: var(--principal); }
-.pasos-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
-@media (max-width: 860px) { .pasos-lista { grid-template-columns: 1fr; gap: 34px; } }
+.pasos-lista { display: grid; grid-template-columns: repeat(3, 1fr); gap: 46px; }
+@media (max-width: 860px) { .pasos-lista { grid-template-columns: 1fr; gap: 58px; } }
 .pasos-lista li {
   position: relative; background: var(--papel); border: 1px solid var(--linea);
   border-top: 3px solid var(--principal); padding: 24px 22px 26px;
@@ -314,12 +314,12 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
           mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12l7 7 7-7'/%3E%3C/svg%3E") center/contain no-repeat;
 }
 @media (min-width: 861px) {
-  .pasos-lista li + li::before { left: -28px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
-  .pasos-lista li + li::after { left: -16px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+  .pasos-lista li + li::before { left: -42px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
+  .pasos-lista li + li::after { left: -30px; top: 50%; transform: translateY(-50%) rotate(-90deg); }
 }
 @media (max-width: 860px) {
-  .pasos-lista li + li::before { left: 50%; top: -36px; transform: translateX(-50%); }
-  .pasos-lista li + li::after { left: 50%; top: -24px; transform: translateX(-50%); }
+  .pasos-lista li + li::before { left: 50%; top: -48px; transform: translateX(-50%); }
+  .pasos-lista li + li::after { left: 50%; top: -36px; transform: translateX(-50%); }
 }
 
 /* Políticas de compra */
