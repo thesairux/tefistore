@@ -49,6 +49,14 @@ a{color:var(--vino)}
 .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--vino)}
 .campo textarea{min-height:76px;resize:vertical;font-family:inherit;line-height:1.5}
 .campo .ayuda{font-size:12.5px;color:var(--suave-txt)}
+/* Avisos: lo que el panel le explica a quien lo está usando */
+.pista{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;
+  background:#fbf3f6;border-left:3px solid var(--vino);border-radius:0 8px 8px 0;
+  padding:11px 14px;font-size:13.5px;line-height:1.5;color:var(--tinta-2)}
+.pista svg{width:17px;height:17px;flex:none;margin-top:1px;color:var(--vino);
+  fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.pista b{color:var(--tinta);font-weight:600}
+.pista--antes{margin:0 0 14px}
 .fila{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 .fila-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px}
 @media(max-width:620px){.fila,.fila-3{grid-template-columns:1fr}}
@@ -600,7 +608,8 @@ a{color:var(--vino)}
         }).join("") +
         '<label class="subir">+ Elegir foto<br><small>del dispositivo</small><input type="file" accept="image/*" hidden data-subir-foto></label>' +
       "</div>" +
-      '<p class="ayuda" style="margin-top:8px">La primera foto es la que se ve en el catálogo. Se eligen desde tu teléfono o computador y se recortan solas a 4:3 sobre fondo blanco.</p>' +
+      pista("La <b>primera foto</b> es la que se ve en el catálogo; arrástrala con la flecha si quieres otra. " +
+        "Las eliges desde tu teléfono o computador y se recortan solas, sobre fondo blanco.") +
 
       '<p class="sub-titulo">Tallas y stock</p>' +
       '<div class="tallas-modo">' +
@@ -622,17 +631,17 @@ a{color:var(--vino)}
                   (tc[x] == null ? 0 : tc[x]) + '"' + ((tc[x] | 0) === 0 ? " data-cero" : "") + "></label>";
               }).join("") + "</div></div>";
           }).join("") +
-          '<p class="ayuda" style="margin-top:8px">Cuántos pares te quedan de cada color en cada talla. ' +
-          'En la página, la clienta elige primero el color y ve solo las tallas que hay de ese color. ' +
-          'En 0 la talla sale tachada; si un color queda en 0 entero, aparece como «sin stock».' +
-          (porColor ? "" : " Apenas cambies un número, el stock se separa por color.") + "</p>"
+          pista("Escribe <b>cuántos pares te quedan</b> de cada color en cada talla. " +
+            "En la página, la clienta elige primero el color y solo ve las tallas que hay de ese color. " +
+            "La talla en 0 le sale tachada, y si un color se acaba entero aparece como «sin stock»." +
+            (porColor ? "" : " Apenas cambies un número, el stock se separa por color."))
         : porStock
           ? '<div class="tallas-stock">' + Object.keys(tallas).map(function (t) {
               return '<label class="talla-stock"><span>Talla ' + esc(t) + "</span>" +
                 '<input type="number" min="0" max="99" data-talla="' + esc(t) + '" value="' + (tallas[t] == null ? 0 : tallas[t]) + '"' +
                 ((tallas[t] | 0) === 0 ? " data-cero" : "") + "></label>";
             }).join("") + "</div>" +
-            '<p class="ayuda" style="margin-top:8px">En 0 la talla sale tachada. Con 1 o 2 la página avisa «última» o «quedan 2».</p>'
+            pista("En 0 la talla le sale tachada a la clienta. Con 1 o 2, la ficha avisa «última» o «quedan 2».")
           : campo("Tallas disponibles", '<input type="text" data-p="tallas" value="' + esc(p.tallas || "") +
               '" placeholder="35-40"><span class="ayuda">Un rango como 35-40, o una lista: 36, 37, 39. ' +
               'Sirve cuando no llevas la cuenta de los pares.</span>')) +
@@ -645,13 +654,13 @@ a{color:var(--vino)}
         campo("Cuidados", '<input type="text" data-p="cuidados" value="' + esc(p.cuidados) + '">') +
       "</div>" +
       campo("Aviso de horma", '<input type="text" data-p="nota" value="' + esc(p.nota) + '">' +
-        '<span class="ayuda">Sale destacado junto a las tallas. Ej: «Horma pequeña: se recomienda pedir una talla más».</span>') +
+        '<span class="ayuda">Le sale destacado junto a las tallas. Por ejemplo: «Horma pequeña: se recomienda pedir una talla más».</span>') +
 
       '<p class="sub-titulo">Colores</p>' +
-      '<p class="ayuda" style="margin:-4px 0 12px">Los colores en que viene este modelo. Salen como botones ' +
-        'en la ficha, se usan en el buscador (si alguien escribe «botines negros» lo encuentra) y el color ' +
-        'elegido viaja en el pedido de WhatsApp. Si subes una foto por color, en el mismo orden, la ficha ' +
-        'cambia la foto al elegir el color.</p>' +
+      pista("Son los colores en que viene este modelo. Le aparecen como <b>botones</b> en la ficha, " +
+        "ayudan a que la encuentren buscando («botines negros») y el color que elija <b>te llega en el " +
+        "pedido de WhatsApp</b>.<br>Si subes una foto por color, en el mismo orden, la ficha cambia la " +
+        "foto sola al tocar cada uno.", "pista--antes") +
       '<div data-colores>' + (p.colores || []).map(function (c, i) {
         return '<div class="color-fila">' +
           '<input type="text" data-color-nombre="' + i + '" value="' + esc(c.nombre) + '" placeholder="Nombre del color">' +
@@ -665,8 +674,7 @@ a{color:var(--vino)}
         "> Mostrar en la portada (Destacados)</label>" +
       '<label class="marca-check"><input type="checkbox" data-p="__oculto"' + (p.disponible === false ? " checked" : "") +
         "> Esconder de la página</label>" +
-      campo("Cinta", '<span class="ayuda" style="margin-bottom:6px">El cartelito de la esquina de la foto, ' +
-        'en el catálogo. Sirve para destacar lo nuevo o lo que está en oferta.</span>' +
+      campo("Cinta", '<span class="ayuda" style="margin-bottom:6px">El cartelito de la esquina de la foto, en el catálogo.</span>' +
         '<select data-p="__etiqueta">' +
         ["", "nuevo", "oferta", "ultimos"].map(function (e) {
           var n = { "": "Sin cinta", nuevo: "Nuevo", oferta: "Oferta", ultimos: "Últimos pares" }[e];
@@ -689,6 +697,13 @@ a{color:var(--vino)}
     if (r) r.textContent = suma + (suma === 1 ? " par" : " pares");
   }
 
+  /* Aviso con icono: se usa para lo que hay que explicarle a la usuaria */
+  function pista(html, clase) {
+    return '<p class="pista' + (clase ? " " + clase : "") + '">' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/>' +
+      '<path d="M12 11v5"/><path d="M12 7.6v.1"/></svg><span>' + html + "</span></p>";
+  }
+
   function campo(etiqueta, html) {
     return '<div class="campo"><label>' + esc(etiqueta) + "</label>" + html + "</div>";
   }
@@ -702,7 +717,7 @@ a{color:var(--vino)}
           '<label class="boton boton--linea boton--chico">' + (valor ? "Cambiar foto" : "Elegir foto") +
             '<input type="file" accept="image/*" hidden ' + attrSubir + "></label>" +
           (valor ? '<button class="boton boton--linea boton--chico" type="button" ' + attrQuitar + ">Quitar</button>" : "") +
-          '<small class="ayuda">Desde tu teléfono o computador. Se recorta sola a 4:3 y se achica para que la página cargue rápido.</small>' +
+          '<small class="ayuda">La eliges desde tu teléfono o computador. Se recorta y se achica sola.</small>' +
         "</div>" +
       "</div></div>";
   }
@@ -1088,7 +1103,8 @@ a{color:var(--vino)}
       "</div>" +
 
       '<div class="tarjeta"><h3>Dónde están</h3>' +
-        '<p class="ayuda" style="margin-bottom:12px">Si dejas la dirección vacía, la página no muestra la sección Tienda ni el mapa.</p>' +
+        pista("Si dejas la dirección vacía, la página no muestra la sección «Tienda» ni el mapa, y el " +
+          "retiro se coordina por WhatsApp.", "pista--antes") +
         campo("Dirección", '<input type="text" data-n="direccion" value="' + esc(N.direccion) + '">') +
         '<div class="fila-3">' +
           campo("Sector", '<input type="text" data-n="sector" value="' + esc(N.sector) + '">') +
@@ -1146,7 +1162,8 @@ a{color:var(--vino)}
   function pintarCupones() {
     $('[data-vista="cupones"]').innerHTML =
       '<div class="tarjeta"><h3>Cupones de descuento</h3>' +
-        '<p class="ayuda" style="margin-bottom:14px">El cliente escribe el código en «Finalizar compra». Un cupón por pedido.</p>' +
+        pista("La clienta escribe el código al finalizar la compra. Se puede usar <b>un cupón por pedido</b>.",
+          "pista--antes") +
         '<div data-cupones>' + (D.cupones || []).map(function (c, i) {
           return '<div class="repe"><div class="repe-cab"><b>' + esc(c.codigo || "Cupón") + "</b>" +
             '<button class="boton boton--linea boton--chico" type="button" data-cup-borra="' + i + '">Quitar</button></div>' +
@@ -1218,15 +1235,15 @@ a{color:var(--vino)}
     if (statsDatos.error) { v.innerHTML = periodos + '<p class="st-vacio">' + esc(statsDatos.error) + "</p>"; return; }
     if (!statsDatos.configurado) {
       v.innerHTML = '<div class="tarjeta"><h3>Falta un paso para contar las visitas</h3>' +
-        '<p class="ayuda">La página funciona igual sin esto. Para guardar las visitas y los pedidos necesita una ' +
-        'base de datos gratuita de Cloudflare (D1). Se hace una sola vez:</p>' +
+        pista("Tu página funciona igual sin esto. Para guardar las visitas y los pedidos necesita una " +
+          "base de datos gratuita de Cloudflare (D1). Se hace <b>una sola vez</b>:", "pista--antes") +
         '<ol class="st-pasos">' +
           "<li>En Cloudflare, abre <b>Storage &amp; Databases → D1</b> y toca <b>Create</b>. Ponle de nombre <b>tefistore-estadisticas</b>.</li>" +
           "<li>Copia el <b>Database ID</b> que te muestra.</li>" +
           "<li>En el repositorio, abre <b>wrangler.jsonc</b>: adentro está la línea de <b>d1_databases</b> comentada. Quítale las barras del principio y pega ahí el ID.</li>" +
           "<li>Guarda y espera a que Cloudflare vuelva a publicar. Desde ahí se empiezan a contar las visitas.</li>" +
         "</ol>" +
-        '<p class="ayuda" style="margin-top:12px">Si prefieres, dime y lo dejo listo yo: solo necesito que me pases el Database ID (no es secreto).</p></div>';
+        pista("¿Prefieres que lo deje listo yo? Pásame el <b>Database ID</b> y lo configuro. No es un dato secreto.") + "</div>";
       return;
     }
 
@@ -1261,8 +1278,8 @@ a{color:var(--vino)}
           tile("Total referencial", plata(tot.ingresos), "suma de los pedidos enviados") +
           tile("Pedido promedio", plata(tot.enviar ? tot.ingresos / tot.enviar : 0)) +
         "</div>" +
-        '<p class="ayuda">Los pedidos llegan por WhatsApp: «enviados» son los que la clienta mandó desde la página. ' +
-        'El total es referencial, tú lo confirmas en la conversación.</p>' +
+        pista("Los pedidos llegan por WhatsApp: «enviados» son los que la clienta mandó desde la página. " +
+          "El total es referencial; tú lo confirmas en la conversación.") +
       "</div>" +
 
       '<div class="st-dos">' +
@@ -1293,7 +1310,9 @@ a{color:var(--vino)}
       "</div>" +
 
       '<div class="tarjeta"><h3>Categorías</h3>' +
-        '<p class="ayuda" style="margin-bottom:12px">Son los botones del menú. Al quitar una categoría se borran sus productos.</p>' +
+        pista("Son los botones del menú y los filtros del catálogo. La foto es la que sale en " +
+          "«Compra por categoría».<br><b>Ojo:</b> al quitar una categoría se borran también sus productos.",
+          "pista--antes") +
         '<div data-cats>' + (D.categorias || []).map(function (c, i) {
           return '<div class="repe"><div class="color-fila">' +
             '<input type="text" data-cat="' + i + '" value="' + esc(c.nombre) + '">' +
