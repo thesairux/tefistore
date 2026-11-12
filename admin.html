@@ -294,10 +294,18 @@ a{color:var(--vino)}
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cuerpo)
     }).then(function (r) {
-      return r.json().catch(function () { return {}; }).then(function (d) {
+      return r.text().then(function (crudo) {
+        var d = {};
+        try { d = JSON.parse(crudo); } catch (x) { d = {}; }
         if (!r.ok || d.error) {
-          var e = new Error((ERRORES[d.error] || ("Error " + r.status)) +
-            (d.github ? "\nGitHub dijo: " + d.github : ""));
+          // Si no hay un mensaje conocido, se muestra lo que haya llegado: es
+          // preferible un texto feo a un «Error 502» que no dice nada.
+          var motivo = ERRORES[d.error] ||
+            (d.error ? "El servidor respondió «" + d.error + "» (HTTP " + r.status + ")."
+                     : "El servidor respondió HTTP " + r.status + ".");
+          var e = new Error(motivo +
+            (d.github ? "\nGitHub dijo: " + d.github : "") +
+            (!d.error && crudo ? "\n" + crudo.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim().slice(0, 200) : ""));
           e.codigo = d.error;
           throw e;
         }
