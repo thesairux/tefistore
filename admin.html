@@ -77,12 +77,22 @@ a{color:var(--vino)}
 
 /* ---------- marco ---------- */
 .barra{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--linea);
-  display:flex;align-items:center;gap:14px;padding:12px 20px}
+  display:flex;align-items:center;gap:14px;padding:12px 20px;flex-wrap:wrap}
 .barra .marca{margin:0;font-size:16px}
 .barra-logo{width:34px;height:34px;border-radius:50%;object-fit:cover;flex:none}
 .barra-etiqueta{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--suave-txt);
   border-left:1px solid var(--linea);padding-left:14px}
 .barra-der{margin-left:auto;display:flex;align-items:center;gap:10px}
+/* En el teléfono no cabía todo en una línea y «Guardar cambios» quedaba
+   cortado a la derecha. Ahora baja a su propia fila, ancho completo. */
+@media(max-width:720px){
+  .barra{padding:10px 14px;gap:10px}
+  .barra-etiqueta{display:none}
+  .barra-der{margin-left:auto;width:100%;flex-wrap:wrap;gap:8px}
+  .barra-der .estado-guardado{order:-1;width:100%;text-align:center}
+  .barra-der [data-guardar]{flex:1 1 auto;justify-content:center}
+  .barra-der a,.barra-der [data-salir]{flex:0 0 auto}
+}
 .estado-guardado{font-size:13px;color:var(--suave-txt)}
 .estado-guardado[data-cambios]{color:var(--dorado);font-weight:600}
 .pestanas{display:flex;gap:2px;overflow-x:auto;background:#fff;border-bottom:1px solid var(--linea);padding:0 12px}
@@ -109,6 +119,23 @@ a{color:var(--vino)}
 .lista-item b{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lista-item small{font-size:12.5px;color:var(--suave-txt)}
 .lista-item .oculto-tag{font-size:11px;color:var(--rojo)}
+/* Grupos por categoría en la lista de productos */
+.grupo-cat{border-bottom:1px solid var(--linea)}
+.grupo-cat:last-child{border-bottom:0}
+.grupo-cat>summary{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;
+  background:var(--suave);list-style:none;position:sticky;top:0;z-index:1;
+  border-bottom:1px solid var(--linea)}
+.grupo-cat>summary::-webkit-details-marker{display:none}
+.grupo-cat>summary::marker{content:""}
+.grupo-cat>summary:hover{background:var(--suave-2)}
+.grupo-cat-foto{width:34px;height:26px;border-radius:5px;object-fit:cover;flex:none;
+  border:1px solid var(--linea);background:#fff}
+.grupo-cat>summary b{font-size:13.5px;font-weight:600;letter-spacing:.02em}
+.grupo-cat-n{margin-left:auto;background:#fff;border:1px solid var(--linea);border-radius:999px;
+  padding:2px 9px;font-size:11.5px;color:var(--suave-txt);font-variant-numeric:tabular-nums}
+.grupo-cat-flecha{width:9px;height:9px;flex:none;border-right:1.6px solid var(--suave-txt);
+  border-bottom:1.6px solid var(--suave-txt);transform:rotate(-45deg);margin-right:2px;transition:transform .15s}
+.grupo-cat[open]>summary .grupo-cat-flecha{transform:rotate(45deg)}
 
 .editor{background:#fff;border:1px solid var(--linea);border-radius:10px;padding:22px}
 .editor-cab{display:flex;align-items:center;gap:12px;margin-bottom:18px}
@@ -506,8 +533,11 @@ a{color:var(--vino)}
       if (!suyos.length) return "";
       var dentro = suyos.some(function (x) { return x.p.id === sel; });
       var abierto = grupos[c.id] === undefined ? dentro : grupos[c.id];
+      var tapa = c.foto || foto1((suyos[0] || {}).p || {});
       return '<details class="grupo-cat"' + (abierto ? " open" : "") + ' data-grupo="' + esc(c.id) + '">' +
-        "<summary><b>" + esc(c.nombre) + "</b><span>" + suyos.length + "</span></summary>" +
+        "<summary><i class=\"grupo-cat-flecha\"></i>" +
+          (tapa ? '<img class="grupo-cat-foto" src="' + esc(urlFoto(tapa)) + '" alt="" loading="lazy">' : "") +
+          "<b>" + esc(c.nombre) + '</b><span class="grupo-cat-n">' + suyos.length + "</span></summary>" +
         suyos.map(item).join("") + "</details>";
     }).join("");
   }
@@ -575,14 +605,12 @@ a{color:var(--vino)}
       '<p class="sub-titulo">Tallas y stock</p>' +
       '<div class="tallas-modo">' +
         '<button type="button" data-modo-tallas="rango" aria-pressed="' + (!porStock && !porColor) + '">Rango (sin contar pares)</button>' +
-        '<button type="button" data-modo-tallas="stock" aria-pressed="' + (porStock && !porColor) + '">Stock por talla</button>' +
-        (colores.length > 1
-          ? '<button type="button" data-modo-tallas="color" aria-pressed="' + porColor + '">Stock por color y talla</button>'
-          : "") +
+        '<button type="button" data-modo-tallas="color" aria-pressed="' + (porStock || porColor) + '">Stock por color y talla</button>' +
       "</div>" +
-      (porColor
+      (porColor || (porStock && colores.length)
         ? colores.map(function (c, ic) {
-            var tc = tallasComoObjeto(c.tallas);
+            // mientras no se haya separado, cada color muestra el stock del producto
+            var tc = tallasComoObjeto(c.tallas != null ? c.tallas : p.tallas);
             var quedan = Object.keys(tc).reduce(function (a, k) { return a + (parseInt(tc[k], 10) || 0); }, 0);
             return '<div class="repe"><div class="repe-cab">' +
               '<b><span class="color-punto" style="background:' + esc(c.hex || "#ddd") + '"></span> ' +
@@ -596,7 +624,8 @@ a{color:var(--vino)}
           }).join("") +
           '<p class="ayuda" style="margin-top:8px">Cuántos pares te quedan de cada color en cada talla. ' +
           'En la página, la clienta elige primero el color y ve solo las tallas que hay de ese color. ' +
-          'En 0 la talla sale tachada; si un color queda en 0 entero, aparece como «sin stock».</p>'
+          'En 0 la talla sale tachada; si un color queda en 0 entero, aparece como «sin stock».' +
+          (porColor ? "" : " Apenas cambies un número, el stock se separa por color.") + "</p>"
         : porStock
           ? '<div class="tallas-stock">' + Object.keys(tallas).map(function (t) {
               return '<label class="talla-stock"><span>Talla ' + esc(t) + "</span>" +
@@ -694,16 +723,16 @@ a{color:var(--vino)}
       var modo = el.getAttribute("data-modo-tallas");
       var base = tallasComoObjeto(x.p.tallas);
       if (modo === "color") {
-        // cada color parte con las tallas del producto, para solo cambiar los números
-        (x.p.colores || []).forEach(function (c) {
-          var o = tallasComoObjeto(c.tallas != null ? c.tallas : base);
-          Object.keys(o).forEach(function (k) { if (o[k] == null) o[k] = 1; });
-          c.tallas = o;
-        });
-      } else if (modo === "stock") {
-        (x.p.colores || []).forEach(function (c) { delete c.tallas; });
         Object.keys(base).forEach(function (k) { if (base[k] == null) base[k] = 1; });
         x.p.tallas = base;
+        // con dos o más colores, cada uno parte con las tallas del producto
+        if ((x.p.colores || []).length > 1) {
+          x.p.colores.forEach(function (c) {
+            var o = tallasComoObjeto(c.tallas != null ? c.tallas : base);
+            Object.keys(o).forEach(function (k) { if (o[k] == null) o[k] = 1; });
+            c.tallas = o;
+          });
+        }
       } else {
         (x.p.colores || []).forEach(function (c) { delete c.tallas; });
         var ks = Object.keys(base);
@@ -766,7 +795,11 @@ a{color:var(--vino)}
       if (cual != null) {
         var col = (x.p.colores || [])[+cual];
         if (!col) return;
-        col.tallas = col.tallas && typeof col.tallas === "object" ? col.tallas : {};
+        // si el stock todavía estaba junto, se reparte a todos los colores de una
+        // vez: dejar unos con tabla y otros sin ella escondería esos colores.
+        (x.p.colores || []).forEach(function (c) {
+          if (c.tallas == null) c.tallas = tallasComoObjeto(x.p.tallas);
+        });
         col.tallas[el.getAttribute("data-talla")] = cuantos;
       } else {
         x.p.tallas[el.getAttribute("data-talla")] = cuantos;

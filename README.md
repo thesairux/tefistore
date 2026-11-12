@@ -150,14 +150,13 @@ Qué se puede editar:
 
 Cada producto tiene dos modos:
 
-- **Rango** (`35-40`): se ofrecen esas tallas sin prometer cuántos pares hay.
-- **Stock por talla**: escribes cuántos pares quedan de cada una. En 0 la talla sale tachada, y con
-  1 o 2 la ficha avisa «última» o «quedan 2». El filtro del catálogo empieza a esconder los modelos
-  que no tengan la talla buscada.
-- **Stock por color y talla** (solo si el modelo tiene dos o más colores): una tabla por color. En
+- **Rango** (`35-40`): se ofrecen esas tallas sin prometer cuántos pares hay. Sirve cuando no llevas
+  la cuenta.
+- **Stock por color y talla**: una tabla por cada color del modelo, con los pares de cada talla. En
   la página, la clienta elige primero el color y ve solo las tallas que hay de ese color; un color
   sin pares aparece tachado como «sin stock», y el color elegido viaja en el pedido de WhatsApp.
-  En `catalogo.js` queda como un `"tallas"` dentro de cada color.
+  En 0 la talla sale tachada, y con 1 o 2 la ficha avisa «última» o «quedan 2». En `catalogo.js`
+  queda como un `"tallas"` dentro de cada color.
 
 Para pasar de uno a otro, los botones están arriba de las tallas.
 
