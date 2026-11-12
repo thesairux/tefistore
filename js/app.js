@@ -100,6 +100,16 @@
 
   function fotos(p) { return (p && p.fotos && p.fotos.length) ? p.fotos : ["img/catalogo/_sinfoto.svg"]; }
   function foto(p) { return fotos(p)[0]; }
+  /* La foto del color pedido. Se emparejan por orden: el 1er color con la 1ra
+     foto, y así. Si hay más colores que fotos (recién agregaste uno y todavía
+     no le subes la suya), ese color usa la principal en vez de romper nada. */
+  function fotoColor(p, color) {
+    var ims = fotos(p);
+    if (!color) return ims[0];
+    var cs = p.colores || [];
+    for (var i = 0; i < cs.length; i++) if (cs[i].nombre === color) return ims[i] || ims[0];
+    return ims[0];
+  }
   var SIN_CONTAR = 10;   // tope por talla cuando la tienda no lleva la cuenta de pares
 
   /* Stock por color: cada color puede traer sus propias tallas. Si ninguno las
@@ -276,7 +286,7 @@
     if (esFavorito(id)) favoritos = favoritos.filter(function (x) { return x !== id; });
     else favoritos = favoritos.concat([id]);
     guardar(LLAVE_FAVORITOS, favoritos);
-    avisar(esFavorito(id) ? "Guardado en favoritos ♥" : "Lo sacamos de favoritos");
+    avisar(esFavorito(id) ? "Lo agregaste a favoritos ♥" : "Lo sacamos de favoritos");
     return esFavorito(id);
   }
 
@@ -430,7 +440,14 @@
     // Anuncio de arriba
     var an = $("[data-anuncio]");
     if (an && (C.anuncio || []).length) {
-      an.innerHTML = C.anuncio.map(function (x) { return "<span>" + esc(x) + "</span>"; }).join("");
+      // Un icono según de qué habla cada aviso: el camión al principio, el de
+       // WhatsApp al final. Se mira el texto, así sigue funcionando si lo cambias.
+       an.innerHTML = C.anuncio.map(function (x) {
+        var s = sinTildes(x);
+        var antes = /envio|despacho|entrega/.test(s) ? ico("camion", "icono icono--anuncio") : "";
+        var despues = /whatsapp|wsp/.test(s) ? ico("wsp", "icono icono--anuncio") : "";
+        return "<span>" + antes + esc(x) + despues + "</span>";
+      }).join("");
       an.removeAttribute("hidden");
     }
 
@@ -442,7 +459,7 @@
     if (menu) menu.innerHTML = enlaces.map(function (e) { return '<a href="' + e.h + '">' + esc(e.t) + "</a>"; }).join("");
     var mm = $("[data-menu-movil-lista]");
     if (mm) {
-      mm.innerHTML = enlaces.concat([{ h: "#/favoritos", t: "Favoritos" }]).map(function (e) {
+      mm.innerHTML = enlaces.map(function (e) {
         return '<a href="' + e.h + '">' + esc(e.t) + ico("flecha") + "</a>";
       }).join("");
     }
@@ -450,7 +467,7 @@
     if (pc) {
       pc.innerHTML = CATEGORIAS.map(function (c) {
         return '<li><a href="#/c/' + esc(c.id) + '">' + esc(c.nombre) + "</a></li>";
-      }).concat(['<li><a href="#/favoritos">Favoritos</a></li>']).join("");
+      }).join("");
     }
 
     // Horario
@@ -583,11 +600,66 @@
     });
   }
 
+  /* Destacados: van cambiando solos, con barritas de avance, flechas y pausa.
+     Se muestran TODOS los que marques en el panel, no solo tres. */
+  var destacados = { lista: [], i: 0, pausado: false, timer: null, ms: 6000 };
+
+  function pintarDestacados() {
+    var caja = $("[data-destacados]");
+    if (!caja) return;
+    var l = destacados.lista;
+    if (!l.length) { caja.innerHTML = ""; return; }
+    if (destacados.i >= l.length) destacados.i = 0;
+    var p = l[destacados.i];
+    var d = descuento(p);
+    var varios = l.length > 1;
+    caja.innerHTML =
+      '<div class="dest" aria-roledescription="carrusel" aria-label="Modelos destacados">' +
+        (varios
+          ? '<div class="dest-barras" style="--duracion:' + destacados.ms + 'ms">' +
+            l.map(function (q, i) {
+              return '<button type="button" data-dest-ir="' + i + '" aria-label="Ver ' + esc(q.nombre) + '" class="' +
+                (i < destacados.i ? "hecha" : i === destacados.i ? "activa" : "") + '"><span><i></i></span></button>';
+            }).join("") + "</div>"
+          : "") +
+        '<a class="dest-foto" href="#/p/' + esc(p.id) + '">' +
+          '<img src="' + esc(foto(p)) + '" alt="' + esc(p.nombre) + '" width="1400" height="1050">' +
+          (d ? '<span class="cinta cinta--oferta">-' + d + "%</span>" : "") + "</a>" +
+        '<div class="dest-texto">' +
+          '<span class="dest-ojo">' + esc(p._catNombre) + "</span>" +
+          '<h3><a href="#/p/' + esc(p.id) + '">' + esc(p.nombre) + "</a></h3>" +
+          (p.detalle ? "<p>" + esc(p.detalle) + "</p>" : "") +
+          '<p class="dest-precio">' + plata(p.precio) +
+            (d ? '<span class="producto-antes">' + plata(p.precioAntes) + "</span>" : "") + "</p>" +
+          '<a class="boton" href="#/p/' + esc(p.id) + '">Ver el modelo</a>' +
+        "</div>" +
+        (varios
+          ? '<button class="dest-flecha dest-flecha--izq" type="button" data-dest="-1" aria-label="Anterior">' + ico("izq") + "</button>" +
+            '<button class="dest-flecha dest-flecha--der" type="button" data-dest="1" aria-label="Siguiente">' + ico("der") + "</button>" +
+            '<button class="dest-pausa" type="button" data-dest-pausa aria-pressed="' + destacados.pausado + '" aria-label="' +
+              (destacados.pausado ? "Seguir" : "Pausar") + ' la rotación">' + (destacados.pausado ? "▶" : "❚❚") + "</button>"
+          : "") +
+      "</div>";
+    caja.classList.toggle("dest-pausado", destacados.pausado);
+  }
+  function verDestacado(i) {
+    var l = destacados.lista;
+    if (!l.length) return;
+    destacados.i = (i + l.length) % l.length;
+    pintarDestacados();
+    relojDestacados();
+  }
+  function relojDestacados() {
+    clearInterval(destacados.timer);
+    if (destacados.pausado || destacados.lista.length < 2) return;
+    destacados.timer = setInterval(function () { verDestacado(destacados.i + 1); }, destacados.ms);
+  }
+
   function armarInicio() {
-    var dest = PRODUCTOS.filter(function (p) { return p.destacado && hayStock(p); }).slice(0, 3);
-    if (!dest.length) dest = PRODUCTOS.filter(hayStock).slice(0, 3);
-    var cajaD = $("[data-destacados]");
-    if (cajaD) cajaD.innerHTML = dest.map(tarjeta).join("");
+    destacados.lista = PRODUCTOS.filter(function (p) { return p.destacado && hayStock(p); }).slice(0, 10);
+    if (!destacados.lista.length) destacados.lista = PRODUCTOS.filter(hayStock).slice(0, 3);
+    pintarDestacados();
+    relojDestacados();
 
     var T = C.temporada || {};
     var cajaT = $("[data-temporada]");
@@ -772,9 +844,7 @@
     var tallas = tallasDe(p, ficha.color);
     var fav = esFavorito(p.id);
 
-    var relacionados = PRODUCTOS.filter(function (x) {
-      return x._cat === p._cat && x.id !== p.id && hayStock(x);
-    }).slice(0, 4);
+    var relacionados = parecidos(p, 4);
 
     vista.innerHTML =
       '<div class="contenedor">' +
@@ -786,6 +856,10 @@
           "<div>" +
             '<div class="galeria-marco">' +
               '<img src="' + esc(ims[ficha.imagen] || ims[0]) + '" alt="' + esc(p.nombre) + '" width="1200" height="900" data-galeria-foto>' +
+              '<button class="corazon" type="button" data-favorito="' + esc(p.id) + '"' +
+                ' aria-pressed="' + (fav ? "true" : "false") + '"' +
+                ' aria-label="' + (fav ? "Sacar de favoritos" : "Agregar a favoritos") + '">' +
+                '<svg class="icono" viewBox="0 0 24 24" aria-hidden="true"' + (fav ? ' fill="currentColor"' : "") + ">" + SVG.corazon + "</svg></button>" +
               (ims.length > 1
                 ? '<button class="galeria-flecha galeria-flecha--izq" type="button" data-galeria="-1" aria-label="Foto anterior">' + ico("izq") + "</button>" +
                   '<button class="galeria-flecha galeria-flecha--der" type="button" data-galeria="1" aria-label="Foto siguiente">' + ico("der") + "</button>"
@@ -852,9 +926,6 @@
               (agotado
                 ? '<a class="boton boton--wsp" href="' + esc(enlaceWsp("Hola, ¿tendrán de nuevo " + p.nombre + "?")) + '" target="_blank" rel="noopener">' + ico("wsp") + "Consultar por WhatsApp</a>"
                 : '<button class="boton" type="button" data-agregar>' + ico("bolsa") + "Agregar al carrito</button>") +
-              '<button class="boton boton--linea" type="button" data-favorito="' + esc(p.id) + '">' +
-                '<svg class="icono" viewBox="0 0 24 24" aria-hidden="true"' + (fav ? ' fill="currentColor"' : "") + ">" + SVG.corazon + "</svg>" +
-                (fav ? "Guardado en favoritos" : "Agregar a favoritos") + "</button>" +
             "</div>" +
 
             '<div class="acordeon">' +
@@ -893,14 +964,15 @@
      Cuando el producto trae una foto por color, la galería dice cuál se está viendo. */
   function coloresDe(p) {
     var cs = p.colores || [], ims = fotos(p);
-    return cs.length > 1 && cs.length === ims.length ? cs : null;
+    // los colores que sí tienen foto propia; los de más quedan fuera del rótulo
+    return cs.length > 1 && ims.length > 1 ? cs.slice(0, ims.length) : null;
   }
   /* Qué foto le toca a un color, cuando hay una por color */
   function indiceColor(p, nombre) {
     var cs = coloresDe(p);
     if (!cs || !nombre) return 0;
     for (var i = 0; i < cs.length; i++) if (cs[i].nombre === nombre) return i;
-    return 0;
+    return 0;   // color sin foto propia: se queda con la principal
   }
   function elegirColor(nombre) {
     var p = PORID[ficha.id];
@@ -920,6 +992,36 @@
       ? '<span class="color-punto" style="background:' + esc(cs[ficha.imagen].hex || "#ddd") + '"></span>' +
         "Color: <b>" + esc(cs[ficha.imagen].nombre) + "</b>"
       : "Foto " + (ficha.imagen + 1) + " de " + fotos(p).length;
+  }
+
+  /* «También te puede gustar»: antes solo repetía el mismo tipo de zapato.
+     Ahora puntúa el parecido (precio, colores, etiquetas, materia) y deja
+     entrar otras categorías, con un tope de dos del mismo tipo. */
+  function parecidos(p, cuantos) {
+    var colores = (p.colores || []).map(function (c) { return sinTildes(c.nombre); });
+    var tags = p.etiquetas || [];
+    var puntaje = function (x) {
+      var s = 0;
+      if (x._cat === p._cat) s += 2;
+      var dif = Math.abs(x.precio - p.precio) / Math.max(1, p.precio);
+      if (dif <= 0.15) s += 4; else if (dif <= 0.3) s += 2; else if (dif <= 0.5) s += 1;
+      if ((x.colores || []).some(function (c) { return colores.indexOf(sinTildes(c.nombre)) >= 0; })) s += 2;
+      if ((x.etiquetas || []).some(function (e) { return tags.indexOf(e) >= 0; })) s += 1;
+      if (sinTildes(x.material || "") && sinTildes(x.material) === sinTildes(p.material || "")) s += 1;
+      if (x.destacado) s += 1;
+      return s;
+    };
+    var lista = PRODUCTOS.filter(function (x) { return x.id !== p.id && hayStock(x); })
+      .map(function (x) { return { p: x, s: puntaje(x) }; })
+      .sort(function (a, b) { return b.s - a.s; });
+    var salida = [], deSuCat = 0;
+    lista.forEach(function (x) {
+      if (salida.length >= cuantos) return;
+      if (x.p._cat === p._cat && deSuCat >= 2) return;   // que no sea todo lo mismo
+      if (x.p._cat === p._cat) deSuCat++;
+      salida.push(x.p);
+    });
+    return salida;
   }
 
   function verFoto(i) {
@@ -986,7 +1088,7 @@
     cuerpo.innerHTML = ls.map(function (l) {
       var p = PORID[l.id];
       return '<div class="linea">' +
-        '<a class="linea-foto" href="#/p/' + esc(p.id) + '" data-cerrar-carrito><img src="' + esc(foto(p)) + '" alt="" width="400" height="300"></a>' +
+        '<a class="linea-foto" href="#/p/' + esc(p.id) + '" data-cerrar-carrito><img src="' + esc(fotoColor(p, l.color)) + '" alt="" width="400" height="300"></a>' +
         '<div class="linea-datos">' +
           '<a class="linea-nombre" href="#/p/' + esc(p.id) + '" data-cerrar-carrito>' + esc(p.nombre) + "</a>" +
           (p.tallaUnica ? "" : '<span class="linea-talla">Talla ' + esc(l.talla) +
@@ -1066,7 +1168,7 @@
                       return '<option value="' + esc(r) + '"' + (datos.region === r ? " selected" : "") + ">" + esc(r) + "</option>";
                     }).join("") +
                   "</select>" + (erroresForm.region ? '<p class="campo-error">' + esc(erroresForm.region) + "</p>" : "") + "</div>" +
-                  campo("co-comuna", "Comuna", "text", "comuna", ' autocomplete="address-level2"') +
+                  comunaCampo(campo) +
                 "</div>" +
                 '<div class="campos" style="margin-top:12px">' +
                   campo("co-dir", "Dirección", "text", "direccion", ' autocomplete="street-address"') +
@@ -1093,7 +1195,7 @@
     return "<b>Tu pedido</b>" +
       '<div class="resumen-lineas">' + ls.map(function (l) {
         var p = PORID[l.id];
-        return '<div class="resumen-linea"><img src="' + esc(foto(p)) + '" alt="" width="400" height="300">' +
+        return '<div class="resumen-linea"><img src="' + esc(fotoColor(p, l.color)) + '" alt="" width="400" height="300">' +
           "<div><b>" + esc(p.nombre) + "</b><small>" +
           (p.tallaUnica ? "" : "Talla " + esc(l.talla) + " · ") +
           (l.color ? esc(l.color) + " · " : "") + "Cantidad " + l.cantidad + "</small></div>" +
@@ -1166,10 +1268,41 @@
     if (datos.correo.trim() && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(datos.correo.trim())) erroresForm.correo = "Revisa el correo.";
     if (datos.entrega !== "retiro") {
       if (!datos.region) erroresForm.region = "Elige tu región.";
-      if (!datos.comuna.trim()) erroresForm.comuna = "Escribe tu comuna.";
+      if (!String(datos.comuna || "").trim()) erroresForm.comuna = "Elige o escribe tu comuna.";
       if (!datos.direccion.trim()) erroresForm.direccion = "Escribe tu dirección.";
     }
     return Object.keys(erroresForm).length === 0;
+  }
+
+  /* La comuna sale de una lista según la región elegida. Si la suya no está,
+     elige «Otra» y la escribe: así no se queda sin poder comprar. */
+  function comunasDe(region) {
+    var todas = window.COMUNAS || {};
+    return (todas[region] || []).slice();
+  }
+  /* «campo» vive dentro de pintarCheckout, así que se recibe como argumento */
+  function comunaCampo(campo) {
+    var lista = comunasDe(datos.region);
+    var err = erroresForm.comuna;
+    if (!lista.length) {
+      // sin región elegida (o sin lista para ella): se escribe a mano
+      return campo("co-comuna", "Comuna", "text", "comuna", ' autocomplete="address-level2"');
+    }
+    var enLista = lista.indexOf(datos.comuna) >= 0;
+    var otra = datos.comunaOtra || (!!datos.comuna.trim() && !enLista);
+    return '<div class="campo"><select data-campo="comuna-lista" aria-label="Comuna"' +
+        (err ? ' aria-invalid="true"' : "") + ">" +
+        '<option value="">Comuna</option>' +
+        lista.map(function (c) {
+          return '<option value="' + esc(c) + '"' + (datos.comuna === c ? " selected" : "") + ">" + esc(c) + "</option>";
+        }).join("") +
+        '<option value="__otra"' + (otra ? " selected" : "") + ">Otra (la escribo yo)</option>" +
+      "</select>" +
+      (otra
+        ? '<input type="text" data-campo="comuna" value="' + esc(datos.comuna) + '" placeholder="¿Cuál?" ' +
+          'autocomplete="address-level2" style="margin-top:8px"' + (err ? ' aria-invalid="true"' : "") + ">"
+        : "") +
+      (err ? '<p class="campo-error">' + esc(err) + "</p>" : "") + "</div>";
   }
 
   function textoPedido(corto) {
@@ -1302,6 +1435,14 @@
       var t = ev.target, el;
 
       if ((el = t.closest("[data-slide]"))) { verSlide(+el.getAttribute("data-slide")); clearInterval(slideTimer); return; }
+      if ((el = t.closest("[data-dest]"))) { verDestacado(destacados.i + (+el.getAttribute("data-dest"))); return; }
+      if ((el = t.closest("[data-dest-ir]"))) { verDestacado(+el.getAttribute("data-dest-ir")); return; }
+      if (t.closest("[data-dest-pausa]")) {
+        destacados.pausado = !destacados.pausado;
+        pintarDestacados();
+        relojDestacados();
+        return;
+      }
       if ((el = t.closest("[data-abrir-menu]"))) { abrirMenu(); return; }
       if (t.closest("[data-cerrar-menu]")) { cerrarMenu(); return; }
       if (t.closest("[data-velo]")) { cerrarMenu(); cerrarCarrito(); return; }
@@ -1438,6 +1579,7 @@
       }
       if (el.matches("[data-campo]")) {
         var k = el.getAttribute("data-campo");
+        if (k === "comuna-lista") return;   // el desplegable se atiende en «change»
         datos[k] = el.value;
         guardarDatos();
         if (erroresForm[k]) {
@@ -1453,7 +1595,27 @@
     document.addEventListener("change", function (ev) {
       var el = ev.target;
       if (el.matches("[data-orden]")) { filtro.orden = el.value; pintarCatalogo(); }
-      if (el.matches('[data-campo="region"]') || el.matches('[data-campo="comuna"]')) pintarResumen();
+      if (el.matches('[data-campo="region"]')) {
+        var validas = comunasDe(datos.region);
+        if (validas.length && datos.comuna && validas.indexOf(datos.comuna) < 0) {
+          datos.comuna = "";
+          datos.comunaOtra = false;   // la comuna escrita a mano era de la región anterior
+          guardarDatos();
+        }
+        pintarCheckout();
+        return;
+      }
+      if (el.matches('[data-campo="comuna-lista"]')) {
+        var v = el.value;
+        datos.comunaOtra = v === "__otra";
+        datos.comuna = datos.comunaOtra ? "" : v;
+        guardarDatos();
+        pintarCheckout();
+        var libre = $('[data-campo="comuna"]');
+        if (libre) libre.focus();
+        return;
+      }
+      if (el.matches('[data-campo="comuna"]')) pintarResumen();
     });
 
     document.addEventListener("keydown", function (ev) {
