@@ -478,8 +478,15 @@
     pintarTodo();
   }
 
+  /* La IA a veces marca los nombres con **asteriscos**: se muestran en negrita
+     en vez de dejar los asteriscos a la vista. Se hace después de escapar, así
+     que no entra nada de HTML. */
+  function conNegritas(texto) {
+    return esc(texto).replace(/\*\*([^*\n]{1,60})\*\*/g, "<b>$1</b>").replace(/\*/g, "");
+  }
   function burbuja(m) {
-    var html = '<div class="burbuja burbuja--' + (m.role === "user" ? "yo" : "bot") + '">' + esc(m.content) + "</div>";
+    var html = '<div class="burbuja burbuja--' + (m.role === "user" ? "yo" : "bot") + '">' +
+      (m.role === "user" ? esc(m.content) : conNegritas(m.content)) + "</div>";
     if (m.productos && m.productos.length) {
       html += '<div class="chat-productos">' + m.productos.map(function (id) {
         var p = P.producto(id);
