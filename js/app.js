@@ -52,6 +52,33 @@
   };
   function ico(n, clase) { return '<svg class="' + (clase || "icono") + '" viewBox="0 0 24 24" aria-hidden="true">' + SVG[n] + "</svg>"; }
 
+  /* -----------------------------------------------------------------------
+     Analítica: cuenta visitas, clics y pedidos para el panel. No manda nada
+     de la persona (ni nombre, ni teléfono, ni dirección), solo qué pasó.
+     Los eventos se juntan y se envían de a poco, para no molestar la página.
+     ----------------------------------------------------------------------- */
+  var cola = [], colaTimer = null;
+  function contar(tipo, id, monto) {
+    if (location.protocol === "file:") return;
+    cola.push({ tipo: tipo, id: id || "", monto: monto || 0 });
+    if (cola.length >= 8) { enviarCola(); return; }
+    clearTimeout(colaTimer);
+    colaTimer = setTimeout(enviarCola, 1500);
+  }
+  function enviarCola() {
+    clearTimeout(colaTimer);
+    if (!cola.length) return;
+    var cuerpo = JSON.stringify({ eventos: cola.splice(0, 10) });
+    try {
+      if (navigator.sendBeacon &&
+          navigator.sendBeacon("/api/estadisticas", new Blob([cuerpo], { type: "application/json" }))) return;
+    } catch (e) { /* se intenta con fetch */ }
+    fetch("/api/estadisticas", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: cuerpo, keepalive: true
+    }).catch(function () { /* si no se pudo contar, da lo mismo */ });
+  }
+  window.addEventListener("pagehide", enviarCola);
+
   /* ---------- Productos ---------- */
   var PRODUCTOS = [];
   var PORID = {};
@@ -264,6 +291,7 @@
     else carrito.push({ clave: k, id: id, talla: talla, color: color, cantidad: Math.min(max, cantidad) });
     guardarCarrito();
     refrescarCarrito();
+    contar("agregar", id);
     avisar(p.nombre + (color ? " · " + color : "") + (p.tallaUnica ? "" : " · talla " + talla) + " en tu carrito");
     return true;
   }
@@ -818,9 +846,11 @@
      ======================================================================= */
   var ficha = { id: "", talla: "", color: "", cantidad: 1, imagen: 0, error: false };
 
+  var vistoUltimo = "";
   function pintarProducto(id) {
     var vista = $('[data-vista="producto"]');
     var p = PORID[id];
+    if (p && vistoUltimo !== id) { vistoUltimo = id; contar("ver", id); }
     if (!p) {
       vista.innerHTML = '<div class="contenedor"><div class="vacio"><b>No encontramos ese modelo</b>' +
         '<p>Puede que ya no esté en el catálogo.</p><a class="boton" href="#/catalogo">Ver el catálogo</a></div></div>';
@@ -1048,6 +1078,7 @@
   var focoPrevio = null;
   function abrirCarrito() {
     focoPrevio = document.activeElement;
+    if (lineas().length) contar("abrir");
     pintarCarrito();
     $("[data-carrito]").removeAttribute("hidden");
     $("[data-velo]").removeAttribute("hidden");
@@ -1353,6 +1384,7 @@
       if (malo) { malo.scrollIntoView({ block: "center", behavior: "smooth" }); malo.focus({ preventScroll: true }); }
       return;
     }
+    contar("enviar", "", total());
     window.open(enlaceWsp(textoPedido(false)), "_blank", "noopener");
   }
 
@@ -1451,6 +1483,7 @@
       if (t.closest("[data-abrir-carrito]")) { abrirCarrito(); return; }
       if (t.closest("[data-cerrar-carrito]")) { cerrarCarrito(); return; }
 
+      if ((el = t.closest('a[href*="wa.me"], a[href*="api.whatsapp"]'))) { contar("wsp"); }
       if ((el = t.closest("[data-abrir-tallas]"))) { ev.preventDefault(); $("[data-ventana-tallas]").showModal(); return; }
       if (t.closest("[data-cerrar-ventana]")) { cerrarVentanas(); return; }
       if ((el = t.closest("[data-ventana]"))) {
@@ -1537,7 +1570,11 @@
       if ((el = t.closest("[data-quitar]"))) { quitar(el.getAttribute("data-quitar")); return; }
       if ((el = t.closest("[data-mas]"))) { cambiarCantidad(el.getAttribute("data-mas"), 1); return; }
       if ((el = t.closest("[data-menos]"))) { cambiarCantidad(el.getAttribute("data-menos"), -1); return; }
-      if (t.closest("[data-wsp-rapido]")) { window.open(enlaceWsp(textoPedido(true)), "_blank", "noopener"); return; }
+      if (t.closest("[data-wsp-rapido]")) {
+        contar("enviar", "", subtotal());
+        window.open(enlaceWsp(textoPedido(true)), "_blank", "noopener");
+        return;
+      }
 
       // Checkout
       if ((el = t.closest("[data-entrega]"))) {
@@ -1636,6 +1673,7 @@
      Arranque
      ======================================================================= */
   function iniciar() {
+    contar("visita");
     revisarCarrito();
     armarFijos();
     armarPortada();
@@ -1665,6 +1703,7 @@
     abrirFicha: function (id) { location.hash = "#/p/" + id; },
     abrirPedido: abrirCarrito,
     agregar: agregar,
+    contar: contar,
     resumenBolsa: function () {
       return lineas().map(function (l) {
         var p = PORID[l.id];

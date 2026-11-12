@@ -565,8 +565,11 @@
     pintarTodo();
   }
 
+  var contado = false;
   function preguntar(texto) {
     if (!texto || ocupado) return;
+    // se cuenta una sola vez por visita: interesa cuánta gente lo usa
+    if (!contado && P.contar) { contado = true; P.contar("asistente"); }
     mensajes.push({ role: "user", content: texto });
     guardar();
     pintarTodo();

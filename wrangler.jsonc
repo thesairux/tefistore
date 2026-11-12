@@ -9,6 +9,12 @@
   "build": { "command": "sh herramientas/construir.sh" },
   "assets": { "directory": "./dist", "binding": "ASSETS" },
 
+  // Base de datos de las estadísticas (visitas, clics y pedidos por día).
+  // Para activarla: en Cloudflare, Storage & Databases → D1 → Create, y pega aquí
+  // el «Database ID». Mientras esté en blanco, la analítica queda apagada y la
+  // página funciona igual.
+  // "d1_databases": [{ "binding": "DB", "database_name": "tefistore-estadisticas", "database_id": "PEGA-AQUI-EL-ID" }],
+
   // No borra las variables que pongas en Cloudflare (Settings → Variables and Secrets) al publicar
   "keep_vars": true,
   "observability": { "enabled": true }
