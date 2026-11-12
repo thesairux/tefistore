@@ -240,8 +240,7 @@ window.CATALOGO = {
           ],
           "tallas": "34-41",
           "precioAntes": 200,
-          "destacado": true,
-          "disponible": false
+          "destacado": true
         },
         {
           "id": "intiara",
