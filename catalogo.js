@@ -1041,6 +1041,12 @@ window.CATALOGO = {
           "tallas": "35-40"
         }
       ]
+    },
+    {
+      "id": "triton",
+      "nombre": "Tritón",
+      "foto": "fotos/categoria-triton-233y7.jpg",
+      "productos": []
     }
   ]
 };
