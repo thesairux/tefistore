@@ -479,7 +479,14 @@ window.CATALOGO = {
             }
           ],
           "etiquetas": [],
-          "tallas": "35-40"
+          "tallas": {
+            "35": 1,
+            "36": 1,
+            "37": 1,
+            "38": 1,
+            "39": 1,
+            "40": 1
+          }
         }
       ]
     },
@@ -561,10 +568,21 @@ window.CATALOGO = {
             {
               "nombre": "Rojo",
               "hex": "#9b2c2c"
+            },
+            {
+              "nombre": "Verde",
+              "hex": "#263e0f"
             }
           ],
           "etiquetas": [],
-          "tallas": "35-40"
+          "tallas": {
+            "35": 1,
+            "36": 3,
+            "37": 0,
+            "38": 1,
+            "39": 1,
+            "40": 0
+          }
         },
         {
           "id": "sumaq-one",
