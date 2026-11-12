@@ -590,10 +590,18 @@
       carrito: P.resumenBolsa()
     };
 
+    // Si la IA se demora, se contesta con el catálogo: nadie espera mirando los puntitos.
+    var corte = window.AbortController ? new AbortController() : null;
+    var reloj = setTimeout(function () { if (corte) corte.abort(); }, 18000);
+
     fetch(API, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(cuerpo)
+      body: JSON.stringify(cuerpo),
+      signal: corte ? corte.signal : undefined
+    }).then(function (r) {
+      clearTimeout(reloj);
+      return r;
     }).then(function (r) {
       return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, d: d }; });
     }).then(function (res) {
@@ -605,6 +613,7 @@
       if (res.status === 503 || res.status === 404 || res.status === 405) modoIA = false;
       terminar(local);
     }).catch(function () {
+      clearTimeout(reloj);
       terminar(local);
     });
   }

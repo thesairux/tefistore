@@ -195,10 +195,15 @@ function momento(C, carrito) {
    se busca uno de la familia «flash» que la cuenta sí tenga. Se recuerda
    mientras viva el worker para no preguntar en cada mensaje. */
 const GOOGLE = "https://generativelanguage.googleapis.com/v1beta";
+const ESPERA = 9000;       // tope por llamada a Google
+const ESPERA_TOTAL = 16000;  // tope para todos los reintentos juntos
 let modeloGemini = "";
 
 async function modelosGemini(llave) {
-  const r = await fetch(GOOGLE + "/models?pageSize=1000", { headers: { "x-goog-api-key": llave } });
+  const r = await fetch(GOOGLE + "/models?pageSize=1000", {
+    headers: { "x-goog-api-key": llave },
+    signal: AbortSignal.timeout(ESPERA)
+  });
   if (!r.ok) return [];
   const data = await r.json().catch(() => ({}));
   const sirve = m => {
@@ -236,16 +241,20 @@ async function preguntarGemini(env, C, mensajes, carrito) {
   const pedir = async nombre => fetch(GOOGLE + "/models/" + encodeURIComponent(nombre) + ":generateContent", {
     method: "POST",
     headers: { "x-goog-api-key": llave, "content-type": "application/json" },
-    body: JSON.stringify(cuerpo)
+    body: JSON.stringify(cuerpo),
+    signal: AbortSignal.timeout(ESPERA)
   });
 
+  const limite = Date.now() + ESPERA_TOTAL;
   const nombre = modeloGemini || modelo(env);
   let r = await pedir(nombre);
   // 404: el modelo no existe o no está en esta cuenta. 429/503: está copado o
-  // sin cupo. En los tres casos vale la pena probar con otro modelo.
+  // sin cupo. En los tres casos vale la pena probar con otro modelo, mientras
+  // quede tiempo: hacer esperar a la clienta es peor que no contestar con IA.
   if ([404, 429, 503].includes(r.status)) {
     const otros = ordenarModelos(await modelosGemini(llave)).filter(x => x !== nombre);
     for (const otro of otros.slice(0, 3)) {
+      if (Date.now() > limite) break;
       const r2 = await pedir(otro);
       if (r2.ok) { modeloGemini = otro; r = r2; break; }
       if (r2.status !== 404 && r2.status !== 429 && r2.status !== 503) { r = r2; break; }
