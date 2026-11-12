@@ -2,11 +2,15 @@
 /catalogo.js
   Cache-Control: no-cache
 
+# El panel lleva su código adentro, así que no se le puede poner marca de versión
+# como al resto: se pide que el navegador lo revise siempre.
 /admin
   X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
 
 /admin.html
   X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
 
 /fotos/*
   Cache-Control: public, max-age=86400, stale-while-revalidate=604800
