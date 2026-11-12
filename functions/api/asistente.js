@@ -23,7 +23,7 @@ const llaveClaude = env => (env.ANTHROPIC_API_KEY || "").trim();
 const hayIA = env => !!(llaveGemini(env) || llaveClaude(env));
 const proveedor = env => (llaveGemini(env) ? "gemini" : "claude");
 const modelo = env => (llaveGemini(env)
-  ? (env.GEMINI_MODELO || "gemini-flash-latest").trim()
+  ? (env.GEMINI_MODELO || "gemini-flash-lite-latest").trim()
   : (env.ASISTENTE_MODELO || "claude-haiku-5-5").trim());
 const ZONA = "America/Santiago";
 const MAX_MENSAJES = 12;
@@ -238,26 +238,37 @@ async function preguntarGemini(env, C, mensajes, carrito) {
     })),
     generationConfig: { temperature: 0.4, maxOutputTokens: 700 }
   };
-  const pedir = async nombre => fetch(GOOGLE + "/models/" + encodeURIComponent(nombre) + ":generateContent", {
-    method: "POST",
-    headers: { "x-goog-api-key": llave, "content-type": "application/json" },
-    body: JSON.stringify(cuerpo),
-    signal: AbortSignal.timeout(ESPERA)
-  });
+  // Si la llamada se corta por demora, fetch lanza el error en vez de devolver
+  // una respuesta; se convierte en un estado 0 para tratarlo como los demás.
+  const pedir = async nombre => {
+    try {
+      return await fetch(GOOGLE + "/models/" + encodeURIComponent(nombre) + ":generateContent", {
+        method: "POST",
+        headers: { "x-goog-api-key": llave, "content-type": "application/json" },
+        body: JSON.stringify(cuerpo),
+        signal: AbortSignal.timeout(ESPERA)
+      });
+    } catch (e) {
+      return { ok: false, status: 0, motivo: e.message || "sin respuesta" };
+    }
+  };
+  // 0: se demoró demasiado. 404: el modelo no existe o no está en esta cuenta.
+  // 429/503: está copado o sin cupo. En todos vale la pena probar otro modelo,
+  // mientras quede tiempo: hacer esperar a la clienta es peor que no usar IA.
+  const reintentable = x => [0, 404, 429, 503].includes(x.status);
 
   const limite = Date.now() + ESPERA_TOTAL;
   const nombre = modeloGemini || modelo(env);
   let r = await pedir(nombre);
-  // 404: el modelo no existe o no está en esta cuenta. 429/503: está copado o
-  // sin cupo. En los tres casos vale la pena probar con otro modelo, mientras
-  // quede tiempo: hacer esperar a la clienta es peor que no contestar con IA.
-  if ([404, 429, 503].includes(r.status)) {
+  if (reintentable(r)) {
+    if (modeloGemini === nombre) modeloGemini = "";   // el recordado dejó de servir
     const otros = ordenarModelos(await modelosGemini(llave)).filter(x => x !== nombre);
     for (const otro of otros.slice(0, 3)) {
       if (Date.now() > limite) break;
       const r2 = await pedir(otro);
       if (r2.ok) { modeloGemini = otro; r = r2; break; }
-      if (r2.status !== 404 && r2.status !== 429 && r2.status !== 503) { r = r2; break; }
+      if (!reintentable(r2)) { r = r2; break; }
+      r = r2;
     }
   } else if (r.ok) {
     modeloGemini = nombre;
@@ -265,7 +276,8 @@ async function preguntarGemini(env, C, mensajes, carrito) {
   if (!r.ok) {
     const e = new Error("api " + r.status);
     e.status = r.status;
-    try { e.detalle = (await r.json()).error; } catch (x) { /* sin detalle */ }
+    if (r.motivo) e.detalle = { message: r.motivo };
+    else { try { e.detalle = (await r.json()).error; } catch (x) { /* sin detalle */ } }
     throw e;
   }
   const data = await r.json();
