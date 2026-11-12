@@ -159,6 +159,20 @@ banda y las categorías llenan el marco recortando lo que sobra. El panel las ac
 en la carpeta `fotos/` del repositorio. La primera foto de la lista es la que se ve en el catálogo; las
 demás salen en la ficha con las flechas. Las fotos que dejas de usar se borran al guardar.
 
+### El token de GitHub
+
+El panel guarda haciendo un commit, así que el token necesita **permiso de escritura**, no solo
+de lectura. Con un token «fine-grained»: GitHub → Settings → Developer settings → Personal access
+tokens → Fine-grained tokens → el token → Repository permissions → **Contents: Read and write**.
+Con uno clásico, el permiso `repo`.
+
+Si le falta ese permiso, el panel deja entrar y muestra el catálogo (leer sí puede), pero al
+guardar avisa «El token de GitHub no tiene permiso para escribir en el repositorio».
+
+Para revisarlo, abre `tu-pagina/api/admin?probar=1`: dice si encuentra el repositorio, si la rama
+existe y si el token **puede escribir de verdad** (lo comprueba creando un objeto suelto, que no
+aparece en el historial y GitHub borra solo). Nunca muestra el token.
+
 ### Configurarlo
 
 Necesita dos claves en las variables del proyecto (Cloudflare: Settings → Variables and Secrets;

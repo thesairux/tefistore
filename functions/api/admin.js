@@ -379,10 +379,13 @@ async function probarGitHub() {
     const info = await gh("");
     out.repoEncontrado = true;
     out.ramaPorOmision = info.default_branch;
-    out.puedeEscribir = !!(info.permissions && info.permissions.push);
-    if (!out.puedeEscribir) out.aviso = "el token llega al repositorio pero no tiene permiso de escritura (Contents: Read and write)";
+    // OJO: info.permissions.push es el rol de la CUENTA en el repositorio, no
+    // lo que el token tiene permitido. Un token de solo lectura igual lo ve
+    // como true, así que no sirve para saber si se podrá guardar.
+    out.cuentaEsDuena = !!(info.permissions && info.permissions.push);
   } catch (e) {
     out.repoEncontrado = false;
+    out.puedeEscribir = false;
     out.falla = porQueFallo(e.status);
     out.codigo = e.status || 0;
     out.github = e.detalle || "";
@@ -393,8 +396,21 @@ async function probarGitHub() {
     out.ramaEncontrada = true;
   } catch (e) {
     out.ramaEncontrada = false;
+    out.github = e.detalle || "";
+  }
+  // Escritura de verdad: se crea un objeto suelto, sin commit ni rama que lo
+  // apunte. No aparece en el historial y GitHub lo borra solo.
+  try {
+    await gh("/git/blobs", { method: "POST", body: { content: "prueba", encoding: "utf-8" } });
+    out.puedeEscribir = true;
+  } catch (e) {
+    out.puedeEscribir = false;
+    out.falla = porQueFallo(e.status);
     out.codigo = e.status || 0;
     out.github = e.detalle || "";
+    out.aviso = e.status === 403
+      ? "el token lee el repositorio pero no puede escribir: dale «Contents: Read and write» en GitHub"
+      : "no se pudo comprobar la escritura";
   }
   return out;
 }
