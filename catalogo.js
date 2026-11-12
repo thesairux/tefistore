@@ -46,8 +46,6 @@ window.CATALOGO = {
     ],
     "pagos": [
       "Transferencia",
-      "Débito",
-      "Crédito",
       "Efectivo al retirar"
     ],
     "cambios": "No se hacen cambios ni devoluciones.",
