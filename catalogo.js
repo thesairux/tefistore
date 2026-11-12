@@ -1,47 +1,10 @@
 /*
   CATÁLOGO DE TEFI STORE
   ======================
-  Este es el ÚNICO archivo que hay que editar para cambiar la página: los datos de la tienda,
-  los colores, el horario, los despachos, los cupones y todos los zapatos con sus tallas.
-  Cambia el texto entre comillas o el número y guarda.
-
-  Reglas rápidas
-  --------------
-  - Los precios van sin punto ni signo: 22990 (no "$22.990").
-  - "tallas" se puede escribir de dos formas:
-      "35-40"                      → esas tallas están disponibles (sin contar pares)
-      { "35": 2, "36": 4, "37": 0 } → cuántos pares quedan de cada talla.
-        Con esta forma la página avisa «última» o «quedan 2», y la talla en 0 sale tachada.
-    Si no llevas la cuenta del stock, deja el rango: es lo más simple y no promete lo que no hay.
-  - "fotos": una o varias. La primera es la que se ve en el catálogo; las demás salen en la ficha
-    con las flechas. Guárdalas en img/catalogo/ y escribe la ruta.
-  - "precioAntes": precio anterior. Si lo pones, se muestra tachado y aparece el % de descuento.
-  - "nota": aviso corto que sale junto a las tallas (por ejemplo, si la horma es pequeña).
-  - "destacado": true lo muestra en la portada, en «Destacados».
-  - "etiquetas": ["nuevo"], ["oferta"] o ["ultimos"] → la cinta de la tarjeta.
-  - Para esconder un producto sin borrarlo: "disponible": false
-  - "categorias" arman solas el menú de arriba, el del celular, los filtros y el pie.
-  - Lo que quede vacío ("") no se muestra: por ejemplo, sin "direccion" no aparece la sección Tienda.
-  - "envios": cada zona puede tener sus "comunas" o sus "regiones". Cuando el cliente escribe su
-    comuna en el checkout, la página elige sola la zona y su precio. La zona con "regiones": ["*"]
-    es la que se usa cuando no calza ninguna otra.
-  - "envioPorPagar": true → el cliente paga el envío al recibirlo, así que NO se suma al total del
-    pedido; la página lo muestra como «por pagar». Si algún día cobras el envío, ponlo en false y
-    agrégale "precio" a cada zona de "envios".
-  - "envioGratisDesde": 60000 → sobre ese monto el despacho sale $0. Pon 0 para desactivarlo
-    (con "envioPorPagar": true no se usa).
-  - "politicas": las reglas de compra, cada una con su "titulo" y su "texto". Salen numeradas en
-    la portada, en el pie y en la ficha de cada producto.
-  - "pasos": los tres pasos de «Comprar es simple». "icono": talla, camion, wsp, bolsa o tienda.
-  - "cupones": códigos de descuento (uno por pedido). Está vacío; abajo quedó el ejemplo del formato.
-  Cuidado con las comas: cada elemento de una lista va separado por una coma.
-
-  POR COMPLETAR (lo que falta para publicar)
-  ------------------------------------------
-  1. "direccion": la dirección del local. Si la dejas vacía, la página no muestra la sección Tienda
-     ni el mapa, y el retiro se coordina por WhatsApp.
-  2. "envios": revisa los plazos reales de cada zona.
-  3. Stock por talla: cuando lo tengas, cambia "35-40" por { "35": 2, ... } en cada modelo.
+  Lo más fácil es editarlo desde el panel: tu-pagina/admin
+  También se puede editar aquí: los precios van sin punto ni signo (22990), las tallas como
+  "35-40" o { "35": 2, "36": 4 }, y cada elemento de una lista va separado por una coma.
+  La explicación completa está en el README del repositorio.
 */
 window.CATALOGO = {
   "negocio": {
@@ -61,6 +24,7 @@ window.CATALOGO = {
     "retiroEnTienda": true,
     "nombreRetiro": "Retiro en La Serena",
     "notaRetiro": "Solo en La Serena. Coordinamos el punto y la hora por WhatsApp.",
+    "retiroComuna": "La Serena",
     "envioPorPagar": true,
     "envioGratisDesde": 0,
     "envios": [
@@ -69,13 +33,6 @@ window.CATALOGO = {
         "detalle": "1 a 2 días hábiles (estimado)",
         "comunas": [
           "La Serena",
-          "Coquimbo"
-        ]
-      },
-      {
-        "nombre": "Región de Coquimbo",
-        "detalle": "2 a 3 días hábiles (estimado)",
-        "regiones": [
           "Coquimbo"
         ]
       },
@@ -116,8 +73,7 @@ window.CATALOGO = {
         "titulo": "Plazos de entrega",
         "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros."
       }
-    ],
-    "retiroComuna": "La Serena"
+    ]
   },
   "tema": {
     "color": "#6a1138",
@@ -161,6 +117,38 @@ window.CATALOGO = {
     "boton": "Ver el modelo",
     "enlace": "#/p/intiara"
   },
+  "textos": {
+    "catalogo": {
+      "titulo": "Catálogo",
+      "bajada": "Todos los modelos vienen de la talla 35 a la 40. Antes de enviarte el pedido confirmamos por WhatsApp que esté tu talla.",
+      "destacado": ""
+    },
+    "destacados": {
+      "titulo": "Destacados",
+      "bajada": "",
+      "destacado": ""
+    },
+    "tallas": {
+      "titulo": "Guía de tallas",
+      "bajada": "Mide tu pie en centímetros, del talón al dedo más largo, de pie y sobre una hoja. Ojo: varios modelos tienen horma pequeña, así que conviene pedir una talla más.",
+      "destacado": ""
+    },
+    "tienda": {
+      "titulo": "Visítanos en la tienda",
+      "bajada": "",
+      "destacado": ""
+    },
+    "pasos": {
+      "titulo": "Comprar es simple",
+      "bajada": "",
+      "destacado": ""
+    },
+    "politicas": {
+      "titulo": "Políticas de compra",
+      "bajada": "Para que no haya sorpresas, esto es lo que acordamos en cada compra.",
+      "destacado": ""
+    }
+  },
   "pasos": [
     {
       "icono": "talla",
@@ -178,29 +166,6 @@ window.CATALOGO = {
       "texto": "Te llega el detalle del pedido. Confirmamos que esté tu talla y el total, y recién ahí pagas."
     }
   ],
-  "textos": {
-    "catalogo": {
-      "titulo": "Catálogo",
-      "bajada": "Todos los modelos vienen de la talla 35 a la 40. Antes de enviarte el pedido confirmamos por WhatsApp que esté tu talla."
-    },
-    "destacados": {
-      "titulo": "Destacados"
-    },
-    "tallas": {
-      "titulo": "Guía de tallas",
-      "bajada": "Mide tu pie en centímetros, del talón al dedo más largo, de pie y sobre una hoja. Ojo: varios modelos tienen horma pequeña, así que conviene pedir una talla más."
-    },
-    "tienda": {
-      "titulo": "Visítanos en la tienda"
-    },
-    "pasos": {
-      "titulo": "Comprar es simple"
-    },
-    "politicas": {
-      "titulo": "Políticas de compra",
-      "bajada": "Para que no haya sorpresas, esto es lo que acordamos en cada compra."
-    }
-  },
   "regiones": [
     "Arica y Parinacota",
     "Tarapacá",
@@ -252,6 +217,7 @@ window.CATALOGO = {
     }
   ],
   "cupones": [],
+  "portadaSegundos": 4,
   "categorias": [
     {
       "id": "botines",
@@ -270,6 +236,7 @@ window.CATALOGO = {
           "descripcion": "Un nombre que simboliza luz, sofisticación y fuerza interior.\nAcabado tipo gamuza premium, de líneas refinadas y diseño contemporáneo. Sus delicadas hebillas y su estructura firme aportan carácter, y el taco estable hace que se pueda usar todo el día.",
           "material": "Tipo gamuza premium",
           "cuidados": "Limpia con cepillo seco de cerdas suaves. No lo mojes ni uses betún líquido.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Camel",
@@ -280,10 +247,9 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
-          "destacado": true,
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "destacado": true
         },
         {
           "id": "amarua-force",
@@ -296,13 +262,13 @@ window.CATALOGO = {
           "descripcion": "Un nombre que evoca fuerza interior y elegancia, diseñado para mujeres que destacan con cada paso.\nDiseño sofisticado y contemporáneo: comodidad sin renunciar al estilo.",
           "material": "Tipo cuero con forro",
           "cuidados": "Paño húmedo y betún neutro de vez en cuando.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -310,7 +276,6 @@ window.CATALOGO = {
           "id": "sayani-prime",
           "nombre": "Sayani Prime",
           "precio": 19990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/sayani-prime.webp"
           ],
@@ -318,24 +283,24 @@ window.CATALOGO = {
           "descripcion": "Perfectas para jeans, vestidos oversized o looks street.\nCordones al frente y suela gruesa con buen agarre.",
           "material": "Tipo cuero",
           "cuidados": "Cepilla el polvo y pasa un paño húmedo.",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "destacado": true,
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990,
+          "destacado": true
         },
         {
           "id": "quilla-seda",
           "nombre": "Quilla Seda",
           "precio": 19990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/quilla-seda.webp"
           ],
@@ -343,17 +308,18 @@ window.CATALOGO = {
           "descripcion": "Perfectas para elevar cualquier look, de día o de noche.\nCierre lateral y plataforma delantera, así el taco se siente más bajo de lo que se ve.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo y betún neutro.",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Marrón",
               "hex": "#4a2d20"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990
         },
         {
           "id": "pachara",
@@ -367,6 +333,7 @@ window.CATALOGO = {
           "descripcion": "Un nombre que representa fuerza, versatilidad y estilo urbano. Diseñado para mujeres activas que buscan comodidad sin perder actitud.\nTobillera alta para mayor sujeción y detalles en contraste rosa y gris.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo húmedo y jabón suave. No la metas a la lavadora.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Camel",
@@ -377,7 +344,6 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         }
@@ -392,7 +358,6 @@ window.CATALOGO = {
           "id": "kallpa",
           "nombre": "Kallpa",
           "precio": 24990,
-          "precioAntes": 30990,
           "fotos": [
             "img/catalogo/kallpa-white.webp",
             "img/catalogo/kallpa-noir.webp"
@@ -401,6 +366,7 @@ window.CATALOGO = {
           "descripcion": "Sofisticación en cada paso.\nDiseño estilizado, detalle de cadena y taco firme que eleva cualquier look. Una bota pensada para mujeres seguras, que marcan presencia.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo. Guarda la bota de pie para que no se marque la caña.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Blanco",
@@ -411,18 +377,17 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [
             "oferta"
           ],
-          "destacado": true,
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 30990,
+          "destacado": true
         },
         {
           "id": "inti-oro",
           "nombre": "Inti Oro",
           "precio": 24990,
-          "precioAntes": 32990,
           "fotos": [
             "img/catalogo/inti-oro.webp"
           ],
@@ -430,23 +395,23 @@ window.CATALOGO = {
           "descripcion": "Un modelo diferente, que combina con todo.\nPerfectas para elevar looks neutros, jeans, vestidos u outfits boho chic.",
           "material": "Tipo gamuza",
           "cuidados": "Cepillo seco de cerdas suaves.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Camel",
               "hex": "#a9682f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 32990
         },
         {
           "id": "yastay-ebano",
           "nombre": "Yastay Ébano",
           "precio": 24990,
-          "precioAntes": 29990,
           "fotos": [
             "img/catalogo/yastay-ebano.webp",
             "img/catalogo/yastay-ebano-2.webp"
@@ -455,23 +420,23 @@ window.CATALOGO = {
           "descripcion": "Perfectas para outfits elegantes, salidas nocturnas o eventos especiales.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo. Guárdala de pie para mantener la caña.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 29990
         },
         {
           "id": "sumaq-atelier",
           "nombre": "Sumaq Atelier",
           "precio": 21990,
-          "precioAntes": 25990,
           "fotos": [
             "img/catalogo/sumaq-atelier.webp"
           ],
@@ -479,17 +444,18 @@ window.CATALOGO = {
           "descripcion": "Versión elegante y moderna: una bota con presencia y actitud.",
           "material": "Tipo cuero",
           "cuidados": "Paño húmedo y betún neutro.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 25990
         },
         {
           "id": "aynara-street",
@@ -503,6 +469,7 @@ window.CATALOGO = {
           "descripcion": "Un nombre que evoca libertad, conexión con la tierra y elegancia auténtica.\nSu taco firme asegura comodidad y estabilidad en cada paso.",
           "material": "Tipo gamuza premium",
           "cuidados": "Cepillo seco de cerdas suaves.",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Terracota",
@@ -513,7 +480,6 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         }
@@ -535,6 +501,7 @@ window.CATALOGO = {
           "descripcion": "Representa la fuerza y resistencia del espíritu andino, inspirada en el desierto de Atacama. Cada zapatilla refleja energía, identidad y superación personal.",
           "material": "Textil con detalles sintéticos",
           "cuidados": "Cepillo húmedo y jabón suave.",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Café",
@@ -545,10 +512,9 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
-          "destacado": true,
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "destacado": true
         },
         {
           "id": "rumi-chaki",
@@ -561,13 +527,13 @@ window.CATALOGO = {
           "descripcion": "Representa la firmeza y resistencia de la piedra en el paisaje del desierto. Inspirada en la fortaleza de la cultura andina.",
           "material": "Textil con detalles sintéticos",
           "cuidados": "Cepillo húmedo y jabón suave.",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Rosado y blanco",
               "hex": "#e8c9cd"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -584,6 +550,7 @@ window.CATALOGO = {
           "descripcion": "Simboliza el gran camino de la vida y la historia ancestral andina. Inspirada en las rutas del desierto atacameño.",
           "material": "Ecocuero",
           "cuidados": "Paño húmedo con jabón suave.",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro",
@@ -598,7 +565,6 @@ window.CATALOGO = {
               "hex": "#9b2c2c"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -606,7 +572,6 @@ window.CATALOGO = {
           "id": "sumaq-one",
           "nombre": "Sumaq One",
           "precio": 17990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/sumaq-one.webp",
             "img/catalogo/sumaq-one-negro.webp"
@@ -615,6 +580,7 @@ window.CATALOGO = {
           "descripcion": "Comodidad total, diseño urbano y una actitud que destaca.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Blanca",
@@ -625,17 +591,16 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990
         },
         {
           "id": "inti-prime",
           "nombre": "Inti Prime",
           "precio": 17990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/inti-prime.webp",
             "img/catalogo/inti-prime-negro.webp"
@@ -644,6 +609,7 @@ window.CATALOGO = {
           "descripcion": "La energía del sol hecha zapatilla: comodidad total, estilo urbano y un diseño que brilla en cada paso.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Blanca",
@@ -654,17 +620,16 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990
         },
         {
           "id": "nawi-street",
           "nombre": "Ñawi Street",
           "precio": 17990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/nawi-street.webp",
             "img/catalogo/nawi-street-negro.webp"
@@ -673,6 +638,7 @@ window.CATALOGO = {
           "descripcion": "Diseño moderno, comodidad total y un toque único que llama la atención en cada paso.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Blanca",
@@ -683,17 +649,16 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990
         },
         {
           "id": "killa-mode",
           "nombre": "Killa Mode",
           "precio": 17990,
-          "precioAntes": 22990,
           "fotos": [
             "img/catalogo/killa-mode.webp"
           ],
@@ -701,17 +666,18 @@ window.CATALOGO = {
           "descripcion": "Estilo urbano inspirado en la magia de la noche, con la comodidad que te acompaña en cada paso.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro charol",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 22990
         },
         {
           "id": "chaska-glow",
@@ -724,13 +690,13 @@ window.CATALOGO = {
           "descripcion": "La estrella que iluminará tu estilo.\nComodidad total, diseño urbano y el brillo perfecto para cada paso.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Blanca",
               "hex": "#f2f0ec"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "nuevo"
           ],
@@ -740,7 +706,6 @@ window.CATALOGO = {
           "id": "pacha-core",
           "nombre": "Pacha Core",
           "precio": 13990,
-          "precioAntes": 16990,
           "fotos": [
             "img/catalogo/pacha-core.webp",
             "img/catalogo/pacha-core-negro.webp"
@@ -749,6 +714,7 @@ window.CATALOGO = {
           "descripcion": "Un diseño urbano con la solidez y comodidad que te conecta con tu estilo en cada momento.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Pink",
@@ -759,17 +725,16 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 16990
         },
         {
           "id": "wayra-rush",
           "nombre": "Wayra Rush",
           "precio": 15990,
-          "precioAntes": 19990,
           "fotos": [
             "img/catalogo/wayra-rush.webp"
           ],
@@ -777,6 +742,7 @@ window.CATALOGO = {
           "descripcion": "Un diseño que combina fuerza y estilo, ideal para quienes no paran nunca.\nComodidad, carácter y actitud para destacar donde vayas.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro",
@@ -787,11 +753,11 @@ window.CATALOGO = {
               "hex": "#9a9aa0"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [
             "oferta"
           ],
-          "tallas": "35-40"
+          "tallas": "35-40",
+          "precioAntes": 19990
         },
         {
           "id": "inti-nam",
@@ -804,13 +770,13 @@ window.CATALOGO = {
           "descripcion": "Simboliza el camino guiado por el sol del desierto. Representa energía, perseverancia y conexión.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Gris",
               "hex": "#9a9aa0"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -825,13 +791,13 @@ window.CATALOGO = {
           "descripcion": "Simboliza el camino guiado por las estrellas del cielo atacameño. Representa libertad, exploración y conexión espiritual.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         }
@@ -853,13 +819,13 @@ window.CATALOGO = {
           "descripcion": "Evoca oro y brillo. Modelo elegante que simboliza el resplandor del sol sobre la arena.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [
             "nuevo"
           ],
@@ -876,13 +842,13 @@ window.CATALOGO = {
           "descripcion": "Un modelo con carácter, pensado para mujeres seguras de su estilo.\nDiseño firme, cómodo y con presencia.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Gris",
               "hex": "#9a9aa0"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -897,13 +863,13 @@ window.CATALOGO = {
           "descripcion": "Un diseño delicado con un toque sofisticado.\nPerfecta para quienes aman destacar con elegancia sutil.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -918,13 +884,13 @@ window.CATALOGO = {
           "descripcion": "Un diseño limpio y sofisticado que se adapta a cualquier ocasión.\nComodidad y estilo para acompañarte todo el día, sin esfuerzo.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Negro",
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -940,6 +906,7 @@ window.CATALOGO = {
           "descripcion": "Pensada para quienes buscan comodidad sin perder estilo.\nUn diseño versátil que combina perfecto con tu día a día.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "colores": [
             {
               "nombre": "Blanco",
@@ -950,7 +917,6 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma pequeña: se recomienda pedir una talla más.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -966,6 +932,7 @@ window.CATALOGO = {
           "descripcion": "Una sandalia básica que nunca falla.\nIdeal para combinar con todo y usar en cualquier ocasión.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Blanco",
@@ -976,7 +943,6 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -992,6 +958,7 @@ window.CATALOGO = {
           "descripcion": "Modelo delicado inspirado en las flores que brotan cerca de los salares. Evoca pureza, suavidad y feminidad natural.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro",
@@ -1002,7 +969,6 @@ window.CATALOGO = {
               "hex": "#f2f0ec"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -1018,6 +984,7 @@ window.CATALOGO = {
           "descripcion": "Sandalia que representa conexión espiritual y belleza profunda.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Negro",
@@ -1028,7 +995,6 @@ window.CATALOGO = {
               "hex": "#f2f0ec"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         },
@@ -1044,6 +1010,7 @@ window.CATALOGO = {
           "descripcion": "Sandalia ligera inspirada en el viento del altiplano. Representan libertad, esperanza y movimiento.",
           "material": "",
           "cuidados": "",
+          "nota": "Horma normal.",
           "colores": [
             {
               "nombre": "Café",
@@ -1054,12 +1021,10 @@ window.CATALOGO = {
               "hex": "#1d1d1f"
             }
           ],
-          "nota": "Horma normal.",
           "etiquetas": [],
           "tallas": "35-40"
         }
       ]
     }
-  ],
-  "portadaSegundos": 4
+  ]
 };
