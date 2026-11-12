@@ -48,7 +48,10 @@ a{color:var(--vino)}
   padding:10px 12px;font-size:14.5px;background:#fff;outline:none}
 .campo input:focus,.campo select:focus,.campo textarea:focus{border-color:var(--vino)}
 .campo textarea{min-height:76px;resize:vertical;font-family:inherit;line-height:1.5}
-.campo .ayuda{font-size:12.5px;color:var(--suave-txt)}
+.campo .ayuda{font-size:12.5px;color:var(--suave-txt);line-height:1.45;
+  padding-left:14px;position:relative}
+.campo .ayuda::before{content:"";position:absolute;left:0;top:.52em;width:7px;height:7px;
+  border-radius:50%;border:1.6px solid var(--vino);opacity:.5}
 /* Avisos: lo que el panel le explica a quien lo está usando */
 .pista{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;
   background:#fbf3f6;border-left:3px solid var(--vino);border-radius:0 8px 8px 0;
@@ -643,8 +646,9 @@ a{color:var(--vino)}
             }).join("") + "</div>" +
             pista("En 0 la talla le sale tachada a la clienta. Con 1 o 2, la ficha avisa «última» o «quedan 2».")
           : campo("Tallas disponibles", '<input type="text" data-p="tallas" value="' + esc(p.tallas || "") +
-              '" placeholder="35-40"><span class="ayuda">Un rango como 35-40, o una lista: 36, 37, 39. ' +
-              'Sirve cuando no llevas la cuenta de los pares.</span>')) +
+              '" placeholder="35-40">') +
+            pista("Escribe un rango, como <b>35-40</b>, o una lista: <b>36, 37, 39</b>. " +
+              "Con esto le muestras las tallas sin prometer cuántos pares te quedan.")) +
 
       '<p class="sub-titulo">Textos</p>' +
       campo("Resumen (se ve bajo el precio)", '<textarea data-p="detalle" style="min-height:60px">' + esc(p.detalle) + "</textarea>") +
@@ -653,8 +657,9 @@ a{color:var(--vino)}
         campo("Material", '<input type="text" data-p="material" value="' + esc(p.material) + '">') +
         campo("Cuidados", '<input type="text" data-p="cuidados" value="' + esc(p.cuidados) + '">') +
       "</div>" +
-      campo("Aviso de horma", '<input type="text" data-p="nota" value="' + esc(p.nota) + '">' +
-        '<span class="ayuda">Le sale destacado junto a las tallas. Por ejemplo: «Horma pequeña: se recomienda pedir una talla más».</span>') +
+      campo("Aviso de horma", '<input type="text" data-p="nota" value="' + esc(p.nota) + '">') +
+      pista("Le sale destacado a la clienta justo al lado de las tallas, antes de que elija. " +
+        "Es el lugar para avisarle algo como «Horma pequeña: se recomienda pedir una talla más».") +
 
       '<p class="sub-titulo">Colores</p>' +
       pista("Son los colores en que viene este modelo. Le aparecen como <b>botones</b> en la ficha, " +
@@ -674,12 +679,13 @@ a{color:var(--vino)}
         "> Mostrar en la portada (Destacados)</label>" +
       '<label class="marca-check"><input type="checkbox" data-p="__oculto"' + (p.disponible === false ? " checked" : "") +
         "> Esconder de la página</label>" +
-      campo("Cinta", '<span class="ayuda" style="margin-bottom:6px">El cartelito de la esquina de la foto, en el catálogo.</span>' +
-        '<select data-p="__etiqueta">' +
+      campo("Cinta", '<select data-p="__etiqueta">' +
         ["", "nuevo", "oferta", "ultimos"].map(function (e) {
           var n = { "": "Sin cinta", nuevo: "Nuevo", oferta: "Oferta", ultimos: "Últimos pares" }[e];
           return '<option value="' + e + '"' + ((p.etiquetas || [])[0] === e ? " selected" : "") + ">" + n + "</option>";
         }).join("") + "</select>") +
+      pista("Es el cartelito que le aparece a la clienta en la esquina de la foto, en el catálogo. " +
+        "Úsalo para que salte a la vista lo <b>nuevo</b> o lo que está <b>en oferta</b>.") +
       "</div>";
   }
 
@@ -1123,7 +1129,7 @@ a{color:var(--vino)}
         '<label class="marca-check"><input type="checkbox" data-n="envioPorPagar"' + (N.envioPorPagar ? " checked" : "") +
           "> Los envíos son por pagar (no se suman al total)</label>" +
         campo("Despacho gratis desde", '<input type="number" min="0" step="1000" data-n="envioGratisDesde" value="' +
-          (N.envioGratisDesde || 0) + '"><span class="ayuda">0 = sin despacho gratis. No se usa si los envíos son por pagar.</span>') +
+          (N.envioGratisDesde || 0) + '"><span class="ayuda">En 0 queda desactivado. No se usa si los envíos van por pagar.</span>') +
         '<div data-zonas>' + (N.envios || []).map(function (e, i) {
           return '<div class="repe"><div class="repe-cab"><b>Zona ' + (i + 1) + "</b>" +
             '<button class="boton boton--linea boton--chico" type="button" data-zona-borra="' + i + '">Quitar</button></div>' +
