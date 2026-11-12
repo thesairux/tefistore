@@ -197,17 +197,30 @@ function momento(C, carrito) {
 const GOOGLE = "https://generativelanguage.googleapis.com/v1beta";
 let modeloGemini = "";
 
-async function buscarModeloGemini(llave) {
-  const r = await fetch(GOOGLE + "/models?pageSize=200", { headers: { "x-goog-api-key": llave } });
-  if (!r.ok) return "";
+async function modelosGemini(llave) {
+  const r = await fetch(GOOGLE + "/models?pageSize=1000", { headers: { "x-goog-api-key": llave } });
+  if (!r.ok) return [];
   const data = await r.json().catch(() => ({}));
   const sirve = m => {
     const metodos = m.supportedGenerationMethods || m.supportedActions || [];
     return Array.isArray(metodos) ? metodos.includes("generateContent") : true;
   };
-  const nombres = (data.models || []).filter(sirve).map(m => String(m.name || "").replace(/^models\//, ""));
-  // primero un flash-lite o flash (son los del plan gratuito), si no, cualquiera
-  return nombres.find(x => /flash-lite/.test(x)) || nombres.find(x => /flash/.test(x)) || nombres[0] || "";
+  return (data.models || []).filter(sirve)
+    .map(m => String(m.name || "").replace(/^models\//, ""))
+    // nada de imagen, voz ni vistas previas: para chatear sirve el texto normal
+    .filter(x => !/(image|tts|audio|live|embedding|vision|thinking)/i.test(x));
+}
+
+/* De mejor a peor para esta página: flash-lite (el más suelto en el plan
+   gratuito), después flash, y al final lo que haya. Se evitan las versiones
+   «preview», que tienen límites más apretados. */
+function ordenarModelos(nombres) {
+  const puntos = x => (
+    (/flash-lite/.test(x) ? 0 : /flash/.test(x) ? 10 : 30) +
+    (/preview|exp/.test(x) ? 5 : 0) +
+    (/latest/.test(x) ? -1 : 0)
+  );
+  return nombres.slice().sort((a, b) => puntos(a) - puntos(b) || a.localeCompare(b));
 }
 
 async function preguntarGemini(env, C, mensajes, carrito) {
@@ -226,14 +239,16 @@ async function preguntarGemini(env, C, mensajes, carrito) {
     body: JSON.stringify(cuerpo)
   });
 
-  let nombre = modeloGemini || modelo(env);
+  const nombre = modeloGemini || modelo(env);
   let r = await pedir(nombre);
-  if (r.status === 404) {
-    // el modelo no existe (o se llama distinto): se busca uno que sí
-    const otro = await buscarModeloGemini(llave);
-    if (otro && otro !== nombre) {
-      modeloGemini = otro;
-      r = await pedir(otro);
+  // 404: el modelo no existe o no está en esta cuenta. 429/503: está copado o
+  // sin cupo. En los tres casos vale la pena probar con otro modelo.
+  if ([404, 429, 503].includes(r.status)) {
+    const otros = ordenarModelos(await modelosGemini(llave)).filter(x => x !== nombre);
+    for (const otro of otros.slice(0, 3)) {
+      const r2 = await pedir(otro);
+      if (r2.ok) { modeloGemini = otro; r = r2; break; }
+      if (r2.status !== 404 && r2.status !== 429 && r2.status !== 503) { r = r2; break; }
     }
   } else if (r.ok) {
     modeloGemini = nombre;
@@ -297,13 +312,39 @@ function separarProductos(C, texto) {
   return { texto: limpio, productos, opciones };
 }
 
-export async function onRequestGet({ env }) {
-  return json(200, {
+const permitidoProbar = limitador(10 * 60 * 1000, 6);   // la autoprueba gasta cupo: pocas por rato
+
+/* Abrir /api/asistente dice si la clave está puesta.
+   Con ?probar=1 además hace una llamada de verdad y cuenta qué contestó
+   Google, para poder arreglarlo sin adivinar. Nunca muestra la clave. */
+export async function onRequestGet({ request, env }) {
+  const estado = {
     ok: true,
     ia: hayIA(env) ? "configurada" : "FALTA (el chat responde en modo básico)",
     proveedor: hayIA(env) ? proveedor(env) : "ninguno",
     modelo: hayIA(env) ? (modeloGemini || modelo(env)) : ""
-  });
+  };
+  const url = new URL(request.url);
+  if (url.searchParams.get("probar") !== "1" || !hayIA(env)) return json(200, estado);
+  if (!permitidoProbar(ipDe(request))) return json(429, Object.assign(estado, { prueba: "espera un rato" }));
+
+  if (proveedor(env) === "gemini") {
+    const llave = llaveGemini(env);
+    const lista = await modelosGemini(llave);
+    estado.modelosDeTuCuenta = ordenarModelos(lista).slice(0, 12);
+    if (!lista.length) estado.aviso = "la cuenta no devolvió ningún modelo: revisa que la clave sea válida";
+  }
+  try {
+    const texto = await preguntar(env, await leerCatalogo(env, request), [{ role: "user", content: "Responde solo: ok" }], "");
+    estado.prueba = "funciona";
+    estado.respuesta = String(texto).slice(0, 120);
+    estado.modelo = modeloGemini || modelo(env);
+  } catch (e) {
+    estado.prueba = "falló";
+    estado.codigo = e.status || 0;
+    estado.google = String((e.detalle && (e.detalle.message || e.detalle.status)) || e.message).slice(0, 300);
+  }
+  return json(200, estado);
 }
 
 export async function onRequestPost({ request, env }) {
