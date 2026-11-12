@@ -439,6 +439,54 @@
     document.title = (N.nombre || "Tienda") + " | " + (N.rubro || "") + " — envíos a todo Chile";
   }
 
+  /* -----------------------------------------------------------------------
+     Ventanas de información: las políticas y el despacho se leen aquí,
+     igual que la guía de tallas, sin sacar a nadie de la página.
+     ----------------------------------------------------------------------- */
+  function cerrarVentanas() {
+    $$("dialog.ventana").forEach(function (d) { if (d.open) d.close(); });
+  }
+  function lineasEnvio() {
+    var l = (N.envios || []).map(function (e) {
+      return "<li><b>" + esc(e.nombre) + "</b><span>" +
+        (N.envioPorPagar ? "Por pagar" : plata(e.precio || 0)) +
+        (e.detalle ? " · " + esc(e.detalle) : "") + "</span></li>";
+    });
+    if (N.retiroEnTienda) {
+      l.push("<li><b>" + esc(N.nombreRetiro || "Retiro en la tienda") + "</b><span>Gratis" +
+        (N.notaRetiro ? " · " + esc(N.notaRetiro) : "") + "</span></li>");
+    }
+    return '<ul class="info-lista">' + l.join("") + "</ul>";
+  }
+  function abrirInfo(que, indice) {
+    var dlg = $("[data-ventana-info]");
+    if (!dlg) return;
+    var pol = N.politicas || [];
+    var titulo = "Información", cuerpo = "";
+    if (que === "politica" && pol[+indice]) {
+      titulo = pol[+indice].titulo || "Políticas de compra";
+      cuerpo = "<p>" + esc(pol[+indice].texto) + "</p>";
+    } else if (que === "despacho") {
+      titulo = "Despacho y retiro";
+      cuerpo = (N.envioPorPagar
+        ? '<p class="texto-suave">Todos los envíos son por pagar: el despacho lo pagas al recibirlo, directo al transporte, así que no se suma al total del pedido.</p>'
+        : "") + lineasEnvio();
+    } else {
+      titulo = "Políticas de compra";
+      cuerpo = '<ul class="info-lista">' + pol.map(function (x) {
+        return "<li>" + (x.titulo ? "<b>" + esc(x.titulo) + "</b>" : "") +
+          "<span>" + esc(x.texto) + "</span></li>";
+      }).join("") + "</ul>";
+    }
+    cuerpo += '<p class="info-wsp">¿Te queda alguna duda? <a href="' +
+      esc(enlaceWsp("Hola, tengo una duda sobre " + titulo.toLowerCase())) +
+      '" target="_blank" rel="noopener">Pregúntanos por WhatsApp</a>.</p>';
+    $("[data-info-titulo]").textContent = titulo;
+    $("[data-info-cuerpo]").innerHTML = cuerpo;
+    cerrarVentanas();
+    dlg.showModal();
+  }
+
   /* =======================================================================
      Vista: inicio
      ======================================================================= */
@@ -466,7 +514,9 @@
         : "");
     if (slides.length > 1) {
       clearInterval(slideTimer);
-      slideTimer = setInterval(function () { verSlide(slide + 1); }, 7000);
+      // cuánto dura cada imagen, configurable desde el panel (entre 2 y 20 segundos)
+      var seg = Math.min(20, Math.max(2, parseFloat(C.portadaSegundos) || 4));
+      slideTimer = setInterval(function () { verSlide(slide + 1); }, seg * 1000);
     }
   }
   function verSlide(i) {
@@ -507,8 +557,9 @@
     if (mos) {
       mos.innerHTML = CATEGORIAS.map(function (c) {
         var p = (c.productos || []).filter(function (x) { return x.disponible !== false; })[0];
+        var f = c.foto || (p ? foto(p) : "");
         return '<a href="#/c/' + esc(c.id) + '">' +
-          (p ? '<img src="' + esc(foto(p)) + '" alt="" loading="lazy" width="400" height="300">' : "") +
+          (f ? '<img src="' + esc(f) + '" alt="" loading="lazy" width="400" height="300">' : "") +
           "<b>" + esc(c.nombre) + "</b></a>";
       }).join("");
     }
@@ -523,25 +574,13 @@
       if (!(C.pasos || []).length) pasos.closest(".pasos").setAttribute("hidden", "");
     }
 
-    var pol = $("[data-politicas]");
-    var polBloque = $("[data-politicas-bloque]");
-    var lista = N.politicas || [];
-    if (pol && polBloque) {
-      if (!lista.length) polBloque.setAttribute("hidden", "");
-      else {
-        polBloque.removeAttribute("hidden");
-        pol.innerHTML = lista.map(function (x, i) {
-          return '<li class="politica">' +
-            '<span class="politica-num">' + ("0" + (i + 1)).slice(-2) + "</span>" +
-            "<span>" + (x.titulo ? '<span class="politica-titulo">' + esc(x.titulo) + "</span>" : "") +
-            '<span class="politica-texto">' + esc(x.texto) + "</span></span></li>";
-        }).join("");
-      }
-    }
+    // Las políticas solo viven en el pie: cada una abre su ventana con el detalle
+    var politicas = N.politicas || [];
     var piePol = $("[data-pie-politicas]");
     if (piePol) {
-      piePol.innerHTML = lista.map(function (x) {
-        return '<li><a href="#/" data-ir-politicas>' + esc(x.titulo || x.texto) + "</a></li>";
+      piePol.innerHTML = politicas.map(function (x, i) {
+        return '<li><button class="pie-enlace" type="button" data-ventana="politica" data-pol="' + i + '">' +
+          esc(x.titulo || x.texto) + "</button></li>";
       }).join("");
     }
 
@@ -614,6 +653,13 @@
         '<div class="cat-cab"><h1 class="titulo">' + esc(titulo) + "</h1>" +
           (bajada ? '<p class="cat-bajada">' + esc(bajada) + "</p>" : "") + "</div>" +
         '<div class="filtros">' +
+          '<div class="filtro-tipos"><span class="filtro-rotulo">Tipo de zapato</span>' +
+            '<div class="pildoras">' +
+            '<button class="pildora" type="button" data-tipo="" aria-pressed="' + (filtro.categoria ? "false" : "true") + '">Todos</button>' +
+            CATEGORIAS.map(function (c) {
+              return '<button class="pildora" type="button" data-tipo="' + esc(c.id) + '" aria-pressed="' +
+                (filtro.categoria === c.id ? "true" : "false") + '">' + esc(c.nombre) + "</button>";
+            }).join("") + "</div></div>" +
           (tallas.length
             ? '<div class="filtro-tallas"><span class="filtro-rotulo">Buscar por talla</span>' +
               '<div class="pildoras pildoras--tallas">' +
@@ -663,6 +709,7 @@
       ficha = { id: id, talla: p.tallaUnica ? "única" : (disponibles.length === 1 ? disponibles[0] : ""), cantidad: 1, imagen: 0, error: false };
     }
     var ims = fotos(p);
+    var colores = coloresDe(p);
     var d = descuento(p);
     var agotado = !hayStock(p);
     var tallas = tallasDe(p);
@@ -688,9 +735,14 @@
                 : "") +
             "</div>" +
             (ims.length > 1
-              ? '<div class="galeria-miniaturas">' + ims.map(function (f, i) {
+              ? '<p class="galeria-color" data-color-actual></p>' +
+                '<div class="galeria-miniaturas">' + ims.map(function (f, i) {
+                  var col = colores && colores[i] ? colores[i].nombre : "";
                   return '<button type="button" data-galeria-ir="' + i + '"' + (i === ficha.imagen ? ' aria-current="true"' : "") +
-                    ' aria-label="Ver la foto ' + (i + 1) + '"><img src="' + esc(f) + '" alt="" loading="lazy" width="400" height="300"></button>';
+                    ' aria-label="' + esc(col ? "Ver el color " + col : "Ver la foto " + (i + 1)) + '"' +
+                    (col ? ' title="' + esc(col) + '"' : "") + '>' +
+                    '<img src="' + esc(f) + '" alt="" loading="lazy" width="400" height="300">' +
+                    (col ? '<span class="miniatura-color">' + esc(col) + "</span>" : "") + "</button>";
                 }).join("") + "</div>"
               : "") +
           "</div>" +
@@ -742,11 +794,14 @@
                 : N.cambios || N.garantia
                   ? detalle("Cambios y devoluciones", [N.cambios, N.garantia ? "Garantía: " + N.garantia : ""].filter(Boolean).join("\n"))
                   : "") +
-              detalle("Despacho y retiro", (N.envios || []).map(function (e) {
-                return "· " + e.nombre + ": " + plata(e.precio) + (e.detalle ? " (" + e.detalle + ")" : "");
-              }).concat([
-                N.envioGratisDesde ? "· Despacho gratis en compras sobre " + plata(N.envioGratisDesde) + "." : "",
-                N.retiroEnTienda ? "· Retiro gratis en la tienda. " + (N.notaRetiro || "") : ""
+              detalle("Despacho y retiro", [
+                N.envioPorPagar ? "Todos los envíos son por pagar: el despacho lo pagas al recibirlo, directo al transporte." : ""
+              ].concat((N.envios || []).map(function (e) {
+                return "· " + e.nombre + ": " + (N.envioPorPagar ? "por pagar" : plata(e.precio || 0)) +
+                  (e.detalle ? " (" + e.detalle + ")" : "");
+              })).concat([
+                N.envioGratisDesde && !N.envioPorPagar ? "· Despacho gratis en compras sobre " + plata(N.envioGratisDesde) + "." : "",
+                N.retiroEnTienda ? "· " + (N.nombreRetiro || "Retiro en la tienda") + ": gratis. " + (N.notaRetiro || "") : ""
               ]).filter(Boolean).join("\n")) +
             "</div>" +
           "</div>" +
@@ -758,8 +813,26 @@
             '<div class="rejilla rejilla--4">' + relacionados.map(tarjeta).join("") + "</div></section>"
           : "") +
       "</div>";
+    pintarColorActual();
   }
-  /* Cambiar de foto no rehace la ficha entera: solo se cambia la imagen grande. */
+
+  /* Cambiar de foto no rehace la ficha entera: solo se cambia la imagen grande.
+     Cuando el producto trae una foto por color, la galería dice cuál se está viendo. */
+  function coloresDe(p) {
+    var cs = p.colores || [], ims = fotos(p);
+    return cs.length > 1 && cs.length === ims.length ? cs : null;
+  }
+  function pintarColorActual() {
+    var p = PORID[ficha.id];
+    var el = $("[data-color-actual]");
+    if (!p || !el) return;
+    var cs = coloresDe(p);
+    el.innerHTML = cs && cs[ficha.imagen]
+      ? '<span class="color-punto" style="background:' + esc(cs[ficha.imagen].hex || "#ddd") + '"></span>' +
+        "Color: <b>" + esc(cs[ficha.imagen].nombre) + "</b>"
+      : "Foto " + (ficha.imagen + 1) + " de " + fotos(p).length;
+  }
+
   function verFoto(i) {
     var p = PORID[ficha.id];
     if (!p) return;
@@ -770,6 +843,7 @@
     $$("[data-galeria-ir]").forEach(function (b, n) {
       if (n === ficha.imagen) b.setAttribute("aria-current", "true"); else b.removeAttribute("aria-current");
     });
+    pintarColorActual();
   }
 
   function detalle(titulo, cuerpo, abierto) {
@@ -1145,14 +1219,10 @@
       if (t.closest("[data-cerrar-carrito]")) { cerrarCarrito(); return; }
 
       if ((el = t.closest("[data-abrir-tallas]"))) { ev.preventDefault(); $("[data-ventana-tallas]").showModal(); return; }
-      if (t.closest("[data-cerrar-ventana]")) { $("[data-ventana-tallas]").close(); return; }
-      if ((el = t.closest("[data-ir-politicas]"))) {
+      if (t.closest("[data-cerrar-ventana]")) { cerrarVentanas(); return; }
+      if ((el = t.closest("[data-ventana]"))) {
         ev.preventDefault();
-        location.hash = "#/";
-        setTimeout(function () {
-          var s = $("#politicas");
-          if (s) s.scrollIntoView({ behavior: "smooth" });
-        }, 60);
+        abrirInfo(el.getAttribute("data-ventana"), el.getAttribute("data-pol"));
         return;
       }
       if ((el = t.closest("[data-ir-tienda]"))) {
@@ -1169,6 +1239,11 @@
       if ((el = t.closest("[data-talla]"))) {
         filtro.talla = el.getAttribute("data-talla");
         pintarCatalogo();
+        return;
+      }
+      if ((el = t.closest("[data-tipo]"))) {
+        var tipo = el.getAttribute("data-tipo");
+        location.hash = tipo ? "#/c/" + tipo : "#/catalogo";
         return;
       }
 
@@ -1276,8 +1351,9 @@
       if (!$("[data-barra-buscador]").hasAttribute("hidden")) alternarBuscador(false);
     });
 
-    var tallasDlg = $("[data-ventana-tallas]");
-    if (tallasDlg) tallasDlg.addEventListener("click", function (ev) { if (ev.target === tallasDlg) tallasDlg.close(); });
+    $$("dialog.ventana").forEach(function (d) {
+      d.addEventListener("click", function (ev) { if (ev.target === d) d.close(); });
+    });
 
     window.addEventListener("hashchange", function () { pintarRuta(); });
   }

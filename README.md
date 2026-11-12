@@ -52,18 +52,24 @@ cambia el rango por el detalle y la página empieza a mostrar el stock real sola
 
 - **Esconder un producto:** `"disponible": false`.
 - **Producto sin tallas** (un accesorio, por ejemplo): `"tallaUnica": true` y `"stock": 12`.
-- **Categorías:** las de `"categorias"` arman solas el menú de arriba, el menú del celular, los
-  filtros y el pie. Puedes agregar, renombrar o reordenar.
+- **Categorías:** las de `"categorias"` arman solas el menú de arriba, el menú del celular, el
+  filtro «Tipo de zapato» del catálogo y el pie. Puedes agregar, renombrar o reordenar. Cada una
+  lleva su `"foto"`, que es la que sale en «Compra por categoría»; si la dejas vacía se usa la del
+  primer producto.
 - **Portada:** `"portada"` es una lista; cada elemento es una imagen con su título. Si hay más de
-  una, aparecen los puntitos y van rotando.
+  una, aparecen los puntitos y van rotando. `"portadaSegundos"` dice cuánto dura cada imagen
+  (entre 2 y 20; por defecto 4).
 - **Despachos:** cada zona de `"envios"` puede tener sus `"comunas"` o sus `"regiones"`. Cuando el
   cliente escribe su comuna en el checkout, la página elige sola la zona. La zona con
   `"regiones": ["*"]` es la que se usa cuando no calza ninguna otra.
 - **Envíos por pagar:** con `"envioPorPagar": true` el despacho no se suma al total y la página lo
   muestra como «Por pagar» en el checkout y en el mensaje de WhatsApp. Si algún día cobras el
   envío, ponlo en `false` y agrega `"precio"` a cada zona.
-- **Políticas de compra:** las de `"politicas"` salen en su propia sección de la portada, en el pie
-  y en la ficha de cada producto, y el asistente las respeta cuando le preguntan.
+- **Retiro:** con `"retiroEnTienda": true` aparece la opción de retirar sin costo. `"retiroComuna"`
+  dice dónde (hoy, La Serena); fuera de ahí el pedido va por despacho, y ese es por pagar.
+- **Políticas de compra:** las de `"politicas"` salen en el pie, bajo «Antes de comprar». Cada una
+  abre una ventana con su texto, igual que la guía de tallas. También están en la ficha de cada
+  producto, y el asistente las respeta cuando le preguntan.
 - El resto de los campos está explicado con comentarios al principio del mismo archivo.
 
 ### Las fotos
@@ -77,8 +83,11 @@ bien encuadradas.
 4:3, ~1200 px de ancho, de preferencia fondo blanco) y escribe la ruta en `"fotos"`. Si la foto no
 es 4:3 no pasa nada: la página la recorta centrada.
 
-Las imágenes de la portada son `img/portada-1.webp`, `-2` y `-3`, y la de la banda del medio es
-`img/temporada.webp`.
+Las imágenes de la portada son `img/portada-1.webp`, `-2` y `-3`. La banda del medio y las fotos
+de «Compra por categoría» apuntan a una foto del catálogo, y se pueden cambiar desde el panel.
+
+Cuando un producto tiene una foto por color (misma cantidad de fotos que de colores), la ficha
+muestra el nombre del color bajo cada miniatura y dice cuál está elegido.
 
 ---
 
@@ -126,10 +135,10 @@ Qué se puede editar:
 | Pestaña | Qué cambia |
 |---|---|
 | **Productos** | Nombre, precio, precio anterior, categoría, fotos, textos, colores, aviso de horma, cinta, destacado, esconder. Agregar y eliminar modelos. |
-| **Portada** | La barra de arriba, las imágenes de portada, la banda del medio y los tres pasos. |
+| **Portada** | La barra de arriba, las imágenes de portada (con los segundos que dura cada una), la banda del medio y los tres pasos. |
 | **Tienda** | WhatsApp, Instagram, dirección, retiro, zonas de despacho, formas de pago y las políticas de compra. |
 | **Cupones** | Crear, apagar y borrar cupones. |
-| **Ajustes** | Colores de la marca, categorías, guía de tallas y los títulos de cada sección. |
+| **Ajustes** | Colores de la marca, categorías (con su foto), guía de tallas y los títulos de cada sección. |
 
 ### Las tallas, desde el panel
 
@@ -144,8 +153,10 @@ Para pasar de uno a otro, el botón está arriba de las tallas.
 
 ### Las fotos
 
-Al subir una foto, el panel la recorta sola a 4:3 sobre fondo blanco, la achica y la guarda en la
-carpeta `fotos/` del repositorio. La primera foto de la lista es la que se ve en el catálogo; las
+Todas las fotos se eligen desde el teléfono o el computador: no se pega ninguna ruta ni ningún
+enlace. Las de los productos se recortan solas a 4:3 sobre fondo blanco; las de la portada, la
+banda y las categorías llenan el marco recortando lo que sobra. El panel las achica y las guarda
+en la carpeta `fotos/` del repositorio. La primera foto de la lista es la que se ve en el catálogo; las
 demás salen en la ficha con las flechas. Las fotos que dejas de usar se borran al guardar.
 
 ### Configurarlo

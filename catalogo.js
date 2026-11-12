@@ -60,7 +60,7 @@ window.CATALOGO = {
     "mapaBusqueda": "",
     "retiroEnTienda": true,
     "nombreRetiro": "Retiro en La Serena",
-    "notaRetiro": "Coordinamos el punto y la hora por WhatsApp.",
+    "notaRetiro": "Solo en La Serena. Coordinamos el punto y la hora por WhatsApp.",
     "envioPorPagar": true,
     "envioGratisDesde": 0,
     "envios": [
@@ -116,7 +116,8 @@ window.CATALOGO = {
         "titulo": "Plazos de entrega",
         "texto": "Los valores de envío y los tiempos de llegada son estimativos. No nos hacemos responsables si el plazo es mayor, porque no depende de nosotros."
       }
-    ]
+    ],
+    "retiroComuna": "La Serena"
   },
   "tema": {
     "color": "#6a1138",
@@ -156,7 +157,7 @@ window.CATALOGO = {
     "etiqueta": "Lo más pedido",
     "titulo": "Modelo Intiara",
     "bajada": "Botín de gamuza premium con doble hebilla, taco cómodo y estable. En camel y en negro.",
-    "foto": "img/temporada.webp",
+    "foto": "img/catalogo/intiara-camel.webp",
     "boton": "Ver el modelo",
     "enlace": "#/p/intiara-camel"
   },
@@ -255,6 +256,7 @@ window.CATALOGO = {
     {
       "id": "botines",
       "nombre": "Botines",
+      "foto": "img/catalogo/quilla-seda.webp",
       "productos": [
         {
           "id": "intiara-camel",
@@ -417,6 +419,7 @@ window.CATALOGO = {
     {
       "id": "botas",
       "nombre": "Botas",
+      "foto": "img/catalogo/inti-oro.webp",
       "productos": [
         {
           "id": "kallpa",
@@ -568,6 +571,7 @@ window.CATALOGO = {
     {
       "id": "zapatillas",
       "nombre": "Zapatillas",
+      "foto": "img/catalogo/kallpa-chaki.webp",
       "productos": [
         {
           "id": "kallpa-chaki",
@@ -885,6 +889,7 @@ window.CATALOGO = {
     {
       "id": "sandalias",
       "nombre": "Sandalias",
+      "foto": "img/catalogo/kori-desierto.webp",
       "productos": [
         {
           "id": "kori-desierto",
@@ -1104,5 +1109,6 @@ window.CATALOGO = {
         }
       ]
     }
-  ]
+  ],
+  "portadaSegundos": 4
 };

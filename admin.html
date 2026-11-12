@@ -636,6 +636,7 @@ a{color:var(--vino)}
     if (el.matches("[data-subir-foto]")) { subirFoto(el); return; }
     if (el.matches("[data-subir-slide]")) { subirPortada(el); return; }
     if (el.matches("[data-subir-temp]")) { subirTemporada(el); return; }
+    if (el.matches("[data-subir-cat]")) { subirCategoria(el); return; }
   });
 
   function nuevoProducto() {
@@ -729,6 +730,20 @@ a{color:var(--vino)}
     }).catch(falloFoto);
   }
 
+  function subirCategoria(input) {
+    var archivo = archivoDe(input);
+    if (!archivo) return;
+    var i = +input.getAttribute("data-subir-cat");
+    var c = (D.categorias || [])[i];
+    if (!c) return;
+    subir(archivo, "categoria-" + (c.id || i + 1), "cubrir").then(function (ruta) {
+      c.foto = ruta;
+      tocar();
+      pintarAjustes();
+      avisar("Foto lista. Recuerda guardar los cambios.");
+    }).catch(falloFoto);
+  }
+
   function subirTemporada(input) {
     var archivo = archivoDe(input);
     if (!archivo) return;
@@ -786,6 +801,12 @@ a{color:var(--vino)}
       "</div>" +
 
       '<div class="tarjeta"><h3>Imágenes de portada</h3>' +
+        '<div class="fila">' +
+          campo("Segundos que dura cada imagen",
+            '<input type="number" min="2" max="20" step="1" data-portada-seg value="' +
+            (parseFloat(D.portadaSegundos) || 4) + '"><span class="ayuda">Entre 2 y 20. Con 4 la portada cambia rápido.</span>') +
+          "<div></div>" +
+        "</div>" +
         (D.portada || []).map(function (s, i) {
           return '<div class="repe"><div class="repe-cab"><b>Imagen ' + (i + 1) + "</b>" +
             '<button class="boton boton--linea boton--chico" type="button" data-slide-borra="' + i + '">Quitar</button></div>' +
@@ -951,11 +972,14 @@ a{color:var(--vino)}
       '<div class="tarjeta"><h3>Categorías</h3>' +
         '<p class="ayuda" style="margin-bottom:12px">Son los botones del menú. Al quitar una categoría se borran sus productos.</p>' +
         '<div data-cats>' + (D.categorias || []).map(function (c, i) {
-          return '<div class="color-fila">' +
+          return '<div class="repe"><div class="color-fila">' +
             '<input type="text" data-cat="' + i + '" value="' + esc(c.nombre) + '">' +
             '<span class="ayuda" style="width:90px">' + (c.productos || []).length + " productos</span>" +
             (i > 0 ? '<button class="boton boton--linea boton--chico" type="button" data-cat-sube="' + i + '">↑</button>' : "") +
-            '<button class="boton boton--linea boton--chico" type="button" data-cat-borra="' + i + '">Quitar</button></div>';
+            '<button class="boton boton--linea boton--chico" type="button" data-cat-borra="' + i + '">Quitar</button></div>' +
+            campoImagen("Foto en «Compra por categoría»", c.foto,
+              'data-subir-cat="' + i + '"', 'data-quitar-cat="' + i + '"') +
+            "</div>";
         }).join("") + "</div>" +
         '<button class="boton boton--linea boton--chico" type="button" data-cat-nueva>+ Agregar categoría</button>' +
       "</div>" +
@@ -994,6 +1018,10 @@ a{color:var(--vino)}
       tocar(); return;
     }
     if (el.matches("[data-temp]")) { D.temporada[el.getAttribute("data-temp")] = el.value; tocar(); return; }
+    if (el.matches("[data-portada-seg]")) {
+      D.portadaSegundos = Math.min(20, Math.max(2, parseInt(el.value, 10) || 4));
+      tocar(); return;
+    }
     if (el.matches("[data-tema]")) { D.tema[el.getAttribute("data-tema")] = el.value; tocar(); return; }
     if (el.matches("[data-anuncio-i]")) { D.anuncio[+el.getAttribute("data-anuncio-i")] = el.value; tocar(); return; }
     if (el.matches("[data-slide]")) {
@@ -1047,6 +1075,7 @@ a{color:var(--vino)}
     if ((el = ev.target.closest("[data-slide-borra]"))) { D.portada.splice(+el.getAttribute("data-slide-borra"), 1); tocar(); pintarPortada(); return; }
     if ((el = ev.target.closest("[data-quitar-slide]"))) { D.portada[+el.getAttribute("data-quitar-slide")].foto = ""; tocar(); pintarPortada(); return; }
     if (ev.target.closest("[data-quitar-temp]")) { (D.temporada = D.temporada || {}).foto = ""; tocar(); pintarPortada(); return; }
+    if ((el = ev.target.closest("[data-quitar-cat]"))) { D.categorias[+el.getAttribute("data-quitar-cat")].foto = ""; tocar(); pintarAjustes(); return; }
     if (ev.target.closest("[data-zona-nueva]")) {
       (D.negocio.envios = D.negocio.envios || []).push({ nombre: "Zona nueva", detalle: "" });
       tocar(); pintarTienda(); return;
@@ -1065,7 +1094,7 @@ a{color:var(--vino)}
     if (ev.target.closest("[data-cat-nueva]")) {
       var nombre = prompt("Nombre de la categoría:");
       if (!nombre) return;
-      D.categorias.push({ id: slug(nombre) || ("cat-" + Date.now().toString(36)), nombre: nombre, productos: [] });
+      D.categorias.push({ id: slug(nombre) || ("cat-" + Date.now().toString(36)), nombre: nombre, foto: "", productos: [] });
       tocar(); pintarAjustes(); return;
     }
     if ((el = ev.target.closest("[data-cat-borra]"))) {

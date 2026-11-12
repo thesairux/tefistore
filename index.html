@@ -109,17 +109,6 @@
       </div>
     </section>
 
-    <section class="bloque politicas" id="politicas" data-politicas-bloque hidden aria-labelledby="politicas-titulo">
-      <div class="contenedor politicas-grilla">
-        <div class="politicas-intro">
-          <h2 class="titulo" id="politicas-titulo" data-texto="politicas.titulo">Políticas de compra</h2>
-          <p class="politicas-bajada" data-texto="politicas.bajada"></p>
-          <a class="enlace-flecha" data-wsp href="#" target="_blank" rel="noopener">Consultar por WhatsApp
-            <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-        </div>
-        <ol class="politicas-lista" data-politicas></ol>
-      </div>
-    </section>
     <section class="bloque" id="tienda" data-si="direccion" hidden aria-labelledby="tienda-titulo">
       <div class="contenedor tienda-grilla">
         <div>
@@ -181,7 +170,7 @@
       <b class="pie-titulo">Ayuda</b>
       <ul class="pie-lista">
         <li><a href="#" data-abrir-tallas>Guía de tallas</a></li>
-        <li><a href="#/" data-ir-politicas>Políticas de compra</a></li>
+        <li><button class="pie-enlace" type="button" data-ventana="politicas">Políticas de compra</button></li>
         <li data-si="direccion" hidden><a href="#/" data-ir-tienda>Dónde estamos</a></li>
         <li><a data-wsp href="#" target="_blank" rel="noopener">Hablar por WhatsApp</a></li>
       </ul>
@@ -228,6 +217,18 @@
         <tbody data-guia-tallas></tbody>
       </table>
     </div>
+  </div>
+</dialog>
+
+<dialog class="ventana" data-ventana-info aria-labelledby="vi-titulo">
+  <div class="ventana-caja">
+    <header class="ventana-cab">
+      <h2 class="titulo" id="vi-titulo" data-info-titulo>Información</h2>
+      <button class="icono-boton" type="button" data-cerrar-ventana aria-label="Cerrar">
+        <svg class="icono" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </header>
+    <div class="ventana-cuerpo" data-info-cuerpo></div>
   </div>
 </dialog>
 

@@ -184,6 +184,7 @@ function limpiarCatalogo(d) {
       retiroEnTienda: bool(N.retiroEnTienda),
       nombreRetiro: texto(N.nombreRetiro, 60),
       notaRetiro: texto(N.notaRetiro, 200),
+      retiroComuna: texto(N.retiroComuna, 60),
       envioPorPagar: bool(N.envioPorPagar),
       envioGratisDesde: entero(N.envioGratisDesde, 0, 90000000),
       envios: lista(N.envios).slice(0, 12).map(e => {
@@ -248,9 +249,12 @@ function limpiarCatalogo(d) {
       if (c && c.hasta) o.hasta = texto(c.hasta, 10);
       return o;
     }).filter(c => c.codigo),
+    // cuántos segundos dura cada imagen de la portada
+    portadaSegundos: Math.min(20, Math.max(2, entero(d.portadaSegundos, 2, 20) || 4)),
     categorias: lista(d.categorias).slice(0, 20).map(c => ({
       id: texto(c && c.id, 40).toLowerCase().replace(/[^a-z0-9-]/g, ""),
       nombre: texto(c && c.nombre, 40),
+      foto: RUTA_FOTO.test(texto(c && c.foto, 160)) ? texto(c.foto, 160) : "",
       productos: lista(c && c.productos).slice(0, 120).map(limpiarProducto).filter(Boolean)
     })).filter(c => c.id && c.nombre)
   };
@@ -277,7 +281,10 @@ function limpiarCatalogo(d) {
 function fotosUsadas(d) {
   const usadas = new Set();
   const ver = f => { if (typeof f === "string" && f.startsWith("fotos/")) usadas.add(f); };
-  (d.categorias || []).forEach(c => (c.productos || []).forEach(p => (p.fotos || []).forEach(ver)));
+  (d.categorias || []).forEach(c => {
+    ver(c.foto);
+    (c.productos || []).forEach(p => (p.fotos || []).forEach(ver));
+  });
   (d.portada || []).forEach(s => ver(s.foto));
   if (d.temporada) ver(d.temporada.foto);
   return usadas;
