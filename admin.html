@@ -227,6 +227,7 @@ a{color:var(--vino)}
   var cuenta = { usuario: "", clave: "" };
   var D = null;              // el catálogo que se está editando
   var fotosNuevas = [];      // { path, sha } de las fotos subidas en esta sesión
+  var version = "";          // versión del catálogo que se cargó: evita pisar cambios de otro
   var previas = {};          // ruta -> la foto en el navegador, para verla antes de publicar
   var cambios = false;
   var sel = null;            // id del producto abierto
@@ -276,6 +277,7 @@ a{color:var(--vino)}
     "token-sin-permiso": "El token de GitHub no tiene permiso para escribir en el repositorio. Necesita «Contents: Read and write».",
     "repo-no-encontrado": "No encuentro el repositorio con ese token. Revisa el nombre en GITHUB_REPO y que el token tenga acceso a ese repositorio.",
     conflicto: "El repositorio cambió mientras guardabas. Vuelve a entrar al panel y guarda de nuevo.",
+    desactualizado: "El catálogo cambió desde que abriste el panel. Sal y vuelve a entrar para no borrar esos cambios, y aplica lo tuyo de nuevo.",
     "github-caido": "GitHub está con problemas ahora mismo. Intenta en unos minutos.",
     catalogo: "No se pudo leer el catálogo publicado.",
     datos: "Hay datos que no se pueden guardar así.",
@@ -330,6 +332,7 @@ a{color:var(--vino)}
     api("entrar").then(function (d) {
       if (!d.catalogo) throw new Error("No se encontró el catálogo publicado.");
       D = d.catalogo;
+      version = d.version || "";
       $("[data-entrar]").hidden = true;
       $("[data-panel]").hidden = false;
       limpio();
@@ -357,7 +360,8 @@ a{color:var(--vino)}
     var b = this;
     b.disabled = true;
     b.textContent = "Guardando…";
-    api("publicar", { catalogo: D, fotos: fotosNuevas }).then(function () {
+    api("publicar", { catalogo: D, fotos: fotosNuevas, version: version }).then(function (d) {
+      version = (d && d.version) || version;
       fotosNuevas = [];
       limpio();
       avisar("Cambios guardados. La página se actualiza en un par de minutos.");

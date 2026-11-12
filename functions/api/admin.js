@@ -98,7 +98,7 @@ async function leerPublicado() {
     const ini = txt.indexOf("{", txt.indexOf("window.CATALOGO"));
     const datos = JSON.parse(txt.slice(ini, txt.lastIndexOf("}") + 1), sinProto);
     if (!datos || typeof datos !== "object" || Array.isArray(datos)) throw new Error("catalogo");
-    return datos;
+    return { datos, version: f.sha };
   } catch (e) {
     throw deCliente("catalogo");
   }
@@ -295,7 +295,7 @@ function fotosUsadas(d) {
   return usadas;
 }
 
-async function publicar(datos, fotos) {
+async function publicar(datos, fotos, versionQueTenia) {
   const limpio = limpiarCatalogo(datos);
   const cuerpo = CABECERA + "window.CATALOGO = " + JSON.stringify(limpio, null, 2) + ";\n";
   if (new TextEncoder().encode(cuerpo).length > MAX_ARCHIVO) throw deCliente("grande");
@@ -304,7 +304,17 @@ async function publicar(datos, fotos) {
   const usadas = fotosUsadas(limpio);
   const rama = encodeURIComponent(repo().branch);
 
-  for (let intento = 0; intento < 2; intento++) {
+  // ¿cambió el catálogo desde que el panel lo cargó? Mejor avisar que pisarlo.
+  if (versionQueTenia) {
+    const ahora = await leerPublicado();
+    if (ahora && ahora.version && ahora.version !== versionQueTenia) throw deCliente("desactualizado", 409);
+  }
+
+  // Si alguien empuja al repositorio justo en el medio, GitHub rechaza el
+  // cambio; se vuelve a intentar con la rama ya movida.
+  const ESPERAS = [0, 400, 900, 1800];
+  for (let intento = 0; intento < ESPERAS.length; intento++) {
+    if (ESPERAS[intento]) await sleep(ESPERAS[intento]);
     try {
       const ref = await gh(`/git/ref/heads/${rama}`);
       const shaCabeza = ref.object.sha;
@@ -325,9 +335,11 @@ async function publicar(datos, fotos) {
         body: { message: "Cambios desde el panel de la tienda", tree: nuevoArbol.sha, parents: [shaCabeza] }
       });
       await gh(`/git/refs/heads/${rama}`, { method: "PATCH", body: { sha: commit.sha } });
-      return;
+      const pub = await leerPublicado();
+      return pub && pub.version;
     } catch (e) {
-      if (intento === 0 && (e.status === 409 || e.status === 422)) continue;  // la rama cambió: se reintenta
+      const choque = e.status === 409 || e.status === 422 || e.status >= 500;
+      if (intento < ESPERAS.length - 1 && choque) continue;   // la rama cambió: se reintenta
       throw e;
     }
   }
@@ -413,9 +425,15 @@ export async function onRequest({ request, env }) {
   if (!token() || !repo().full) return json(500, { error: "config" });
 
   try {
-    if (body.accion === "entrar") return json(200, { ok: true, catalogo: await leerPublicado() });
+    if (body.accion === "entrar") {
+      const pub = await leerPublicado();
+      return json(200, { ok: true, catalogo: pub && pub.datos, version: pub && pub.version });
+    }
     if (body.accion === "foto") return json(200, { ok: true, sha: await subirFoto(body.datos) });
-    if (body.accion === "publicar") { await publicar(body.catalogo, body.fotos); return json(200, { ok: true }); }
+    if (body.accion === "publicar") {
+      const version = await publicar(body.catalogo, body.fotos, body.version);
+      return json(200, { ok: true, version });
+    }
     return json(400, { error: "accion" });
   } catch (e) {
     if (e.cliente) return json(e.estado || 400, { error: e.cliente });
