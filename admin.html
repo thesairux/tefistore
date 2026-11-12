@@ -136,6 +136,9 @@ a{color:var(--vino)}
 .talla-stock span{display:block;font-size:12px;color:var(--suave-txt);text-align:center;margin-bottom:3px}
 .talla-stock input{width:100%;text-align:center;border:1px solid var(--linea);border-radius:var(--radio);padding:7px 4px}
 .talla-stock input[data-cero]{background:#fdf0ef;border-color:#f0c9c6}
+.color-punto{display:inline-block;width:12px;height:12px;border-radius:50%;
+  border:1px solid rgb(0 0 0 / .18);vertical-align:-1px;margin-right:2px}
+.repe-cab .ayuda{margin-left:auto;font-size:12.5px;color:var(--suave-txt)}
 
 /* filas repetibles */
 .repe{border:1px solid var(--linea);border-radius:8px;padding:14px;margin-bottom:10px;background:var(--suave)}
@@ -438,8 +441,15 @@ a{color:var(--vino)}
     }).join("") : '<p class="vacio" style="padding:14px">No hay productos con ese filtro.</p>';
   }
 
+  /* Ojo: devuelve siempre un objeto nuevo. Si devolviera el mismo, todos los
+     colores terminarían compartiendo la misma tabla de tallas y cambiar uno
+     cambiaría los otros. */
   function tallasComoObjeto(t) {
-    if (t && typeof t === "object") return t;
+    if (t && typeof t === "object") {
+      var copia = {};
+      Object.keys(t).forEach(function (k) { copia[k] = t[k]; });
+      return copia;
+    }
     var o = {};
     var m = /^\s*(\d+)\s*(?:-|a|al)\s*(\d+)\s*$/.exec(String(t || ""));
     if (m) { for (var i = +m[1]; i <= +m[2]; i++) o[String(i)] = null; }
@@ -457,6 +467,8 @@ a{color:var(--vino)}
     }
     var p = x.p;
     var porStock = p.tallas && typeof p.tallas === "object";
+    var colores = p.colores || [];
+    var porColor = colores.some(function (c) { return c && c.tallas; });
     var tallas = tallasComoObjeto(p.tallas);
 
     caja.innerHTML = '<div class="editor">' +
@@ -489,20 +501,41 @@ a{color:var(--vino)}
       "</div>" +
       '<p class="ayuda" style="margin-top:8px">La primera foto es la que se ve en el catálogo. Se eligen desde tu teléfono o computador y se recortan solas a 4:3 sobre fondo blanco.</p>' +
 
-      '<p class="sub-titulo">Tallas</p>' +
+      '<p class="sub-titulo">Tallas y stock</p>' +
       '<div class="tallas-modo">' +
-        '<button type="button" data-modo-tallas="rango" aria-pressed="' + (!porStock) + '">Rango (sin contar pares)</button>' +
-        '<button type="button" data-modo-tallas="stock" aria-pressed="' + (porStock) + '">Stock por talla</button>' +
+        '<button type="button" data-modo-tallas="rango" aria-pressed="' + (!porStock && !porColor) + '">Rango (sin contar pares)</button>' +
+        '<button type="button" data-modo-tallas="stock" aria-pressed="' + (porStock && !porColor) + '">Stock por talla</button>' +
+        (colores.length > 1
+          ? '<button type="button" data-modo-tallas="color" aria-pressed="' + porColor + '">Stock por color y talla</button>'
+          : "") +
       "</div>" +
-      (porStock
-        ? '<div class="tallas-stock">' + Object.keys(tallas).map(function (t) {
-            return '<label class="talla-stock"><span>Talla ' + esc(t) + "</span>" +
-              '<input type="number" min="0" max="99" data-talla="' + esc(t) + '" value="' + (tallas[t] == null ? 0 : tallas[t]) + '"' +
-              ((tallas[t] | 0) === 0 ? " data-cero" : "") + "></label>";
-          }).join("") + "</div>" +
-          '<p class="ayuda" style="margin-top:8px">En 0 la talla sale tachada. Con 1 o 2 la página avisa «última» o «quedan 2».</p>'
-        : campo("Tallas disponibles", '<input type="text" data-p="tallas" value="' + esc(p.tallas || "") +
-            '" placeholder="35-40"><span class="ayuda">Un rango como 35-40, o una lista: 36, 37, 39.</span>')) +
+      (porColor
+        ? colores.map(function (c, ic) {
+            var tc = tallasComoObjeto(c.tallas);
+            var quedan = Object.keys(tc).reduce(function (a, k) { return a + (parseInt(tc[k], 10) || 0); }, 0);
+            return '<div class="repe"><div class="repe-cab">' +
+              '<b><span class="color-punto" style="background:' + esc(c.hex || "#ddd") + '"></span> ' +
+              esc(c.nombre || "Color " + (ic + 1)) + "</b>" +
+              '<span class="ayuda">' + quedan + (quedan === 1 ? " par" : " pares") + "</span></div>" +
+              '<div class="tallas-stock">' + Object.keys(tc).map(function (x) {
+                return '<label class="talla-stock"><span>Talla ' + esc(x) + "</span>" +
+                  '<input type="number" min="0" max="99" data-talla-color="' + ic + '" data-talla="' + esc(x) + '" value="' +
+                  (tc[x] == null ? 0 : tc[x]) + '"' + ((tc[x] | 0) === 0 ? " data-cero" : "") + "></label>";
+              }).join("") + "</div></div>";
+          }).join("") +
+          '<p class="ayuda" style="margin-top:8px">Cuántos pares te quedan de cada color en cada talla. ' +
+          'En la página, la clienta elige primero el color y ve solo las tallas que hay de ese color. ' +
+          'En 0 la talla sale tachada; si un color queda en 0 entero, aparece como «sin stock».</p>'
+        : porStock
+          ? '<div class="tallas-stock">' + Object.keys(tallas).map(function (t) {
+              return '<label class="talla-stock"><span>Talla ' + esc(t) + "</span>" +
+                '<input type="number" min="0" max="99" data-talla="' + esc(t) + '" value="' + (tallas[t] == null ? 0 : tallas[t]) + '"' +
+                ((tallas[t] | 0) === 0 ? " data-cero" : "") + "></label>";
+            }).join("") + "</div>" +
+            '<p class="ayuda" style="margin-top:8px">En 0 la talla sale tachada. Con 1 o 2 la página avisa «última» o «quedan 2».</p>'
+          : campo("Tallas disponibles", '<input type="text" data-p="tallas" value="' + esc(p.tallas || "") +
+              '" placeholder="35-40"><span class="ayuda">Un rango como 35-40, o una lista: 36, 37, 39. ' +
+              'Sirve cuando no llevas la cuenta de los pares.</span>')) +
 
       '<p class="sub-titulo">Textos</p>' +
       campo("Resumen (se ve bajo el precio)", '<textarea data-p="detalle" style="min-height:60px">' + esc(p.detalle) + "</textarea>") +
@@ -515,6 +548,10 @@ a{color:var(--vino)}
         '<span class="ayuda">Sale destacado junto a las tallas. Ej: «Horma pequeña: se recomienda pedir una talla más».</span>') +
 
       '<p class="sub-titulo">Colores</p>' +
+      '<p class="ayuda" style="margin:-4px 0 12px">Los colores en que viene este modelo. Salen como botones ' +
+        'en la ficha, se usan en el buscador (si alguien escribe «botines negros» lo encuentra) y el color ' +
+        'elegido viaja en el pedido de WhatsApp. Si subes una foto por color, en el mismo orden, la ficha ' +
+        'cambia la foto al elegir el color.</p>' +
       '<div data-colores>' + (p.colores || []).map(function (c, i) {
         return '<div class="color-fila">' +
           '<input type="text" data-color-nombre="' + i + '" value="' + esc(c.nombre) + '" placeholder="Nombre del color">' +
@@ -528,7 +565,9 @@ a{color:var(--vino)}
         "> Mostrar en la portada (Destacados)</label>" +
       '<label class="marca-check"><input type="checkbox" data-p="__oculto"' + (p.disponible === false ? " checked" : "") +
         "> Esconder de la página</label>" +
-      campo("Cinta", '<select data-p="__etiqueta">' +
+      campo("Cinta", '<span class="ayuda" style="margin-bottom:6px">El cartelito de la esquina de la foto, ' +
+        'en el catálogo. Sirve para destacar lo nuevo o lo que está en oferta.</span>' +
+        '<select data-p="__etiqueta">' +
         ["", "nuevo", "oferta", "ultimos"].map(function (e) {
           var n = { "": "Sin cinta", nuevo: "Nuevo", oferta: "Oferta", ultimos: "Últimos pares" }[e];
           return '<option value="' + e + '"' + ((p.etiquetas || [])[0] === e ? " selected" : "") + ">" + n + "</option>";
@@ -538,6 +577,17 @@ a{color:var(--vino)}
 
   /* Una foto recién subida aún no está en la página: se muestra la copia del navegador */
   function urlFoto(f) { return (f && previas[f]) || f || ""; }
+
+  /* Mantiene al día el «N pares» del color que se está editando, sin rehacer
+     el formulario (si se rehiciera, se perdería el foco mientras se escribe) */
+  function contarPares(input) {
+    var caja = input.closest(".repe");
+    if (!caja) return;
+    var suma = 0;
+    caja.querySelectorAll("[data-talla-color]").forEach(function (i) { suma += parseInt(i.value, 10) || 0; });
+    var r = caja.querySelector(".repe-cab .ayuda");
+    if (r) r.textContent = suma + (suma === 1 ? " par" : " pares");
+  }
 
   function campo(etiqueta, html) {
     return '<div class="campo"><label>' + esc(etiqueta) + "</label>" + html + "</div>";
@@ -560,17 +610,32 @@ a{color:var(--vino)}
   /* ---- eventos de productos ---- */
   document.addEventListener("click", function (ev) {
     var el;
-    if ((el = ev.target.closest("[data-sel]"))) { sel = el.getAttribute("data-sel"); pintarLista(); pintarEditor(); return; }
+    if ((el = ev.target.closest("[data-sel]"))) {
+      sel = el.getAttribute("data-sel");
+      pintarLista(); pintarEditor();
+      alEditor();
+      return;
+    }
     if (ev.target.closest("[data-nuevo]")) { nuevoProducto(); return; }
     if (ev.target.closest("[data-borrar-prod]")) { borrarProducto(); return; }
     if ((el = ev.target.closest("[data-modo-tallas]"))) {
       var x = buscarProd(sel); if (!x) return;
-      if (el.getAttribute("data-modo-tallas") === "stock") {
-        var o = tallasComoObjeto(x.p.tallas);
-        Object.keys(o).forEach(function (k) { if (o[k] == null) o[k] = 1; });
-        x.p.tallas = o;
+      var modo = el.getAttribute("data-modo-tallas");
+      var base = tallasComoObjeto(x.p.tallas);
+      if (modo === "color") {
+        // cada color parte con las tallas del producto, para solo cambiar los números
+        (x.p.colores || []).forEach(function (c) {
+          var o = tallasComoObjeto(c.tallas != null ? c.tallas : base);
+          Object.keys(o).forEach(function (k) { if (o[k] == null) o[k] = 1; });
+          c.tallas = o;
+        });
+      } else if (modo === "stock") {
+        (x.p.colores || []).forEach(function (c) { delete c.tallas; });
+        Object.keys(base).forEach(function (k) { if (base[k] == null) base[k] = 1; });
+        x.p.tallas = base;
       } else {
-        var ks = Object.keys(tallasComoObjeto(x.p.tallas));
+        (x.p.colores || []).forEach(function (c) { delete c.tallas; });
+        var ks = Object.keys(base);
         x.p.tallas = ks.length ? ks[0] + "-" + ks[ks.length - 1] : "35-40";
       }
       tocar(); pintarEditor();
@@ -624,8 +689,19 @@ a{color:var(--vino)}
     }
     if (el.matches("[data-talla]")) {
       x = buscarProd(sel); if (!x) return;
-      x.p.tallas[el.getAttribute("data-talla")] = Math.max(0, parseInt(el.value, 10) || 0);
-      if ((parseInt(el.value, 10) || 0) === 0) el.setAttribute("data-cero", ""); else el.removeAttribute("data-cero");
+      var cuantos = Math.max(0, parseInt(el.value, 10) || 0);
+      var cual = el.getAttribute("data-talla-color");
+      // el stock puede ser del producto entero o de un color
+      if (cual != null) {
+        var col = (x.p.colores || [])[+cual];
+        if (!col) return;
+        col.tallas = col.tallas && typeof col.tallas === "object" ? col.tallas : {};
+        col.tallas[el.getAttribute("data-talla")] = cuantos;
+      } else {
+        x.p.tallas[el.getAttribute("data-talla")] = cuantos;
+      }
+      if (cuantos === 0) el.setAttribute("data-cero", ""); else el.removeAttribute("data-cero");
+      if (cual != null) contarPares(el);
       tocar();
       return;
     }
@@ -657,6 +733,18 @@ a{color:var(--vino)}
     if (el.matches("[data-subir-cat]")) { subirCategoria(el); return; }
   });
 
+  /* En el teléfono la lista va arriba del editor: al elegir un producto hay que
+     bajar a mano. Esto lleva la vista al editor sin que la usuaria haga nada. */
+  function alEditor() {
+    if (window.innerWidth > 860) return;
+    var caja = $("[data-editor]");
+    if (!caja) return;
+    requestAnimationFrame(function () {
+      var y = caja.getBoundingClientRect().top + window.scrollY - 70;   // deja ver la barra
+      window.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+    });
+  }
+
   function nuevoProducto() {
     var cat = (D.categorias || []).filter(function (c) { return c.id === filtro.categoria; })[0] || D.categorias[0];
     if (!cat) return;
@@ -679,6 +767,7 @@ a{color:var(--vino)}
     tocar();
     pintarLista();
     pintarEditor();
+    alEditor();
   }
 
   function borrarProducto() {
